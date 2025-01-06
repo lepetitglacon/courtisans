@@ -11,6 +11,10 @@ export const useConnectionStore = defineStore("socket", () => {
         return user?.length > 0 ? user[0] : null
     })
 
+    const isYourTurn = computed(() => {
+        return currentPlayer.value.socket === game.value?.userTurnId
+    })
+
     function bindEvents() {
         socket.on("connect", () => {
             isConnected.value = true;
@@ -37,6 +41,7 @@ export const useConnectionStore = defineStore("socket", () => {
         isConnected,
         game,
         currentPlayer,
+        isYourTurn,
         emit,
         bindEvents,
         connect

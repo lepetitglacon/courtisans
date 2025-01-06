@@ -3,32 +3,36 @@ import {useConnectionStore} from "@/stores/socket.ts";
 
 const gameStore = useConnectionStore()
 
-  const props = defineProps([
-      'card'
-  ])
+const props = defineProps([
+    'card'
+])
 
-  function onCardClick(e) {
-	  gameStore.emit('client/play', {
-		  action: 'card',
-
-	  })
-  }
+function onCardClick(e) {
+  // gameStore.emit('client/play', {
+  //   action: 'card',
+  //   id: props.card.id
+  // })
+}
+function handleDragStart(e) {
+  e.dataTransfer.setData('application/json', JSON.stringify(props.card))
+}
 </script>
 
 <template>
 <div
-	class="card-container"
-     :style="{
-		  backgroundColor: card.family.color,
-		  color: 'white'
-	 }"
+    draggable="true"
+    @dragstart="handleDragStart"
+	  class="card-container"
+    :style="{
+      backgroundColor: card.family.color,
+      color: 'white'
+    }"
 	@click="onCardClick"
 >
-
-
   <div class="card-inner" >
     <p class="card-title">{{ card.family.title }}</p>
     <p>{{ card.power }}</p>
+    <p>{{ card.id }}</p>
   </div>
 </div>
 </template>

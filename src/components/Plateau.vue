@@ -1,22 +1,26 @@
 <script setup lang="ts">
 import draggable from "vuedraggable";
 import {useConnectionStore} from "@/stores/socket.ts";
-import {ref} from "vue";
 
 const gameStore = useConnectionStore()
 
-const list = [
-	{
-		name: 'ok'
-	}
-]
+function handleDragOver(e) {
+  e.preventDefault()
+}
+function handleDragDrop(e) {
+  console.log()
+  const card = JSON.parse(e.dataTransfer.getData("application/json"))
+  gameStore.emit('client/play', {
+    action: e.target.dataset.action,
+    id: card.id,
+    family: e.target.dataset.family,
+  })
+}
 </script>
 
 <template>
-
-	<pre>{{ gameStore.game.familyCards }}</pre>
-	
   <div class="plateau">
+
     <div
         v-for="[key, family] of Object.entries(gameStore?.game?.infos?.FAMILIES ?? [])"
         class="plateau-family"
@@ -24,18 +28,35 @@ const list = [
     >
       <p>{{ family.title }}</p>
 
-	    <draggable
-		    :list="list"
-		    item-key="name"
-		    class="list-group"
-		    ghost-class="ghost"
-	    >
-		    <template #item="{ element }">
-			    <div class="list-group-item">
-				    {{ element.name }}
-			    </div>
-		    </template>
-	    </draggable>
+      <div
+          class="draggable enlight"
+          @dragover="handleDragOver"
+          @drop="handleDragDrop"
+          data-action="enlight"
+          :data-family="family.id"
+      ></div>
+
+      <div
+          class="draggable shadow"
+          @dragover="handleDragOver"
+          @drop="handleDragDrop"
+          data-action="shadow"
+          :data-family="family.id"
+      ></div>
+
+<!--	    <draggable-->
+<!--		    :list="gameStore.game.familyCards[family.id]"-->
+<!--		    item-key="name"-->
+<!--		    class="list-group"-->
+<!--		    ghost-class="ghost"-->
+<!--	    >-->
+<!--		    <template #item="{ element }">-->
+<!--			    <div class="list-group-item">-->
+<!--				    {{ element.id }}-->
+<!--				    {{ element.power }}-->
+<!--			    </div>-->
+<!--		    </template>-->
+<!--	    </draggable>-->
 
     </div>
   </div>
@@ -50,13 +71,29 @@ const list = [
   height: 25vh;
 }
 .plateau-family {
+  display: flex;
+  flex-direction: column;
   color: white;
   width: 100%;
   height: 100%;
 }
 
+.draggable {
+  width: 100%;
+  height: 50%;
+}
+
+.enlight {
+  background-color: rgba(0,0,0,25%);
+}
+
+.shadow {
+  background-color: rgba(0,0,0,75%);
+}
+
 .list-group {
 	display: flex;
+  flex-direction: column;
 	justify-content: center;
 
 	background-color: beige;
@@ -66,6 +103,7 @@ const list = [
 }
 .list-group-item {
 	display: flex;
+  flex-direction: column;
 	justify-content: center;
 
 	background-color: #2c3e50;

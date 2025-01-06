@@ -19,7 +19,10 @@ function onStartSubmit() {
 <template>
   <button @click="onRestartClick">Restart</button>
   <button v-if="gameStore.currentPlayer && !gameStore.game?.started" @click="onStartSubmit">Start</button>
-	
+
+  <p v-if="gameStore.isYourTurn">Votre tour</p>
+  <p v-if="gameStore.game.userActionsToPlay">{{gameStore.game.userActionsToPlay}}</p>
+  <p >{{ gameStore.game.cards.length }}</p>
 
   <Players/>
 

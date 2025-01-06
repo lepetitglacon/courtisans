@@ -3,19 +3,25 @@ import Card from "./card.js";
 import POWERS from "./data/powers.js";
 import FAMILIES from "./data/families.js";
 import {shuffleArray} from "./utils.js";
+import ActionValidator from "./logic/actionValidator.js";
 
 export default class Game {
 
     constructor(io) {
+        this.HAND_SIZE = 3
+
+
         this.io = io;
         this.roomId = '0000'
         this.started = false
+        this.userTurnId = null
 
         this.users = []
+        this.initialDeck = []
         this.cards = []
-        this.familyCards = {
+        this.familyCards = {}
 
-        }
+        this.actionValidator = new ActionValidator(this);
 
         this.init()
         this.bind()
@@ -35,6 +41,7 @@ export default class Game {
     }
 
     initCards() {
+        let cardId = 0
         for (const family of Object.values(FAMILIES)) {
             for (const i in [...Array(15).keys()].map(i => parseInt(i))) {
                 const card = new Card({
@@ -45,7 +52,9 @@ export default class Game {
                 if (i > 6) { card.power = POWERS.NOBLE }
                 if (i > 9) { card.power = POWERS.ROGUE }
                 if (i > 12) { card.power = POWERS.HIDDEN }
+                card.id = cardId++
                 this.cards.push(card)
+                this.initialDeck.push(card)
             }
         }
     }
@@ -60,7 +69,8 @@ export default class Game {
         });
     }
 
-    bindSocket(socket) {
+
+    bindSocket(socket, user) {
         // ADMIN
         socket.on('client/start-request', (data) => {
             console.log(socket.id, 'starting the game')
@@ -75,7 +85,28 @@ export default class Game {
 
         // GAME actions
         socket.on('client/play', (data) => {
-            console.log(socket.id, data)
+            if (!this.actionValidator.isValidAction(socket)) { return }
+            const validationResult = this.actionValidator.validate(data, user)
+            if (!validationResult.isValid) {
+                console.log(socket.id, data, validationResult.reason)
+                return
+            }
+
+            if (user.cards.length < 1) {
+                // fill cards from deck
+                this.drawCardsForUser(user)
+
+                // next player
+                const index = this.users.indexOf(user)
+                if (index === this.users.length - 1) {
+                    this.userTurnId = this.users[0].socket.id
+                } else {
+                    this.userTurnId = this.users[index + 1].socket.id
+                }
+                this.actionValidator.initForCurrentUser()
+            }
+
+            this.update()
         })
     }
 
@@ -85,7 +116,7 @@ export default class Game {
         socket.on('disconnect', () => {
             this.users.splice(this.users.indexOf(user), 1)
         })
-        this.bindSocket(socket)
+        this.bindSocket(socket, user)
 
         if (this.users.length === 0) {
             user.admin = true
@@ -109,12 +140,14 @@ export default class Game {
     start() {
         this.started = true
 
-        this.distributeCards()
+        this.userTurnId = this.users[0].socket.id
+        this.actionValidator.initForCurrentUser()
+        this.distributeCardsToEveryPlayer()
         this.update()
     }
 
-    distributeCards() {
-        const cardsToDistribute = this.users.length * 3
+    distributeCardsToEveryPlayer() {
+        const cardsToDistribute = this.users.length * this.HAND_SIZE
         for (let i = 0; i < cardsToDistribute; i++) {
             if (this.canDrawCard()) {
                 this.users[i % this.users.length].cards.push(...this.drawCards())
@@ -122,8 +155,10 @@ export default class Game {
                 console.error('trying to draw while there is no card left')
             }
         }
+    }
 
-
+    drawCardsForUser(user) {
+        user.cards.push(...this.drawCards(this.HAND_SIZE))
     }
 
     canDrawCard() {
@@ -151,6 +186,8 @@ export default class Game {
         state.users = this.users.map(u => u.toJson())
         state.cards = this.cards
         state.familyCards = this.familyCards
+        state.userTurnId = this.userTurnId
+        state.userActionsToPlay = Array.from(this.actionValidator.actionsToPlay)
         state.infos = {
             FAMILIES,
             POWERS
