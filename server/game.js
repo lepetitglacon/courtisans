@@ -13,7 +13,9 @@ export default class Game {
 
         this.users = []
         this.cards = []
-        this.familyCards = []
+        this.familyCards = {
+
+        }
 
         this.init()
         this.bind()
@@ -21,6 +23,11 @@ export default class Game {
 
     init() {
         this.started = false
+
+        for (const family of Object.values(FAMILIES)) {
+            this.familyCards[family.id] = []
+        }
+
         this.initCards()
         this.shuffleCards()
         this.update()
@@ -53,18 +60,8 @@ export default class Game {
         });
     }
 
-    handleConnect(socket) {
-        const user = new User('todo', socket);
-
-        if (this.users.length === 0) {
-            user.admin = true
-        }
-
-        this.users.push(user);
-
-        socket.on('disconnect', () => {
-            this.users.splice(this.users.indexOf(user), 1)
-        })
+    bindSocket(socket) {
+        // ADMIN
         socket.on('client/start-request', (data) => {
             console.log(socket.id, 'starting the game')
             if (this.users.length > 1) {
@@ -76,8 +73,27 @@ export default class Game {
             this.restart()
         })
 
-        console.log('a user connected', socket.id);
+        // GAME actions
+        socket.on('client/play', (data) => {
+            console.log(socket.id, data)
+        })
+    }
+
+    handleConnect(socket) {
+        const user = new User('todo', socket);
+
+        socket.on('disconnect', () => {
+            this.users.splice(this.users.indexOf(user), 1)
+        })
+        this.bindSocket(socket)
+
+        if (this.users.length === 0) {
+            user.admin = true
+        }
+
+        this.users.push(user);
         this.update()
+        console.log('a user connected', socket.id);
     }
 
     restart() {
@@ -106,6 +122,8 @@ export default class Game {
                 console.error('trying to draw while there is no card left')
             }
         }
+
+
     }
 
     canDrawCard() {

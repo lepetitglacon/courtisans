@@ -1,14 +1,31 @@
 <script setup lang="ts">
+import {useConnectionStore} from "@/stores/socket.ts";
+
+const gameStore = useConnectionStore()
+
   const props = defineProps([
       'card'
   ])
+
+  function onCardClick(e) {
+	  gameStore.emit('client/play', {
+		  action: 'card',
+
+	  })
+  }
 </script>
 
 <template>
-<div class="card-container" :style="{
-  backgroundColor: card.family.color,
-  color: 'white'
-}">
+<div
+	class="card-container"
+     :style="{
+		  backgroundColor: card.family.color,
+		  color: 'white'
+	 }"
+	@click="onCardClick"
+>
+
+
   <div class="card-inner" >
     <p class="card-title">{{ card.family.title }}</p>
     <p>{{ card.power }}</p>

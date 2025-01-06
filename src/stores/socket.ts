@@ -8,7 +8,7 @@ export const useConnectionStore = defineStore("socket", () => {
 
     const currentPlayer = computed(() => {
         const user = game.value?.users?.filter(user => user.socket === socket.id)
-        return user.length > 0 ? user[0] : null
+        return user?.length > 0 ? user[0] : null
     })
 
     function bindEvents() {

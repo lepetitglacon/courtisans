@@ -2,6 +2,7 @@
 import {useConnectionStore} from "@/stores/socket.ts";
 import Deck from "@/components/Deck.vue";
 import Plateau from "@/components/Plateau.vue";
+import Players from "@/components/Players.vue";
 const gameStore = useConnectionStore()
 gameStore.bindEvents()
 
@@ -18,6 +19,7 @@ function onStartSubmit() {
 <template>
   <button @click="onRestartClick">Restart</button>
   <button v-if="gameStore.currentPlayer && !gameStore.game?.started" @click="onStartSubmit">Start</button>
+	
 
   <Players/>
 
