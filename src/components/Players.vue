@@ -6,9 +6,18 @@ const gameStore = useConnectionStore()
 </script>
 
 <template>
-	<Player v-for="users of gameStore.game.users ?? []"/>
+	<div class="players-container">
+		<Player v-for="user of gameStore.game.users ?? []" :user="user" />
+	</div>
 </template>
 
 <style scoped>
+.players-container {
+	display: flex;
+	justify-content: space-evenly;
 
+	width: 100%;
+	height: 20vh;
+	background-color: #a3cda5;
+}
 </style>

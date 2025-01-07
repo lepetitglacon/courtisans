@@ -92,7 +92,7 @@ export default class Game {
                 return
             }
 
-            if (user.cards.length < 1) {
+            if (user.handCards.length < 1) {
                 // fill cards from deck
                 this.drawCardsForUser(user)
 
@@ -115,6 +115,7 @@ export default class Game {
 
         socket.on('disconnect', () => {
             this.users.splice(this.users.indexOf(user), 1)
+            this.update()
         })
         this.bindSocket(socket, user)
 
@@ -131,7 +132,7 @@ export default class Game {
         this.cards.length = 0
 
         for (const user of this.users) {
-            user.cards.length = 0
+            user.handCards.length = 0
         }
 
         this.init()
@@ -158,7 +159,7 @@ export default class Game {
     }
 
     drawCardsForUser(user) {
-        user.cards.push(...this.drawCards(this.HAND_SIZE))
+        user.handCards.push(...this.drawCards(this.HAND_SIZE))
     }
 
     canDrawCard() {

@@ -5,6 +5,7 @@ export default class User {
         this.socket = socket;
 
         this.admin = false;
+        this.handCards = [];
         this.cards = [];
     }
 
@@ -13,6 +14,7 @@ export default class User {
             name: this.name,
             admin: this.admin,
             socket: this.socket.id,
+            handCards: this.handCards,
             cards: this.cards,
         }
     }

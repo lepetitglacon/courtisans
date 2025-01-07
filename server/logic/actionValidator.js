@@ -26,7 +26,7 @@ export default class ActionValidator {
     }
 
     validate(data, user) {
-        const card = user.cards.find(card => card.id === data.id)
+        const card = user.handCards.find(card => card.id === data.id)
         if (!card) {
             return {
                 isValid: false,
@@ -65,8 +65,6 @@ export default class ActionValidator {
                 reason: `Higher action "${higherAction}" has already been played`,
             }
         }
-        this.actionsToPlay.delete(higherAction)
-
 
         switch (data.action) {
             case 'enlight':
@@ -74,9 +72,11 @@ export default class ActionValidator {
                 if (card.family.id !== data.family) {
                     return {
                         isValid: false,
-                        reason: `Card ${card.family.id} has not the same family ${data.family.id}`
+                        reason: `Card ${card.family.id} has not the same family ${data.family}`
                     }
                 }
+                this.game.familyCards[data.family].push(card)
+                user.handCards.slice(user.cards.indexOf(card), 1)
                 break;
             case 'kill_crown':
             case 'kill_other':
@@ -85,12 +85,34 @@ export default class ActionValidator {
                 break
             case 'give':
             case 'keep':
+
                 break
         }
 
+        this.actionsToPlay.delete(higherAction)
         return {
             isValid: true,
             reason: ''
+        }
+    }
+
+    process(data, user) {
+        switch (data.action) {
+            case 'enlight':
+
+                break
+            case 'shadow':
+
+                break;
+            case 'kill_crown':
+            case 'kill_other':
+            case 'kill_own':
+                // TODO
+                break
+            case 'give':
+            case 'keep':
+
+                break
         }
     }
 }

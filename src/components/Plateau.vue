@@ -19,6 +19,7 @@ function handleDragDrop(e) {
 </script>
 
 <template>
+
   <div class="plateau">
 
     <div
@@ -27,6 +28,19 @@ function handleDragDrop(e) {
       :style="{backgroundColor: family.color}"
     >
       <p>{{ family.title }}</p>
+
+	    <div>
+		    <div
+			    class="card"
+			    v-for="familyCard of gameStore.game.familyCards[family.id]"
+			    @dragover="handleDragOver"
+			    @drop="handleDragDrop"
+			    data-action="kill_crown"
+			    :data-family="family.id"
+		    >
+			    {{ familyCard.id }} {{ familyCard.power }}
+		    </div>
+	    </div>
 
       <div
           class="draggable enlight"
@@ -81,6 +95,13 @@ function handleDragDrop(e) {
 .draggable {
   width: 100%;
   height: 50%;
+}
+
+.plateau .card {
+	background-color: rgba(0,0,0,20%);
+	margin: 5px;
+	padding: 2px;
+	border-radius: 2px;
 }
 
 .enlight {

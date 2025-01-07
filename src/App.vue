@@ -22,7 +22,7 @@ function onStartSubmit() {
 
   <p v-if="gameStore.isYourTurn">Votre tour</p>
   <p v-if="gameStore.game.userActionsToPlay">{{gameStore.game.userActionsToPlay}}</p>
-  <p >{{ gameStore.game.cards.length }}</p>
+  <p >{{ gameStore.game?.cards?.length }}</p>
 
   <Players/>
 

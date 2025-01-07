@@ -12,7 +12,7 @@ export const useConnectionStore = defineStore("socket", () => {
     })
 
     const isYourTurn = computed(() => {
-        return currentPlayer.value.socket === game.value?.userTurnId
+        return currentPlayer.value?.socket === game.value?.userTurnId
     })
 
     function bindEvents() {

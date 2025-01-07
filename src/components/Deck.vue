@@ -5,10 +5,12 @@
 </script>
 
 <template>
+	
+	<pre>{{ gameStore?.currentPlayer?.handCards }}</pre>
 
   <div class="deck">
     <p>Deck</p>
-    <Card v-for="card in gameStore?.currentPlayer?.cards ?? []" :card="card"/>
+    <Card v-for="card in gameStore?.currentPlayer?.handCards ?? []" :card="card"/>
   </div>
 
 </template>
