@@ -31,7 +31,10 @@ export default class Game {
         this.started = false
 
         for (const family of Object.values(FAMILIES)) {
-            this.familyCards[family.id] = []
+            this.familyCards[family.id] = {
+                enlighten: [],
+                shadowed: []
+            }
         }
 
         this.initCards()
@@ -133,6 +136,7 @@ export default class Game {
 
         for (const user of this.users) {
             user.handCards.length = 0
+            user.cards.length = 0
         }
 
         this.init()
@@ -151,7 +155,7 @@ export default class Game {
         const cardsToDistribute = this.users.length * this.HAND_SIZE
         for (let i = 0; i < cardsToDistribute; i++) {
             if (this.canDrawCard()) {
-                this.users[i % this.users.length].cards.push(...this.drawCards())
+                this.users[i % this.users.length].handCards.push(...this.drawCards())
             } else {
                 console.error('trying to draw while there is no card left')
             }

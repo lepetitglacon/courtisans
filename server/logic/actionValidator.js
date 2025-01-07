@@ -26,11 +26,25 @@ export default class ActionValidator {
     }
 
     validate(data, user) {
-        const card = user.handCards.find(card => card.id === data.id)
+        const card = user.handCards.find(card => card.id === data.cardId)
         if (!card) {
             return {
                 isValid: false,
                 reason: 'Card was not found in user hand'
+            }
+        }
+
+        const otherUser = this.game.users.find(User => User.socket.id === data?.toUserId)
+        if (!otherUser && (data.action === 'give' || ['kill_other', 'kill_own'].includes(data.action))) {
+            return {
+                isValid: false,
+                reason: 'Other user was not found'
+            }
+        }
+        if (['kill_crown', 'kill_other', 'kill_own'].includes(data.action) && card.power !== 'rogue') {
+            return {
+                isValid: false,
+                reason: `Trying to kill with no rogue`,
             }
         }
 
@@ -65,31 +79,46 @@ export default class ActionValidator {
                 reason: `Higher action "${higherAction}" has already been played`,
             }
         }
+        console.log(data, higherAction)
 
         switch (data.action) {
             case 'enlight':
             case 'shadow':
-                if (card.family.id !== data.family) {
+                if (card.family.id !== data.familyId) {
                     return {
                         isValid: false,
-                        reason: `Card ${card.family.id} has not the same family ${data.family}`
+                        reason: `Card ${card.family.id} has not the same family ${data.familyId}`
                     }
                 }
-                this.game.familyCards[data.family].push(card)
-                user.handCards.slice(user.cards.indexOf(card), 1)
+                data.action === 'enlight'
+                    ? this.game.familyCards[card.family.id].enlighten.push(card)
+                    : this.game.familyCards[card.family.id].shadowed.push(card)
+
+                user.handCards.splice(user.cards.indexOf(card), 1)
                 break;
             case 'kill_crown':
+                console.log(this.game.familyCards[data.familyId])
+                this.game.familyCards[data.familyId].splice(this.game.familyCards[data.familyId].indexOf(card), 1)
+                user.handCards.splice(user.cards.indexOf(card), 1)
+                break;
             case 'kill_other':
             case 'kill_own':
                 // TODO
                 break
             case 'give':
+                otherUser.cards.push(card)
+                user.handCards.splice(user.cards.indexOf(card), 1)
+                break
             case 'keep':
-
+                user.cards.push(card)
+                user.handCards.splice(user.cards.indexOf(card), 1)
                 break
         }
 
-        this.actionsToPlay.delete(higherAction)
+
+        if (data.action !== 'kill_crown') {
+            this.actionsToPlay.delete(higherAction)
+        }
         return {
             isValid: true,
             reason: ''

@@ -1,37 +1,46 @@
 <script setup lang="ts">
 import {useConnectionStore} from "@/stores/socket.ts";
+import {socket} from "@/socket.ts";
 
 const props = defineProps([
-	'action',
-	'data'
+  'action',
+  'data',
+  'divOption'
 ])
 
 const gameStore = useConnectionStore()
 
 function handleDragOver(e) {
-	e.preventDefault()
+  e.stopPropagation()
+  e.preventDefault()
 }
 function handleDragDrop(e) {
-	console.log()
-	const card = JSON.parse(e.dataTransfer.getData("application/json"))
-	gameStore.emit('client/play', {
-		action: e.target.dataset.action,
-		id: card.id,
-		family: e.target.dataset.family,
-	})
+  const card = JSON.parse(e.dataTransfer.getData("application/json"))
+  gameStore.emit('client/play', {
+    action: props?.action,
+    cardId: card?.id,
+    userId: socket?.id,
+    toUserId: props?.data?.toUserId ?? null,
+    ...props?.data ?? {}
+  })
 }
 </script>
 
 <template>
-	<div
-		class="card"
-		@dragover="handleDragOver"
-		@drop="handleDragDrop"
-	>
+  <div
+      class="action"
+      :style="{backgroundColor: divOption?.color ?? 'rgba(0,0,0,0.34)'}"
+      @dragover="handleDragOver"
+      @drop="handleDragDrop"
+      :title="props.action"
+  >
 
-	</div>
+  </div>
 </template>
 
 <style scoped>
-
+.action {
+  width: 100%;
+  height: 100%;
+}
 </style>

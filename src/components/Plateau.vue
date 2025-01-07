@@ -1,21 +1,9 @@
 <script setup lang="ts">
 import draggable from "vuedraggable";
 import {useConnectionStore} from "@/stores/socket.ts";
+import Action from "@/components/actions/Action.vue";
 
 const gameStore = useConnectionStore()
-
-function handleDragOver(e) {
-  e.preventDefault()
-}
-function handleDragDrop(e) {
-  console.log()
-  const card = JSON.parse(e.dataTransfer.getData("application/json"))
-  gameStore.emit('client/play', {
-    action: e.target.dataset.action,
-    id: card.id,
-    family: e.target.dataset.family,
-  })
-}
 </script>
 
 <template>
@@ -32,45 +20,32 @@ function handleDragDrop(e) {
 	    <div>
 		    <div
 			    class="card"
-			    v-for="familyCard of gameStore.game.familyCards[family.id]"
-			    @dragover="handleDragOver"
-			    @drop="handleDragDrop"
-			    data-action="kill_crown"
-			    :data-family="family.id"
-		    >
+			    v-for="familyCard of gameStore.game.familyCards[family.id].enlighten"
+        >
 			    {{ familyCard.id }} {{ familyCard.power }}
+
+          <div style="width: 20px; height: 20px;">
+            <Action action="kill_crown" :data="{familyId: family.id}"/>
+          </div>
+
 		    </div>
 	    </div>
 
-      <div
-          class="draggable enlight"
-          @dragover="handleDragOver"
-          @drop="handleDragDrop"
-          data-action="enlight"
-          :data-family="family.id"
-      ></div>
+      <div class="enlight">
+        <Action action="enlight" :data="{familyId: family.id}"/>
+      </div>
+      <div class="shadow">
+        <Action action="shadow" :data="{familyId: family.id}"/>
+      </div>
 
-      <div
-          class="draggable shadow"
-          @dragover="handleDragOver"
-          @drop="handleDragDrop"
-          data-action="shadow"
-          :data-family="family.id"
-      ></div>
-
-<!--	    <draggable-->
-<!--		    :list="gameStore.game.familyCards[family.id]"-->
-<!--		    item-key="name"-->
-<!--		    class="list-group"-->
-<!--		    ghost-class="ghost"-->
-<!--	    >-->
-<!--		    <template #item="{ element }">-->
-<!--			    <div class="list-group-item">-->
-<!--				    {{ element.id }}-->
-<!--				    {{ element.power }}-->
-<!--			    </div>-->
-<!--		    </template>-->
-<!--	    </draggable>-->
+      <div>
+        <div
+            class="card"
+            v-for="familyCard of gameStore.game.familyCards[family.id].shadowed"
+          >
+          {{ familyCard.id }} {{ familyCard.power }}
+        </div>
+      </div>
 
     </div>
   </div>
@@ -106,10 +81,12 @@ function handleDragDrop(e) {
 
 .enlight {
   background-color: rgba(0,0,0,25%);
+  height: 50%;
 }
 
 .shadow {
   background-color: rgba(0,0,0,75%);
+  height: 50%;
 }
 
 .list-group {
