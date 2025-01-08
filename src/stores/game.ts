@@ -3,9 +3,22 @@ import { defineStore } from 'pinia'
 
 export const useGameStore = defineStore('game', () => {
 
+  const holdenCard = ref(null)
+  const holdenCardAction = ref(null)
+  const holdenCardData = ref(null)
+
+  const actionDivs = ref<Object[]>([])
+  function registerActionDiv(action, ref, data) {
+    actionDivs.value.push({
+      action, ref, data
+    })
+  }
 
   return {
-    game,
-    currentPlayer
+    holdenCard,
+    holdenCardAction,
+    holdenCardData,
+    actionDivs,
+    registerActionDiv
   }
 })

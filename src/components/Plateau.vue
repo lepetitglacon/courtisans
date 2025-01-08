@@ -2,8 +2,10 @@
 import draggable from "vuedraggable";
 import {useConnectionStore} from "@/stores/socket.ts";
 import Action from "@/components/actions/Action.vue";
+import {useGameStore} from "@/stores/game.ts";
 
-const gameStore = useConnectionStore()
+const socketStore = useConnectionStore()
+const gameStore = useGameStore()
 </script>
 
 <template>
@@ -11,7 +13,7 @@ const gameStore = useConnectionStore()
   <div class="plateau">
 
     <div
-        v-for="[key, family] of Object.entries(gameStore?.game?.infos?.FAMILIES ?? [])"
+        v-for="[key, family] of Object.entries(socketStore?.game?.infos?.FAMILIES ?? [])"
         class="plateau-family"
       :style="{backgroundColor: family.color}"
     >
@@ -20,7 +22,7 @@ const gameStore = useConnectionStore()
 	    <div>
 		    <div
 			    class="card"
-			    v-for="familyCard of gameStore.game.familyCards[family.id].enlighten"
+			    v-for="familyCard of socketStore.game.familyCards[family.id].enlighten"
         >
 			    {{ familyCard.id }} {{ familyCard.power }}
 
@@ -41,7 +43,7 @@ const gameStore = useConnectionStore()
       <div>
         <div
             class="card"
-            v-for="familyCard of gameStore.game.familyCards[family.id].shadowed"
+            v-for="familyCard of socketStore.game.familyCards[family.id].shadowed"
           >
           {{ familyCard.id }} {{ familyCard.power }}
         </div>

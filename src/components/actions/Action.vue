@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import {useConnectionStore} from "@/stores/socket.ts";
 import {socket} from "@/socket.ts";
+import {useConnectionStore} from "@/stores/socket.ts";
+import {useGameStore} from "@/stores/game.ts";
+import {ref} from "vue";
 
 const props = defineProps([
   'action',
@@ -8,7 +10,12 @@ const props = defineProps([
   'divOption'
 ])
 
-const gameStore = useConnectionStore()
+const socketStore = useConnectionStore()
+const gameStore = useGameStore()
+
+const divRef = ref()
+
+gameStore.registerActionDiv(props.action, divRef, props.data)
 
 function handleDragOver(e) {
   e.stopPropagation()
@@ -16,7 +23,7 @@ function handleDragOver(e) {
 }
 function handleDragDrop(e) {
   const card = JSON.parse(e.dataTransfer.getData("application/json"))
-  gameStore.emit('client/play', {
+  socketStore.emit('client/play', {
     action: props?.action,
     cardId: card?.id,
     userId: socket?.id,
@@ -28,13 +35,11 @@ function handleDragDrop(e) {
 
 <template>
   <div
+      ref="divRef"
       class="action"
-      :style="{backgroundColor: divOption?.color ?? 'rgba(0,0,0,0.34)'}"
-      @dragover="handleDragOver"
-      @drop="handleDragDrop"
       :title="props.action"
   >
-
+    <slot/>
   </div>
 </template>
 
