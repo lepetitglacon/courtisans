@@ -16,7 +16,10 @@ const props = defineProps([
 ])
 
 const cardContainerRef = ref<HTMLDivElement>()
+const cardRef = ref<HTMLDivElement>()
+const cardCenterRef = ref<HTMLDivElement>()
 const dragging = ref(false)
+const hovering = ref(false)
 const closestSnap = ref(null)
 
 function onCardClick(e) {}
@@ -26,12 +29,17 @@ function contains(x, y, rect) {
       rect.y <= y && y <= rect.y + rect.height;
 }
 
-let offsetX = 0, offsetY = 0;
+
 let initialBBox = null
 
+onMounted(() => {
+  document.addEventListener("mousemove", onMouseMove)
+  document.addEventListener("mouseup", onMouseUp)
+})
 function onMouseDown(e) {
   if (!props.movable) { return }
   if (e.button !== 0) { return }
+  let offsetX = 0, offsetY = 0;
 
   offsetX = e.offsetX;
   offsetY = e.offsetY;
@@ -41,19 +49,16 @@ function onMouseDown(e) {
   chatStore.postMessage(`[debug] ${props.card.id} taken`)
   dragging.value = true
 }
-
-onMounted(() => {
-  document.addEventListener("mousemove", onMouseMove)
-  document.addEventListener("mouseup", onMouseUp)
-})
-const onMouseMove = (event) => {
+function move(event) {
   if (!dragging.value) { return }
 
-  cardContainerRef.value.style.left = `${event.clientX - offsetX}px`;
-  cardContainerRef.value.style.top = `${event.clientY - offsetY}px`;
+  const cardRect = cardContainerRef.value.getBoundingClientRect();
+  cardContainerRef.value.style.left = `${event.clientX - cardRect.width / 2}px`;
+  cardContainerRef.value.style.top = `${event.clientY - cardRect.height / 2}px`;
+}
+function snap(event) {
+  if (!dragging.value) { return }
 
-  // Snap to nearest point
-  let minDistance = Infinity;
   let action = null;
   closestSnap.value = null
 
@@ -61,30 +66,13 @@ const onMouseMove = (event) => {
     if (!actionDiv.ref) { continue }
 
     const snapRect = actionDiv.ref.getBoundingClientRect();
-    const cardRect = cardContainerRef.value.getBoundingClientRect();
-
     if (contains(event.clientX, event.clientY, snapRect)) {
       closestSnap.value = actionDiv;
       action = actionDiv.action;
     }
-
-    // // depuis la carte
-    // // const dx = snapRect.left - (cardRect.left + cardRect.width/2);
-    // // const dy = snapRect.top - (cardRect.top + cardRect.height/2);
-    // // depuis la souris
-    // const dx = snapRect.left - event.clientX;
-    // const dy = snapRect.top - event.clientY;
-    // const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // if (distance < minDistance) {
-    //   minDistance = distance;
-    //   closestSnap.value = actionDiv;
-    //   action = actionDiv.action;
-    // }
   }
 
   if (closestSnap.value) { // Adjust threshold as needed
-    console.log('indistance')
     gameStore.holdenCardAction = action
     gameStore.holdenCardActionData = null
 
@@ -92,11 +80,26 @@ const onMouseMove = (event) => {
     cardContainerRef.value.style.left = `${snapRect.left - cardContainerRef.value.offsetParent.offsetLeft}px`;
     cardContainerRef.value.style.top = `${snapRect.top - cardContainerRef.value.offsetParent.offsetTop}px`;
   } else {
-    console.log('faraway')
     closestSnap.value = null
     gameStore.holdenCardAction = null
     gameStore.holdenCardActionData = null
   }
+}
+function updateRotation(event) {
+  if (!hovering.value) { return }
+  const rect = cardContainerRef.value.getBoundingClientRect();
+  const x = event.clientX - rect.left; // Mouse X relative to container
+  const y = event.clientY - rect.top; // Mouse Y relative to container
+  const centerX = rect.width / 2; // Center of container (X)
+  const centerY = rect.height / 2; // Center of container (Y)
+  const rotateX = ((y - centerY) / centerY) * -10; // Tilt based on Y-axis
+  const rotateY = ((x - centerX) / centerX) * 10; // Tilt based on X-axis
+  cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+}
+const onMouseMove = (event) => {
+  updateRotation(event)
+  move(event)
+  snap(event)
 };
 
 const onMouseUp = () => {
@@ -109,9 +112,11 @@ const onMouseUp = () => {
       userId: socket?.id,
       ...closestSnap.value?.data ?? {}
     })
+    cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
   } else {
     cardContainerRef.value.style.left = `${initialBBox.left}px`;
     cardContainerRef.value.style.top = `${initialBBox.top}px`;
+    cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
   }
 
   cardContainerRef.value.style.zIndex = 0;
@@ -122,55 +127,89 @@ const onMouseUp = () => {
 
   dragging.value = false
 };
+function onMouseLeave(e) {
+  hovering.value = false
+  cardRef.value.style.transition = "transform 0.3s ease";
+  cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+
+  setTimeout(() => {
+    cardRef.value.style.transition = "none"; // Remove transition after reset
+  }, 300);
+}
 </script>
 
 <template>
 <div
     ref="cardContainerRef"
-	  class="card-container card"
+	  class="card-container"
     :class="movable && 'movable'"
     :style="{
       backgroundColor: card.family.color,
       color: 'white',
-      height: size ?? 8 + 'cm'
     }"
     @click="onCardClick"
     @mousedown="onMouseDown"
+    @mouseenter="hovering = true"
+    @mouseleave="onMouseLeave"
     @mouseup="onMouseUp"
 >
   <div
+      ref="cardRef"
+       class="card"
       @mousedown.prevent=""
       @mouseup.prevent=""
   >
-    <div class="card-info">
-      <p class="card-title">{{ card.family.title }}</p>
-      <p>{{ card.power }}</p>
-      <p>{{ card.id }}</p>
+    <div class="">
+      <div class="card-info">
+        <p class="card-title">{{ card.family.title }}</p>
+        <p>{{ card.power }}</p>
+        <p>{{ card.id }}</p>
+      </div>
+      <div ref="cardCenterRef" class="center"></div>
+      <img
+          class="img"
+          :src="`/cards/${card.family.id}.png`"
+      >
     </div>
-    <img
-        class="img"
-        :src="`/cards/${card.family.id}.png`"
-    >
   </div>
 </div>
 </template>
 
 <style scoped>
-
+.card-container {
+  position: absolute;
+  perspective: 1000px;
+  width: 4.5cm;
+  height: 8cm;
+  margin: 100px auto;
+}
 .card {
   position: absolute;
+  width: 100%;
+  height: 100%;
 
-  background: #ff7b7b;
-  border: 5px solid #d9534f;
+  border: 5px solid #dc2823;
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 
   transform-style: preserve-3d;
-  transition: transform 0.2s ease;
+  transition: transform 0.1s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
 
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .movable {
@@ -193,5 +232,12 @@ const onMouseUp = () => {
 
 .img {
   height: 8.5cm;
+}
+
+.center {
+ position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: red;
 }
 </style>
