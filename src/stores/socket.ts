@@ -1,8 +1,11 @@
 import { defineStore } from "pinia";
 import { socket } from "@/socket.ts";
 import {computed, ref} from "vue";
+import {useChatStore} from "@/stores/chat.ts";
 
 export const useConnectionStore = defineStore("socket", () => {
+    const chatStore = useChatStore()
+
     const isConnected = ref(false)
     const game = ref({})
 
@@ -30,6 +33,7 @@ export const useConnectionStore = defineStore("socket", () => {
     }
 
     function emit(type: string, data: any = null) {
+        chatStore.postMessage(`[debug][emit] ${type} ${data}`)
         socket.emit(type, data);
     }
 

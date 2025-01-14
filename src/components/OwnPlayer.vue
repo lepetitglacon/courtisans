@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import Card from "@/components/Card.vue";
+  import Card from "@/components/cards/Card.vue";
   import Action from "@/components/actions/Action.vue";
   import Chat from "@/components/Chat.vue";
 
@@ -15,8 +15,10 @@
   <div class="own-player-container">
     <Chat/>
 
-    <pre>{{gameStore.holdenCard}}</pre>
-    <pre>{{gameStore.holdenCardAction}}</pre>
+    <div class="floating-left-bottom">
+      <pre>{{gameStore.holdenCard}}</pre>
+      <pre>{{gameStore.holdenCardAction}}</pre>
+    </div>
 
     <div class="own-player">
       <Action action="keep" />
@@ -24,7 +26,9 @@
     </div>
 
     <div class="deck">
-      <Card v-for="card in socketStore?.currentPlayer?.handCards ?? []" :card="card"/>
+      <p v-if="socketStore.isYourTurn">Votre tour</p>
+      <p v-if="socketStore.game.userActionsToPlay">{{socketStore.game.userActionsToPlay}}</p>
+      <Card v-for="card in socketStore?.currentPlayer?.handCards ?? []" :card="card" :movable="true"/>
     </div>
   </div>
 
@@ -48,5 +52,12 @@
   width: 100%;
   height: 25vh;
   background-color: rgba(40, 40, 40, 0.06);
+}
+
+.floating-left-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.4);
 }
 </style>

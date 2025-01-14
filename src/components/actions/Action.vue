@@ -22,6 +22,7 @@ function handleDragOver(e) {
   e.preventDefault()
 }
 function handleDragDrop(e) {
+  console.log(props?.data)
   const card = JSON.parse(e.dataTransfer.getData("application/json"))
   socketStore.emit('client/play', {
     action: props?.action,

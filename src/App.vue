@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.css'
+
 import {useConnectionStore} from "@/stores/socket.ts";
 import OwnPlayer from "@/components/OwnPlayer.vue";
 import Plateau from "@/components/Plateau.vue";
@@ -18,21 +21,29 @@ function onStartSubmit() {
 
 <template>
 
-  <Players/>
+  <div class="d-flex flex-column">
+    <div class="row">
+      <Players/>
+    </div>
+    <div class="row">
+      <Plateau/>
+    </div>
+    <div class="row">
+      <OwnPlayer/>
+    </div>
+  </div>
 
-  <Plateau/>
+  <div class="admin-panel">
+    <button @click="onRestartClick">Restart</button>
+    <button v-if="gameStore.currentPlayer && !gameStore.game?.started" @click="onStartSubmit">Start</button>
+  </div>
 
-  <OwnPlayer/>
-
-  <button @click="onRestartClick">Restart</button>
-  <button v-if="gameStore.currentPlayer && !gameStore.game?.started" @click="onStartSubmit">Start</button>
-
-  <p v-if="gameStore.isYourTurn">Votre tour</p>
-  <p v-if="gameStore.game.userActionsToPlay">{{gameStore.game.userActionsToPlay}}</p>
   <p >{{ gameStore.game?.cards?.length }}</p>
 
 </template>
 
 <style scoped>
-
+.admin-panel {
+ position: absolute;
+}
 </style>

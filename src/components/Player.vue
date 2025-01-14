@@ -2,24 +2,29 @@
 import {useConnectionStore} from "@/stores/socket.ts";
 import Action from "@/components/actions/Action.vue";
 import {socket} from "@/socket.ts";
+import Deck from "@/components/cards/Deck.vue";
 
 const props = defineProps(['user'])
 
 const gameStore = useConnectionStore()
+
 </script>
 
 <template>
 
-  <Action action="give" :data="{toUserId}">
 
     <div
       v-if="user.socket !== socket.id"
       class="player"
     >
+      <Action action="give" :data="{toUserId: user.socket}">
       <div>
         <p>{{ user.name }}</p>
         <p>{{ user.socket }}</p>
       </div>
+
+
+      </Action>
 
 
       <div class="families">
@@ -30,14 +35,13 @@ const gameStore = useConnectionStore()
         >
           {{ user.cards.filter(card => card.family.id === family.id).length }}
           <p class="card" v-for="card of user.cards.filter(card => card.family.id === family.id)">{{ card.id }} {{ card.power }}</p>
-          <Card class="card" v-for="card of user.cards.filter(card => card.family.id === family.id)" :card="card"/>
+          <Deck :cards="user.cards.filter(card => card.family.id === family.id)"/>
 
         </div>
       </div>
 
     </div>
 
-  </Action>
 
 
 </template>
