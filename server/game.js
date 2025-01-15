@@ -1,14 +1,17 @@
 import User from "./user.js";
-import Card from "./card.js";
+import Card from "./cards/card.js";
 import POWERS from "./data/powers.js";
 import FAMILIES from "./data/families.js";
 import {shuffleArray} from "./utils.js";
 import ActionValidator from "./logic/actionValidator.js";
+import MISSIONS from "./data/missions.js";
+import MissionCard from "./cards/missionCard.js";
 
 export default class Game {
 
     constructor(io) {
         this.HAND_SIZE = 3
+        this.MISSION_HAND_SIZE = 2
 
 
         this.io = io;
@@ -19,8 +22,7 @@ export default class Game {
         this.users = []
         this.initialDeck = []
         this.cards = []
-        this.cards = []
-        this.cards = []
+        this.missionCards = []
         this.familyCards = {}
 
         this.actionValidator = new ActionValidator(this);
@@ -62,10 +64,24 @@ export default class Game {
                 this.initialDeck.push(card)
             }
         }
+
+        for (const family of Object.values(FAMILIES)) {
+            for (const [missionName, missionOption] of Object.entries(MISSIONS)) {
+                const card = new MissionCard({
+                    family: family,
+                    power: POWERS.NORMAL,
+                    type: missionName,
+                    ...missionOption
+                })
+                card.id = cardId++
+                this.missionCards.push(card)
+            }
+        }
     }
 
     shuffleCards() {
         shuffleArray(this.cards)
+        shuffleArray(this.missionCards)
     }
 
     bind() {
@@ -135,10 +151,12 @@ export default class Game {
 
     restart() {
         this.cards.length = 0
+        this.missionCards.length = 0
 
         for (const user of this.users) {
             user.handCards.length = 0
             user.cards.length = 0
+            user.missionCards.length = 0
         }
 
         this.init()
@@ -162,6 +180,11 @@ export default class Game {
                 console.error('trying to draw while there is no card left')
             }
         }
+
+        const missionCardsToDistribute = this.users.length * this.MISSION_HAND_SIZE
+        for (let i = 0; i < missionCardsToDistribute; i++) {
+            this.users[i % this.users.length].missionCards.push(...this.drawMissionCards())
+        }
     }
 
     drawCardsForUser(user) {
@@ -176,6 +199,14 @@ export default class Game {
         const cards = []
         for (let i = 0; i < numberOfCards; i++) {
             cards.push(this.cards.pop())
+        }
+        return cards
+    }
+
+    drawMissionCards(numberOfCards = 1) {
+        const cards = []
+        for (let i = 0; i < numberOfCards; i++) {
+            cards.push(this.missionCards.pop())
         }
         return cards
     }

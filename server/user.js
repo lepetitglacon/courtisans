@@ -7,6 +7,7 @@ export default class User {
         this.admin = false;
         this.handCards = [];
         this.cards = [];
+        this.missionCards = [];
     }
 
     toJson() {
@@ -16,6 +17,7 @@ export default class User {
             socket: this.socket.id,
             handCards: this.handCards,
             cards: this.cards,
+            missionCards: this.missionCards,
         }
     }
 }

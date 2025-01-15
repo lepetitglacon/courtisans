@@ -61,8 +61,14 @@ const gameStore = useGameStore()
     </div>
 
     <div class="col-2">
-      <img/>
-      <img/>
+      <div class="row d-flex flex-column">
+        <div
+            v-for="card of socketStore.currentPlayer?.missionCards ?? []"
+            class="col mission-card"
+        >
+          <p>{{ card.text }} {{ card.id }}</p>
+        </div>
+      </div>
     </div>
   </div>
 

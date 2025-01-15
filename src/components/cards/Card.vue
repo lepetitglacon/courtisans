@@ -1,16 +1,25 @@
 <script setup lang="ts">
+import sound_hover_1 from '../../assets/sounds/cards_handle/hover_1.wav'
+import sound_hover_2 from '../../assets/sounds/cards_handle/hover_2.wav'
+
 import {useConnectionStore} from "@/stores/socket.ts";
 import {onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
 import {socket} from "@/socket.ts";
+import Action from "@/components/actions/Action.vue";
 
 const socketStore = useConnectionStore()
 const gameStore = useGameStore()
 const chatStore = useChatStore()
 
+const sound1 = new Audio(sound_hover_1)
+const sound2 = new Audio(sound_hover_2)
+const sounds = [sound1, sound2]
+
 const props = defineProps([
     'card',
+    'action',
     'movable',
     'size',
     'offset'
@@ -22,6 +31,7 @@ const cardCenterRef = ref<HTMLDivElement>()
 const dragging = ref(false)
 const hovering = ref(false)
 const closestSnap = ref(null)
+const tilt = ref(15)
 
 function onCardClick(e) {}
 
@@ -99,14 +109,20 @@ function updateRotation(event) {
   const y = event.clientY - rect.top; // Mouse Y relative to container
   const centerX = rect.width / 2; // Center of container (X)
   const centerY = rect.height / 2; // Center of container (Y)
-  const rotateX = ((y - centerY) / centerY) * -10; // Tilt based on Y-axis
-  const rotateY = ((x - centerX) / centerX) * 10; // Tilt based on X-axis
+  const rotateX = ((y - centerY) / centerY) * -tilt.value; // Tilt based on Y-axis
+  const rotateY = ((x - centerX) / centerX) * tilt.value; // Tilt based on X-axis
   cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+}
+function playSound(event) {
+  // if (!dragging.value) { return }
+  if (!hovering.value) { return }
+
 }
 const onMouseMove = (event) => {
   updateRotation(event)
   move(event)
   snap(event)
+  playSound(event)
 };
 
 const onMouseUp = () => {
@@ -121,9 +137,16 @@ const onMouseUp = () => {
     })
     cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
   } else {
+    cardRef.value.style.transition = "transform 0.3s ease";
+    cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+
     cardContainerRef.value.style.left = `${initialBBox.left}px`;
     cardContainerRef.value.style.top = `${initialBBox.top}px`;
     cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
+
+    setTimeout(() => {
+      cardRef.value.style.transition = "none"; // Remove transition after reset
+    }, 300);
   }
 
   cardContainerRef.value.style.zIndex = 0;
@@ -144,20 +167,25 @@ function onMouseLeave(e) {
     cardRef.value.style.transition = "none"; // Remove transition after reset
   }, 300);
 }
+function onMouseEnter(e) {
+  hovering.value = true
+  if (props.movable) {
+    sounds[Math.floor(Math.random()*sounds.length)].play()
+  }
+}
 </script>
 
 <template>
 <div
     ref="cardContainerRef"
 	  class="card-container"
-    :class="movable && 'movable'"
+    :class="[movable && 'movable', movable && hovering && 'hovering']"
     :style="{
-      backgroundColor: card.family.color,
       color: 'white',
     }"
     @click="onCardClick"
     @mousedown="onMouseDown"
-    @mouseenter="hovering = true"
+    @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
     @mouseup="onMouseUp"
 >
@@ -167,6 +195,7 @@ function onMouseLeave(e) {
       @mousedown.prevent=""
       @mouseup.prevent=""
   >
+    <Action v-if="!movable && action" :action="action"></Action>
     <div class="">
       <div class="card-info">
         <p class="card-title">{{ card.family.title }}</p>
@@ -225,6 +254,9 @@ function onMouseLeave(e) {
 }
 .moving {
   position: absolute;
+}
+.hovering {
+  box-shadow: 0px 0px 44px 33px rgba(237,226,19,0.35);
 }
 
 .card .movable:active {
