@@ -22,13 +22,13 @@ function onStartSubmit() {
 <template>
 
   <div class="d-flex flex-column">
-    <div class="row">
+    <div class="row tier">
       <Players/>
     </div>
-    <div class="row">
+    <div class="row tier">
       <Plateau/>
     </div>
-    <div class="row">
+    <div class="row tier">
       <OwnPlayer/>
     </div>
   </div>
@@ -45,5 +45,8 @@ function onStartSubmit() {
 <style scoped>
 .admin-panel {
  position: absolute;
+}
+.tier {
+  height: 32vh;
 }
 </style>

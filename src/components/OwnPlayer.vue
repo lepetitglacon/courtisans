@@ -36,10 +36,18 @@
     </div>
 
     <div class="deck">
-      <p v-if="socketStore.isYourTurn">Votre tour</p>
-      <p v-if="socketStore.game.userActionsToPlay">{{socketStore.game.userActionsToPlay}}</p>
-      <pre>{{socketStore?.currentPlayer?.handCards}}</pre>
-      <Card v-for="card in socketStore?.currentPlayer?.handCards ?? []" :card="card" :movable="true"/>
+      <div class="row">
+        <p class="isYourTurn" v-if="socketStore.isYourTurn">À vous de jouer !</p>
+        <div class="actionsToPlay d-flex mb-5">
+          <div class="action" v-if="socketStore.game.userActionsToPlay" v-for="action of socketStore.game.userActionsToPlay">{{action}}</div>
+        </div>
+      </div>
+      <div class="row ">
+        <div v-for="card in socketStore?.currentPlayer?.handCards ?? []" :key="card.id"
+             class="col d-flex justify-content-center">
+          <Card :card="card" :movable="true"/>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -52,6 +60,7 @@
 }
 .deck {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   width: 100vw;
 }
@@ -59,6 +68,18 @@
   width: 100%;
   height: 25vh;
   background-color: rgba(40, 40, 40, 0.06);
+}
+
+.isYourTurn {
+  text-align: center;
+  font-weight: 900;
+  font-size: 32px;
+}
+.actionsToPlay {
+
+}
+.actionsToPlay.action {
+
 }
 
 .floating-left-bottom {

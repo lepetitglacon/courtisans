@@ -42,6 +42,12 @@ function onMouseDown(e) {
   if (e.button !== 0) { return }
   let offsetX = 0, offsetY = 0;
 
+  const cardRect = cardContainerRef.value.getBoundingClientRect();
+  cardContainerRef.value.style.left = `${e.clientX - cardRect.width / 2}px`;
+  cardContainerRef.value.style.top = `${e.clientY - cardRect.height / 2}px`;
+
+  cardContainerRef.value?.classList.add('moving')
+
   offsetX = e.offsetX;
   offsetY = e.offsetY;
   initialBBox = cardContainerRef.value.getBoundingClientRect();
@@ -127,6 +133,7 @@ const onMouseUp = () => {
   chatStore.postMessage(`[debug] ${props.card.id} dropped`)
 
   dragging.value = false
+  cardContainerRef.value?.classList.remove('moving')
 };
 function onMouseLeave(e) {
   hovering.value = false
@@ -213,9 +220,11 @@ function onMouseLeave(e) {
 }
 
 .movable {
-  position: absolute;
   cursor: grab;
   user-select: none;
+}
+.moving {
+  position: absolute;
 }
 
 .card .movable:active {

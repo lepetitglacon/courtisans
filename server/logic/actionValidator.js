@@ -94,12 +94,12 @@ export default class ActionValidator {
                     ? this.game.familyCards[card.family.id].enlighten.push(card)
                     : this.game.familyCards[card.family.id].shadowed.push(card)
 
-                user.handCards.splice(user.cards.indexOf(card), 1)
+                user.handCards.splice(user.handCards.indexOf(card), 1)
                 break;
             case 'kill_crown':
                 console.log(this.game.familyCards[data.familyId])
                 this.game.familyCards[data.familyId].splice(this.game.familyCards[data.familyId].indexOf(card), 1)
-                user.handCards.splice(user.cards.indexOf(card), 1)
+                user.handCards.splice(user.handCards.indexOf(card), 1)
                 break;
             case 'kill_other':
             case 'kill_own':

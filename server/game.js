@@ -19,6 +19,8 @@ export default class Game {
         this.users = []
         this.initialDeck = []
         this.cards = []
+        this.cards = []
+        this.cards = []
         this.familyCards = {}
 
         this.actionValidator = new ActionValidator(this);
