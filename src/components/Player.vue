@@ -18,12 +18,10 @@ const gameStore = useConnectionStore()
       class="player"
     >
       <Action action="give" :data="{toUserId: user.socket}">
-      <div>
-        <p>{{ user.name }}</p>
-        <p>{{ user.socket }}</p>
-      </div>
-
-
+        <div>
+          <p>{{ user.name }}</p>
+          <p>{{ user.socket }}</p>
+        </div>
       </Action>
 
 
@@ -33,10 +31,7 @@ const gameStore = useConnectionStore()
             v-for="family of gameStore?.game?.infos?.FAMILIES"
             :style="{backgroundColor: family.color}"
         >
-          {{ user.cards.filter(card => card.family.id === family.id).length }}
-          <p class="card" v-for="card of user.cards.filter(card => card.family.id === family.id)">{{ card.id }} {{ card.power }}</p>
           <Deck :cards="user.cards.filter(card => card.family.id === family.id)"/>
-
         </div>
       </div>
 
@@ -56,7 +51,7 @@ const gameStore = useConnectionStore()
   display: flex;
 }
 .family {
-  min-width: 20px;
+  min-width: 200px;
 }
 .card {
   background-color: rgba(255, 255, 0, 40%);

@@ -46,7 +46,8 @@ function handleDragDrop(e) {
 
 <style scoped>
 .action {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>

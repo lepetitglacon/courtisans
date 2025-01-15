@@ -10,12 +10,17 @@ const props = defineProps([
 <template>
 
   <div class="deck-container">
-    <pre>{{ cards }}</pre>
     <Card v-for="card of cards" :card="card"/>
   </div>
 
 </template>
 
 <style scoped>
+.deck-container {
+  display: flex;
+  flex-direction: column;
+}
+.deck-container.card-container {
 
+}
 </style>

@@ -12,7 +12,8 @@ const chatStore = useChatStore()
 const props = defineProps([
     'card',
     'movable',
-    'size'
+    'size',
+    'offset'
 ])
 
 const cardContainerRef = ref<HTMLDivElement>()
@@ -177,11 +178,10 @@ function onMouseLeave(e) {
 
 <style scoped>
 .card-container {
-  position: absolute;
   perspective: 1000px;
   width: 4.5cm;
   height: 8cm;
-  margin: 100px auto;
+  margin-bottom: -7cm;
 }
 .card {
   position: absolute;
@@ -213,6 +213,7 @@ function onMouseLeave(e) {
 }
 
 .movable {
+  position: absolute;
   cursor: grab;
   user-select: none;
 }
