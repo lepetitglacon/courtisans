@@ -107,11 +107,11 @@ export default class ActionValidator {
                 break
             case 'give':
                 otherUser.cards.push(card)
-                user.handCards.splice(user.cards.indexOf(card), 1)
+                user.handCards.splice(user.handCards.indexOf(card), 1)
                 break
             case 'keep':
                 user.cards.push(card)
-                user.handCards.splice(user.cards.indexOf(card), 1)
+                user.handCards.splice(user.handCards.indexOf(card), 1)
                 break
         }
 
