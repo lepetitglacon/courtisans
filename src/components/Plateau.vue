@@ -27,7 +27,7 @@ const gameStore = useGameStore()
             :style="{backgroundColor: family.color}"
         >
 
-          <div class="row position-relative">
+          <div class="row position-relative scaled">
             <pre>{{ socketStore.game.familyCards[family.id].enlighten.length }}</pre>
             <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
 <!--            <Action action="kill_crown" :data="{familyId: family.id}">-->
@@ -48,8 +48,8 @@ const gameStore = useGameStore()
             </div>
           </div>
 
-          <div class="row">
-            <Card v-for="familyCard of socketStore.game.familyCards[family.id].shadowed" :card="familyCard"/>
+          <div class="row scaled">
+	          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
             <!--            <Action action="kill_crown" :data="{familyId: family.id}">-->
             <!--              {{ familyCard.id }} {{ familyCard.power }}-->
             <!--            </Action>-->

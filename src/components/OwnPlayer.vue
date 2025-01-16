@@ -24,7 +24,7 @@
     <div class="own-player">
       <Action action="keep" />
 
-      <div class="families">
+      <div class="families scaled">
         <div
             class="family"
             v-for="family of socketStore?.game?.infos?.FAMILIES"

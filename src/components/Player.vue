@@ -15,25 +15,26 @@ const gameStore = useConnectionStore()
 
     <div
       v-if="user.socket !== socket.id"
-      class="player"
+      class="player-container d-flex justify-content-center"
     >
-      <Action action="give" :data="{toUserId: user.socket}">
+      <Action action="give" :data="{toUserId: user.socket}" class="player">
         <div>
           <p>{{ user.name }}</p>
           <p>{{ user.socket }}</p>
         </div>
+
+	      <div class="d-flex scaled">
+	        <div
+	            class="family"
+	            v-for="family of gameStore?.game?.infos?.FAMILIES"
+	            :style="{backgroundColor: family.color}"
+	        >
+	          <Deck :cards="user.cards.filter(card => card.family.id === family.id)"/>
+	        </div>
+	      </div>
       </Action>
 
 
-      <div class="families">
-        <div
-            class="family"
-            v-for="family of gameStore?.game?.infos?.FAMILIES"
-            :style="{backgroundColor: family.color}"
-        >
-          <Deck :cards="user.cards.filter(card => card.family.id === family.id)"/>
-        </div>
-      </div>
 
     </div>
 
@@ -42,18 +43,15 @@ const gameStore = useConnectionStore()
 </template>
 
 <style scoped>
+.player-container {
+	height: 100%;
+	width: 100%;
+	background-color: rgba(50, 50, 50, 0.17);
+}
 .player {
-  width: 100%;
-	padding: 20px;
-  background-color: rgba(0, 0, 0, 10%);
+	background-color: rgba(50, 50, 50, .5);
 }
-.families {
-  display: flex;
-}
-.family {
-  min-width: 200px;
-}
-.card {
-  background-color: rgba(255, 255, 0, 40%);
+.scaled {
+
 }
 </style>

@@ -6,3 +6,7 @@
 
   overflow: hidden;
 }
+
+.scaled {
+  transform: scale(.5);
+}

@@ -93,9 +93,12 @@ function snap(event) {
     gameStore.holdenCardAction = action
     gameStore.holdenCardActionData = null
 
+
+    // TODO
+    // TODO ajouter la carte au deck
     const snapRect = closestSnap.value.ref.getBoundingClientRect();
-    cardContainerRef.value.style.left = `${snapRect.left - cardContainerRef.value.offsetParent.offsetLeft}px`;
-    cardContainerRef.value.style.top = `${snapRect.top - cardContainerRef.value.offsetParent.offsetTop}px`;
+    cardContainerRef.value.style.left = `${(snapRect.left-snapRect.width/2) - cardContainerRef.value.offsetParent.offsetLeft}px`;
+    cardContainerRef.value.style.top = `${(snapRect.top-snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
   } else {
     closestSnap.value = null
     gameStore.holdenCardAction = null
@@ -137,12 +140,11 @@ const onMouseUp = () => {
     })
     cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
   } else {
-    cardRef.value.style.transition = "transform 0.3s ease";
+    cardRef.value.style.transition = "transform 1s ease";
     cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
 
     cardContainerRef.value.style.left = `${initialBBox.left}px`;
     cardContainerRef.value.style.top = `${initialBBox.top}px`;
-    cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
 
     setTimeout(() => {
       cardRef.value.style.transition = "none"; // Remove transition after reset
@@ -159,8 +161,10 @@ const onMouseUp = () => {
   cardContainerRef.value?.classList.remove('moving')
 };
 function onMouseLeave(e) {
-  hovering.value = false
-  cardRef.value.style.transition = "transform 0.3s ease";
+	if (hovering.value) {
+        hovering.value = false
+	}
+  cardRef.value.style.transition = "transform 1s ease";
   cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
 
   setTimeout(() => {
