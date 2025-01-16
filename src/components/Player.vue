@@ -25,7 +25,7 @@ const gameStore = useConnectionStore()
 
 	      <div class="d-flex scaled">
 	        <div
-	            class="family"
+	            class="family d-flex justify-content-center"
 	            v-for="family of gameStore?.game?.infos?.FAMILIES"
 	            :style="{backgroundColor: family.color}"
 	        >
@@ -51,7 +51,7 @@ const gameStore = useConnectionStore()
 .player {
 	background-color: rgba(50, 50, 50, .5);
 }
-.scaled {
-
+.family {
+	min-width: 4.5cm;
 }
 </style>
