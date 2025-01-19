@@ -29,7 +29,8 @@ const gameStore = useConnectionStore()
 	            v-for="family of gameStore?.game?.infos?.FAMILIES"
 	            :style="{backgroundColor: family.color}"
 	        >
-	          <Deck :cards="user.cards.filter(card => card.family.id === family.id)"/>
+	          <Deck v-if="family.id !== 'assassin'" :cards="user.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')"/>
+	          <Deck v-else :cards="user.cards.filter(card => card.power === 'hidden')"/>
 	        </div>
 	      </div>
       </Action>

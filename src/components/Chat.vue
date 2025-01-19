@@ -12,7 +12,6 @@ function sendMessage() {
 }
 
 watch(chatStore.messages, (newValue) => {
-  console.log(messagesDivRef.scrollTop, messagesDivRef.scrollHeight)
   messagesDivRef.value.scrollTop = messagesDivRef.value.scrollHeight
 })
 </script>

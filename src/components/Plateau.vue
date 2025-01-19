@@ -20,7 +20,7 @@ const gameStore = useGameStore()
     </div>
 
     <div class="col">
-      <div class="row d-flex">
+      <div class="row h-100 d-flex">
         <div
             v-for="[key, family] of Object.entries(socketStore?.game?.infos?.FAMILIES ?? [])"
             class="plateau-family col d-flex flex-column justify-content-center align-items-center"
@@ -28,7 +28,6 @@ const gameStore = useGameStore()
         >
 
           <div class="row position-relative scaled">
-            <pre>{{ socketStore.game.familyCards[family.id].enlighten.length }}</pre>
             <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
 <!--            <Action action="kill_crown" :data="{familyId: family.id}">-->
 <!--              {{ familyCard.id }} {{ familyCard.power }}-->
@@ -43,17 +42,13 @@ const gameStore = useGameStore()
                 class="family-img"
                 :src="`/cards/${family.id}.png`"
             >
-            <div class="shadow position-absolute">
+            <div class="shadowed position-absolute">
               <Action action="shadow" :data="{familyId: family.id}"/>
             </div>
           </div>
 
           <div class="row scaled">
 	          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
-            <!--            <Action action="kill_crown" :data="{familyId: family.id}">-->
-            <!--              {{ familyCard.id }} {{ familyCard.power }}-->
-            <!--            </Action>-->
-            <pre>{{ socketStore.game.familyCards[family.id].shadowed.length }}</pre>
           </div>
 
         </div>
@@ -61,12 +56,12 @@ const gameStore = useGameStore()
     </div>
 
     <div class="col-2">
-      <div class="row d-flex flex-column">
+      <div class="row h-100 d-flex flex-column justify-content-center align-items-center">
         <div
             v-for="card of socketStore.currentPlayer?.missionCards ?? []"
-            class="col mission-card"
+            class="col mission-card d-flex justify-content-center align-items-center"
         >
-          <p>{{ card.text }} {{ card.id }}</p>
+          <p>{{ card.text }}</p>
         </div>
       </div>
     </div>
@@ -76,24 +71,10 @@ const gameStore = useGameStore()
 
 <style scoped>
 .plateau {
+  height: 100%;
 }
 .plateau-family {
   color: white;
-}
-
-.middle-cards-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-
-  position: relative;
-  height: 100%;
-}
-.middle-cards {
-  position: absolute;
-  height: 8cm;
-  width: 100%;
 }
 .family-img {
   height: 8cm;
@@ -107,25 +88,36 @@ const gameStore = useGameStore()
 	border-radius: 2px;
 }
 
-.deck-container {
-  flex-basis: 0;
-}
-
 .enlight {
-  background-color: rgba(0,0,0,25%);
   height: 50%;
 }
 .enlighten-cards {
   background-color: #cfb960;
 }
 
-.shadow {
-  background-color: rgba(0,0,0,75%);
+.shadowed {
   bottom: 0;
   height: 50%;
 }
 .shadowed-cards {
   height: 50%;
   background-color: #9a5858;
+}
+
+.mission-card {
+  width: 5cm;
+  height: 4cm;
+
+  margin: 5px;
+  padding: 20px;
+
+  background-color: #fbedd6;
+  border-radius: 10px;
+  border: solid 5px #774f36;
+}
+.mission-card p {
+  word-break: break-word;
+  font-weight: 800;
+  color: #774f36;
 }
 </style>

@@ -1,13 +1,11 @@
+import HIGHER_ACTIONS from "../shared/higherActions.js";
+
 export default class ActionValidator {
 
     constructor(game) {
         this.game = game
 
-        this.HIGHER_ACTIONS = {
-            GIVE: 'give',
-            PLACE: 'place',
-            KEEP: 'keep',
-        }
+        this.HIGHER_ACTIONS = HIGHER_ACTIONS
 
         this.actionsToPlay = new Set(Object.values(this.HIGHER_ACTIONS))
 
@@ -84,15 +82,19 @@ export default class ActionValidator {
         switch (data.action) {
             case 'enlight':
             case 'shadow':
-                if (card.family.id !== data.familyId) {
+                if (card.family.id !== data.familyId && data.familyId !== 'assassin') {
                     return {
                         isValid: false,
                         reason: `Card ${card.family.id} has not the same family ${data.familyId}`
                     }
                 }
-                data.action === 'enlight'
-                    ? this.game.familyCards[card.family.id].enlighten.push(card)
-                    : this.game.familyCards[card.family.id].shadowed.push(card)
+                if (data.familyId === 'assassin') {
+                    this.game.familyCards['assassin'].enlighten.push(card)
+                } else {
+                    data.action === 'enlight'
+                        ? this.game.familyCards[card.family.id].enlighten.push(card)
+                        : this.game.familyCards[card.family.id].shadowed.push(card)
+                }
 
                 user.handCards.splice(user.handCards.indexOf(card), 1)
                 break;
@@ -122,26 +124,6 @@ export default class ActionValidator {
         return {
             isValid: true,
             reason: ''
-        }
-    }
-
-    process(data, user) {
-        switch (data.action) {
-            case 'enlight':
-
-                break
-            case 'shadow':
-
-                break;
-            case 'kill_crown':
-            case 'kill_other':
-            case 'kill_own':
-                // TODO
-                break
-            case 'give':
-            case 'keep':
-
-                break
         }
     }
 }

@@ -22,17 +22,20 @@
     </div>
 
     <div class="own-player">
-      <Action action="keep" />
-
+      <Action action="keep">
       <div class="families scaled">
         <div
             class="family"
             v-for="family of socketStore?.game?.infos?.FAMILIES"
             :style="{backgroundColor: family.color}"
         >
-          <Deck :cards="socketStore?.currentPlayer?.cards.filter(card => card.family.id === family.id)"/>
+          <Deck v-if="family.id !== 'assassin'" :cards="socketStore?.currentPlayer?.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')"/>
+          <Deck v-else :cards="socketStore?.currentPlayer?.cards.filter(card => card.power === 'hidden')"/>
         </div>
       </div>
+
+      </Action>
+
     </div>
 
     <div class="deck">
@@ -42,10 +45,10 @@
           <div class="action" v-if="socketStore.game.userActionsToPlay" v-for="action of socketStore.game.userActionsToPlay">{{action}}</div>
         </div>
       </div>
-      <div class="row ">
+      <div class="row">
         <div v-for="card in socketStore?.currentPlayer?.handCards ?? []" :key="card.id"
              class="col d-flex justify-content-center">
-          <Card :card="card" :movable="true"/>
+          <Card :card="card" :movable="true" :is-player-deck="true"/>
         </div>
       </div>
     </div>
@@ -66,7 +69,7 @@
 }
 .own-player {
   width: 100%;
-  height: 25vh;
+  height: 100%;
   background-color: rgba(40, 40, 40, 0.06);
 }
 
@@ -84,9 +87,10 @@
 
 .floating-left-bottom {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(255, 255, 255, 0.4);
+  bottom: 200px;
+  left: 200px;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 5px;
 }
 .families {
   display: flex;

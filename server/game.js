@@ -49,7 +49,7 @@ export default class Game {
 
     initCards() {
         let cardId = 0
-        for (const family of Object.values(FAMILIES)) {
+        for (const family of Object.values(FAMILIES).filter(family => family.id !== 'assassin')) {
             for (const i in [...Array(15).keys()].map(i => parseInt(i))) {
                 const card = new Card({
                     family: family,
@@ -65,7 +65,7 @@ export default class Game {
             }
         }
 
-        for (const family of Object.values(FAMILIES)) {
+        for (const family of Object.values(FAMILIES).filter(family => family.id !== 'assassin')) {
             for (const [missionName, missionOption] of Object.entries(MISSIONS)) {
                 const card = new MissionCard({
                     family: family,

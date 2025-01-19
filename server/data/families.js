@@ -1,20 +1,8 @@
 const FAMILIES = {
-    Cerfs: {
-        id: 'green',
-        title: 'Cerfs',
-        color: '#3a7850',
-        url: ''
-    },
-    Rossignol: {
-        id: 'red',
-        title: 'Rossignol',
-        color: '#b1706c',
-        url: ''
-    },
-    Lievre: {
-        id: 'yellow',
-        title: 'Lièvre',
-        color: '#ead95d',
+    Papillon: {
+        id: 'grey',
+        title: 'Papillon',
+        color: '#91b2c0',
         url: ''
     },
     Crapaud: {
@@ -23,10 +11,28 @@ const FAMILIES = {
         color: '#798842',
         url: ''
     },
-    Papillon: {
-        id: 'grey',
-        title: 'Papillon',
-        color: '#91b2c0',
+    Rossignol: {
+        id: 'red',
+        title: 'Rossignol',
+        color: '#b1706c',
+        url: ''
+    },
+    Assassin: {
+        id: 'assassin',
+        title: 'Assassin',
+        color: '#979797',
+        url: ''
+    },
+    Lievre: {
+        id: 'yellow',
+        title: 'Lièvre',
+        color: '#ead95d',
+        url: ''
+    },
+    Cerfs: {
+        id: 'green',
+        title: 'Cerfs',
+        color: '#3a7850',
         url: ''
     },
     Carpe: {

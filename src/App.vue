@@ -10,11 +10,9 @@ const gameStore = useConnectionStore()
 gameStore.bindEvents()
 
 function onRestartClick() {
-  console.log("onRestartClick");
   gameStore.emit('client/admin/restart')
 }
 function onStartSubmit() {
-  console.log("onStartSubmit");
   gameStore.emit('client/start-request')
 }
 </script>
@@ -25,7 +23,7 @@ function onStartSubmit() {
     <div class="row tier">
       <Players/>
     </div>
-    <div class="row tier">
+    <div class="row quart">
       <Plateau/>
     </div>
     <div class="row tier">
@@ -45,8 +43,12 @@ function onStartSubmit() {
 <style scoped>
 .admin-panel {
  position: absolute;
+  bottom: 0;
 }
 .tier {
-  height: 32vh;
+  height: 25vh;
+}
+.quart {
+  height: 50vh;
 }
 </style>

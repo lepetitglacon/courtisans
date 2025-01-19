@@ -22,7 +22,8 @@ const props = defineProps([
     'action',
     'movable',
     'size',
-    'offset'
+    'offset',
+    'isPlayerDeck'
 ])
 
 const cardContainerRef = ref<HTMLDivElement>()
@@ -47,25 +48,13 @@ onMounted(() => {
   document.addEventListener("mousemove", onMouseMove)
   document.addEventListener("mouseup", onMouseUp)
 })
-function onMouseDown(e) {
-  if (!props.movable) { return }
-  if (e.button !== 0) { return }
-  let offsetX = 0, offsetY = 0;
 
-  const cardRect = cardContainerRef.value.getBoundingClientRect();
-  cardContainerRef.value.style.left = `${e.clientX - cardRect.width / 2}px`;
-  cardContainerRef.value.style.top = `${e.clientY - cardRect.height / 2}px`;
-
-  cardContainerRef.value?.classList.add('moving')
-
-  offsetX = e.offsetX;
-  offsetY = e.offsetY;
-  initialBBox = cardContainerRef.value.getBoundingClientRect();
-  gameStore.holdenCard = props.card
-  cardContainerRef.value.style.zIndex = 1;
-  chatStore.postMessage(`[debug] ${props.card.id} taken`)
-  dragging.value = true
-}
+const onMouseMove = (event) => {
+  updateRotation(event)
+  move(event)
+  snap(event)
+  playSound(event)
+};
 function move(event) {
   if (!dragging.value) { return }
 
@@ -83,7 +72,7 @@ function snap(event) {
     if (!actionDiv.ref) { continue }
 
     const snapRect = actionDiv.ref.getBoundingClientRect();
-    if (contains(event.clientX, event.clientY, snapRect)) {
+    if (contains(event.clientX, event.clientY, snapRect) && actionDiv.active) {
       closestSnap.value = actionDiv;
       action = actionDiv.action;
     }
@@ -92,13 +81,11 @@ function snap(event) {
   if (closestSnap.value) { // Adjust threshold as needed
     gameStore.holdenCardAction = action
     gameStore.holdenCardActionData = null
-
-
     // TODO
     // TODO ajouter la carte au deck
     const snapRect = closestSnap.value.ref.getBoundingClientRect();
-    cardContainerRef.value.style.left = `${(snapRect.left-snapRect.width/2) - cardContainerRef.value.offsetParent.offsetLeft}px`;
-    cardContainerRef.value.style.top = `${(snapRect.top-snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
+    cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
+    cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
   } else {
     closestSnap.value = null
     gameStore.holdenCardAction = null
@@ -121,13 +108,21 @@ function playSound(event) {
   if (!hovering.value) { return }
 
 }
-const onMouseMove = (event) => {
-  updateRotation(event)
-  move(event)
-  snap(event)
-  playSound(event)
-};
 
+function onMouseDown(e) {
+  if (!props.movable) { return }
+  if (e.button !== 0) { return }
+
+  const cardRect = cardContainerRef.value.getBoundingClientRect();
+  cardContainerRef.value.style.left = `${e.clientX - cardRect.width / 2}px`;
+  cardContainerRef.value.style.top = `${e.clientY - cardRect.height / 2}px`;
+
+  initialBBox = cardContainerRef.value.getBoundingClientRect();
+  gameStore.holdenCard = props.card
+  cardContainerRef.value.style.zIndex = 1;
+  chatStore.postMessage(`[debug] ${props.card.id} taken`)
+  dragging.value = true
+}
 const onMouseUp = () => {
   if (!dragging.value) { return }
 
@@ -147,7 +142,9 @@ const onMouseUp = () => {
     cardContainerRef.value.style.top = `${initialBBox.top}px`;
 
     setTimeout(() => {
-      cardRef.value.style.transition = "none"; // Remove transition after reset
+      if (cardRef.value) {
+        cardRef.value.style.transition = "none"; // Remove transition after reset
+      }
     }, 300);
   }
 
@@ -160,21 +157,28 @@ const onMouseUp = () => {
   dragging.value = false
   cardContainerRef.value?.classList.remove('moving')
 };
-function onMouseLeave(e) {
-	if (hovering.value) {
-        hovering.value = false
-	}
-  cardRef.value.style.transition = "transform 1s ease";
-  cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
 
-  setTimeout(() => {
-    cardRef.value.style.transition = "none"; // Remove transition after reset
-  }, 300);
-}
+
 function onMouseEnter(e) {
   hovering.value = true
   if (props.movable) {
     sounds[Math.floor(Math.random()*sounds.length)].play()
+  }
+}
+function onMouseLeave(e) {
+  hovering.value = false
+  cardRef.value.style.transition = "transform 1s ease";
+  cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+  setTimeout(() => {
+    cardRef.value.style.transition = "none"; // Remove transition after reset
+  }, 300);
+}
+
+function getImgSrc() {
+  if (props.card.power !== 'hidden' || props.isPlayerDeck) {
+    return `${props.card.family.id}/${props.card.power}`
+  } else {
+    return 'assassin'
   }
 }
 </script>
@@ -183,7 +187,7 @@ function onMouseEnter(e) {
 <div
     ref="cardContainerRef"
 	  class="card-container"
-    :class="[movable && 'movable', movable && hovering && 'hovering']"
+    :class="[movable && 'movable', movable && (hovering || dragging) && 'hovering', dragging && 'moving']"
     :style="{
       color: 'white',
     }"
@@ -191,25 +195,27 @@ function onMouseEnter(e) {
     @mousedown="onMouseDown"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
-    @mouseup="onMouseUp"
 >
   <div
       ref="cardRef"
        class="card"
       @mousedown.prevent=""
       @mouseup.prevent=""
+      @mouseleave.prevent=""
+      @mouseenter.prevent=""
   >
     <Action v-if="!movable && action" :action="action"></Action>
     <div class="">
-      <div class="card-info">
+      <div v-if="gameStore.debug" class="card-info">
         <p class="card-title">{{ card.family.title }}</p>
+        <p>drag : {{ dragging }}</p>
+        <p>hover : {{ hovering }}</p>
         <p>{{ card.power }}</p>
         <p>{{ card.id }}</p>
       </div>
-      <div ref="cardCenterRef" class="center"></div>
       <img
           class="img"
-          :src="`/cards/${card.family.id}.png`"
+          :src="`/cards/${getImgSrc()}.png`"
       >
     </div>
   </div>
@@ -228,7 +234,6 @@ function onMouseEnter(e) {
   width: 100%;
   height: 100%;
 
-  border: 5px solid #dc2823;
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -260,7 +265,7 @@ function onMouseEnter(e) {
   position: absolute;
 }
 .hovering {
-  box-shadow: 0px 0px 44px 33px rgba(237,226,19,0.35);
+  box-shadow: 0px 0px 44px 33px rgba(239, 228, 2, 0.5);
 }
 
 .card .movable:active {

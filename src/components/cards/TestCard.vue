@@ -6,7 +6,6 @@ const cardRef = ref(null);
 const dragging = ref(false);
 // Handle mouse movement
 const handleMouseMove = (event) => {
-console.log(dragging.value);
 
   const rect = cardContainer.value.getBoundingClientRect()
   if (dragging.value) {
