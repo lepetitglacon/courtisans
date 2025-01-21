@@ -14,12 +14,13 @@
 <template>
 
   <div class="own-player-container">
-    <Chat/>
 
     <div class="floating-left-bottom">
       <pre>{{gameStore.holdenCard}}</pre>
       <pre>{{gameStore.holdenCardAction}}</pre>
     </div>
+
+    <Chat/>
 
     <div class="own-player">
       <Action action="keep">

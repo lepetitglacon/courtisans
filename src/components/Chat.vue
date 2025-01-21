@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {useChatStore} from "@/stores/chat.ts";
 import {ref, watch} from "vue";
+import {useConnectionStore} from "@/stores/socket.ts";
 
+const socketStore = useConnectionStore()
 const chatStore = useChatStore()
 const textareaValue = ref()
 const messagesDivRef = ref<HTMLDivElement>()
@@ -13,6 +15,11 @@ function sendMessage() {
 
 watch(chatStore.messages, (newValue) => {
   messagesDivRef.value.scrollTop = messagesDivRef.value.scrollHeight
+})
+
+watch(() => socketStore.game?.state, (newValue) => {
+  console.log(newValue)
+  chatStore.postMessage(`[STATE] -> ${newValue}`)
 })
 </script>
 

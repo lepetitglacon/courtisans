@@ -88,8 +88,11 @@ export default class ActionValidator {
                         reason: `Card ${card.family.id} has not the same family ${data.familyId}`
                     }
                 }
-                if (data.familyId === 'assassin') {
-                    this.game.familyCards['assassin'].enlighten.push(card)
+                if (card.power === 'hidden') {
+                    data.action === 'enlight'
+                        ? this.game.familyCards['assassin'].enlighten.push(card)
+                        : this.game.familyCards['assassin'].shadowed.push(card)
+
                 } else {
                     data.action === 'enlight'
                         ? this.game.familyCards[card.family.id].enlighten.push(card)

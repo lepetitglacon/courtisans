@@ -18,6 +18,10 @@ export const useConnectionStore = defineStore("socket", () => {
         return currentPlayer.value?.socket === game.value?.userTurnId
     })
 
+    function on(type, cb) {
+        socket.on('type', cb);
+    }
+
     function bindEvents() {
         socket.on("connect", () => {
             isConnected.value = true;
@@ -29,6 +33,10 @@ export const useConnectionStore = defineStore("socket", () => {
         socket.on("game:update", (data) => {
             // game.value = {}
             game.value = data
+        });
+
+        socket.on('client/validationResult', (data) => {
+
         });
     }
 

@@ -3,14 +3,15 @@ import Card from "@/components/cards/Card.vue";
 
 const props = defineProps([
     'cards',
-    'vertical'
+    'vertical',
+    'showBackFace'
 ])
 </script>
 
 <template>
 
   <div class="deck-container">
-    <Card v-for="card of cards" :card="card"/>
+    <Card v-for="card of cards" :card="card" :showBackFace="showBackFace"/>
   </div>
 
 </template>
@@ -19,8 +20,5 @@ const props = defineProps([
 .deck-container {
   display: flex;
   flex-direction: column;
-}
-.deck-container.card-container {
-
 }
 </style>

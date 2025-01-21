@@ -23,7 +23,8 @@ const props = defineProps([
     'movable',
     'size',
     'offset',
-    'isPlayerDeck'
+    'isPlayerDeck',
+    'showBackFace'
 ])
 
 const cardContainerRef = ref<HTMLDivElement>()
@@ -31,8 +32,11 @@ const cardRef = ref<HTMLDivElement>()
 const cardCenterRef = ref<HTMLDivElement>()
 const dragging = ref(false)
 const hovering = ref(false)
+const hidden = ref(false)
 const closestSnap = ref(null)
+const lastSnap = ref(null)
 const tilt = ref(15)
+const fakeCardsInDeck = ref([])
 
 function onCardClick(e) {}
 
@@ -80,17 +84,37 @@ function snap(event) {
 
   if (closestSnap.value) { // Adjust threshold as needed
     gameStore.holdenCardAction = action
-    gameStore.holdenCardActionData = null
-    // TODO
-    // TODO ajouter la carte au deck
+
+    if (closestSnap.value.data?.familyId) {
+      const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
+      if (!socketStore.game.familyCards[closestSnap.value.data.familyId][type].includes(props.card)) {
+        socketStore.game.familyCards[closestSnap.value.data.familyId][type].push(props.card)
+        fakeCardsInDeck.value.push(socketStore.game.familyCards[closestSnap.value.data.familyId][type])
+        hidden.value = true
+      }
+    }
+
+    if (closestSnap.value?.action !== lastSnap.value?.action) {
+      for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
+        fakeCardsInDeckElement.remove(props.card)
+      }
+      hidden.value = false
+    }
+
     const snapRect = closestSnap.value.ref.getBoundingClientRect();
     cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
     cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
+
+
   } else {
+    for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
+      fakeCardsInDeckElement.remove(props.card)
+    }
+    hidden.value = false
     closestSnap.value = null
     gameStore.holdenCardAction = null
-    gameStore.holdenCardActionData = null
   }
+  lastSnap.value = closestSnap.value
 }
 function updateRotation(event) {
   if (!hovering.value) { return }
@@ -141,6 +165,8 @@ const onMouseUp = () => {
     cardContainerRef.value.style.left = `${initialBBox.left}px`;
     cardContainerRef.value.style.top = `${initialBBox.top}px`;
 
+    hidden.value = false
+
     setTimeout(() => {
       if (cardRef.value) {
         cardRef.value.style.transition = "none"; // Remove transition after reset
@@ -170,11 +196,16 @@ function onMouseLeave(e) {
   cardRef.value.style.transition = "transform 1s ease";
   cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
   setTimeout(() => {
-    cardRef.value.style.transition = "none"; // Remove transition after reset
+    if (cardRef.value) {
+      cardRef.value.style.transition = "none"; // Remove transition after reset
+    }
   }, 300);
 }
 
 function getImgSrc() {
+  if (props.showBackFace) {
+    return 'assassin'
+  }
   if (props.card.power !== 'hidden' || props.isPlayerDeck) {
     return `${props.card.family.id}/${props.card.power}`
   } else {
@@ -187,7 +218,13 @@ function getImgSrc() {
 <div
     ref="cardContainerRef"
 	  class="card-container"
-    :class="[movable && 'movable', movable && (hovering || dragging) && 'hovering', dragging && 'moving']"
+    :class="[
+        movable && 'movable',
+        movable && (hovering || dragging) && 'hovering',
+        dragging && 'moving',
+        hidden && 'hidden',
+        showBackFace ? 'showBackFace' : 'showFrontFace'
+    ]"
     :style="{
       color: 'white',
     }"
@@ -227,7 +264,7 @@ function getImgSrc() {
   perspective: 1000px;
   width: 4.5cm;
   height: 8cm;
-  margin-bottom: -7cm;
+
 }
 .card {
   position: absolute;
@@ -243,7 +280,13 @@ function getImgSrc() {
   transition: transform 0.1s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
-
+.showFrontFace {
+  margin-bottom: -7cm;
+}
+.showBackFace {
+  padding: 0;
+  margin-top: -8.5cm;
+}
 .card-face {
   position: absolute;
   width: 100%;
@@ -266,6 +309,9 @@ function getImgSrc() {
 }
 .hovering {
   box-shadow: 0px 0px 44px 33px rgba(239, 228, 2, 0.5);
+}
+.hidden {
+  opacity: 0;
 }
 
 .card .movable:active {

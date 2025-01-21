@@ -6,16 +6,19 @@ import {shuffleArray} from "./utils.js";
 import ActionValidator from "./logic/actionValidator.js";
 import MISSIONS from "./data/missions.js";
 import MissionCard from "./cards/missionCard.js";
+import STATE from "./shared/gameState.js";
 
 export default class Game {
 
     constructor(io) {
+        this.NUMBER_OF_CARDS_PER_FAMILY = 15
         this.HAND_SIZE = 3
         this.MISSION_HAND_SIZE = 2
 
-
         this.io = io;
         this.roomId = '0000'
+
+        this.state = STATE.WAITING_FOR_PLAYERS
         this.started = false
         this.userTurnId = null
 
@@ -33,6 +36,7 @@ export default class Game {
 
     init() {
         this.started = false
+        this.state = STATE.WAITING_FOR_PLAYERS
 
         for (const family of Object.values(FAMILIES)) {
             this.familyCards[family.id] = {
@@ -42,7 +46,6 @@ export default class Game {
         }
 
         this.initCards()
-        this.shuffleCards()
         this.update()
         console.log('game init')
     }
@@ -50,7 +53,7 @@ export default class Game {
     initCards() {
         let cardId = 0
         for (const family of Object.values(FAMILIES).filter(family => family.id !== 'assassin')) {
-            for (const i in [...Array(15).keys()].map(i => parseInt(i))) {
+            for (const i in [...Array(this.NUMBER_OF_CARDS_PER_FAMILY).keys()].map(i => parseInt(i))) {
                 const card = new Card({
                     family: family,
                     power: POWERS.NORMAL
@@ -90,6 +93,34 @@ export default class Game {
         });
     }
 
+    handleConnect(socket) {
+        const user = new User('todo', socket);
+
+        socket.on('disconnect', () => {
+            this.users.splice(this.users.indexOf(user), 1)
+            if (this.users.length <= 1 && this.state === STATE.WAITING_FOR_START) {
+                this.state = STATE.WAITING_FOR_PLAYERS
+            }
+            this.update()
+        })
+        this.bindSocket(socket, user)
+
+        if (this.users.length === 0) {
+            user.admin = true
+        }
+
+        this.users.push(user);
+
+        if (
+            this.users.length > 1 &&
+            this.state === STATE.WAITING_FOR_PLAYERS
+        ) {
+            this.state = STATE.WAITING_FOR_START
+        }
+
+        this.update()
+        console.log('a user connected', socket.id);
+    }
 
     bindSocket(socket, user) {
         // ADMIN
@@ -108,6 +139,8 @@ export default class Game {
         socket.on('client/play', (data) => {
             if (!this.actionValidator.isValidAction(socket)) { return }
             const validationResult = this.actionValidator.validate(data, user)
+
+            socket.emit('client/validationResult', {valid: validationResult.isValid})
             if (!validationResult.isValid) {
                 console.log(socket.id, data, validationResult.reason)
                 return
@@ -131,24 +164,6 @@ export default class Game {
         })
     }
 
-    handleConnect(socket) {
-        const user = new User('todo', socket);
-
-        socket.on('disconnect', () => {
-            this.users.splice(this.users.indexOf(user), 1)
-            this.update()
-        })
-        this.bindSocket(socket, user)
-
-        if (this.users.length === 0) {
-            user.admin = true
-        }
-
-        this.users.push(user);
-        this.update()
-        console.log('a user connected', socket.id);
-    }
-
     restart() {
         this.cards.length = 0
         this.missionCards.length = 0
@@ -163,11 +178,14 @@ export default class Game {
     }
 
     start() {
-        this.started = true
+        this.shuffleCards()
+        this.distributeCardsToEveryPlayer()
 
         this.userTurnId = this.users[0].socket.id
         this.actionValidator.initForCurrentUser()
-        this.distributeCardsToEveryPlayer()
+
+        this.started = true
+        this.state = STATE.PLAYING
         this.update()
     }
 
@@ -216,10 +234,16 @@ export default class Game {
      */
     update() {
         this.io.emit('game:update', this.toJson())
+
+        if (this.cards.length <= 0) {
+            this.state = STATE.COUNTING
+            this.io.emit('game:end:start', this.toJson())
+        }
     }
 
     toJson() {
         const state = {}
+        state.state = this.state
         state.started = this.started
         state.users = this.users.map(u => u.toJson())
         state.cards = this.cards

@@ -15,6 +15,14 @@ function onRestartClick() {
 function onStartSubmit() {
   gameStore.emit('client/start-request')
 }
+
+Array.prototype.remove = function(element) {
+  const index = this.indexOf(element)
+  if (index !== -1) {
+    this.splice(index, 1)
+  }
+  return this
+}
 </script>
 
 <template>

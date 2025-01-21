@@ -14,24 +14,21 @@ const gameStore = useGameStore()
 
   <div class="plateau col d-flex">
 
-    <div class="col-2">
-      <img/>
-      <img/>
+    <div class="col-2 position-relative">
+        <Card :card="socketStore.game.cards[0]" :showBackFace="true" :movable="false"/>
     </div>
 
     <div class="col">
+
       <div class="row h-100 d-flex">
         <div
             v-for="[key, family] of Object.entries(socketStore?.game?.infos?.FAMILIES ?? [])"
-            class="plateau-family col d-flex flex-column justify-content-center align-items-center"
+            class="plateau-family col d-flex flex-column justify-content-evenly align-items-center"
             :style="{backgroundColor: family.color}"
         >
 
           <div class="row position-relative scaled">
             <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
-<!--            <Action action="kill_crown" :data="{familyId: family.id}">-->
-<!--              {{ familyCard.id }} {{ familyCard.power }}-->
-<!--            </Action>-->
           </div>
 
           <div class="row position-relative">
@@ -47,7 +44,7 @@ const gameStore = useGameStore()
             </div>
           </div>
 
-          <div class="row scaled">
+          <div class="row position-relative scaled">
 	          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
           </div>
 
@@ -86,6 +83,9 @@ const gameStore = useGameStore()
 	margin: 5px;
 	padding: 2px;
 	border-radius: 2px;
+}
+.plateau .family-img {
+
 }
 
 .enlight {
