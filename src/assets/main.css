@@ -1,10 +1,11 @@
-@import './base.css';
+@import 'base.css';
 
 #app {
   width: 100vw;
   height: 100vh;
 
-  overflow: hidden;
+  color: white;
+  background-color: #282828;
 }
 
 .scaled {

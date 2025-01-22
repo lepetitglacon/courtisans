@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {socket} from "@/socket.ts";
-import {useConnectionStore} from "@/stores/socket.ts";
+import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
 import {onMounted, ref, watch} from "vue";
 import Rule from "@/components/actions/rule.ts";
@@ -11,7 +11,7 @@ const props = defineProps([
   'divOption'
 ])
 
-const socketStore = useConnectionStore()
+const socketStore = useSocketStore()
 const gameStore = useGameStore()
 
 const divRef = ref()

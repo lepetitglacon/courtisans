@@ -3,7 +3,7 @@ import { socket } from "@/socket.ts";
 import {computed, ref} from "vue";
 import {useChatStore} from "@/stores/chat.ts";
 
-export const useConnectionStore = defineStore("socket", () => {
+export const useSocketStore = defineStore("socket", () => {
     const chatStore = useChatStore()
 
     const isConnected = ref(false)
@@ -49,11 +49,22 @@ export const useConnectionStore = defineStore("socket", () => {
         socket.connect();
     }
 
+    function getPlayableFamilies() {
+        return Object.entries(game.value.infos.FAMILIES).filter(([key, value]) => {
+            return value.id !== 'assassin'
+        })
+    }
+
+    function findUserBySocket(socketId) {
+        return game.users
+    }
+
     return {
         isConnected,
         game,
         currentPlayer,
         isYourTurn,
+        getPlayableFamilies,
         emit,
         bindEvents,
         connect

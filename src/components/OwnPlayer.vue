@@ -3,11 +3,11 @@
   import Action from "@/components/actions/Action.vue";
   import Chat from "@/components/Chat.vue";
 
-  import {useConnectionStore} from "@/stores/socket.ts";
+  import {useSocketStore} from "@/stores/socket.ts";
   import {useGameStore} from "@/stores/game.ts";
   import Deck from "@/components/cards/Deck.vue";
 
-  const socketStore = useConnectionStore()
+  const socketStore = useSocketStore()
   const gameStore = useGameStore()
 </script>
 

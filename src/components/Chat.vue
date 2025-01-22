@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {useChatStore} from "@/stores/chat.ts";
 import {ref, watch} from "vue";
-import {useConnectionStore} from "@/stores/socket.ts";
+import {useSocketStore} from "@/stores/socket.ts";
 
-const socketStore = useConnectionStore()
+const socketStore = useSocketStore()
 const chatStore = useChatStore()
 const textareaValue = ref()
 const messagesDivRef = ref<HTMLDivElement>()

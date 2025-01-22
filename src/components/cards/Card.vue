@@ -2,14 +2,14 @@
 import sound_hover_1 from '../../assets/sounds/cards_handle/hover_1.wav'
 import sound_hover_2 from '../../assets/sounds/cards_handle/hover_2.wav'
 
-import {useConnectionStore} from "@/stores/socket.ts";
+import {useSocketStore} from "@/stores/socket.ts";
 import {onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
 import {socket} from "@/socket.ts";
 import Action from "@/components/actions/Action.vue";
 
-const socketStore = useConnectionStore()
+const socketStore = useSocketStore()
 const gameStore = useGameStore()
 const chatStore = useChatStore()
 
@@ -220,7 +220,6 @@ function getImgSrc() {
 	  class="card-container"
     :class="[
         movable && 'movable',
-        movable && (hovering || dragging) && 'hovering',
         dragging && 'moving',
         hidden && 'hidden',
         showBackFace ? 'showBackFace' : 'showFrontFace'
@@ -236,6 +235,9 @@ function getImgSrc() {
   <div
       ref="cardRef"
        class="card"
+      :class="[
+        movable && (hovering || dragging) && 'hovering',
+      ]"
       @mousedown.prevent=""
       @mouseup.prevent=""
       @mouseleave.prevent=""
