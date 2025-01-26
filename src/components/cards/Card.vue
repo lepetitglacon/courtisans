@@ -6,7 +6,6 @@ import {useSocketStore} from "@/stores/socket.ts";
 import {onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
-import {socket} from "@/socket.ts";
 import Action from "@/components/actions/Action.vue";
 
 const socketStore = useSocketStore()
@@ -35,29 +34,44 @@ const hovering = ref(false)
 const hidden = ref(false)
 const closestSnap = ref(null)
 const lastSnap = ref(null)
-const tilt = ref(15)
+const tilt = ref(20)
 const fakeCardsInDeck = ref([])
+let resetRotationTimeOut = null
+let initialBBox = null
+const rotation = ref(0);
 
-function onCardClick(e) {}
 
 function contains(x, y, rect) {
   return rect.x <= x && x <= rect.x + rect.width &&
       rect.y <= y && y <= rect.y + rect.height;
 }
 
-
-let initialBBox = null
-
 onMounted(() => {
   document.addEventListener("mousemove", onMouseMove)
   document.addEventListener("mouseup", onMouseUp)
 })
+const lerp = (x, y, a) => x * (1 - a) + y * a;
+function onMouseDown(e) {
+  if (!props.movable) { return }
+  if (e.button !== 0) { return }
 
+  initialBBox = cardContainerRef.value.getBoundingClientRect();
+
+  // const cardRect = cardContainerRef.value.getBoundingClientRect();
+  // let newX = e.clientX - cardRect.width / 2
+  // let newY = e.clientY - cardRect.height / 2
+  // cardContainerRef.value.style.left = `${lerp(cardRect.left, newX, .5)}px`;
+  // cardContainerRef.value.style.top = `${lerp(cardRect.top, newY, .5)}px`;
+
+  gameStore.holdenCard = props.card
+  cardContainerRef.value.style.zIndex = 1;
+  chatStore.postMessage(`[debug] ${props.card.id} taken`)
+  dragging.value = true
+}
 const onMouseMove = (event) => {
   updateRotation(event)
   move(event)
   snap(event)
-  playSound(event)
 };
 function move(event) {
   if (!dragging.value) { return }
@@ -65,6 +79,7 @@ function move(event) {
   const cardRect = cardContainerRef.value.getBoundingClientRect();
   cardContainerRef.value.style.left = `${event.clientX - cardRect.width / 2}px`;
   cardContainerRef.value.style.top = `${event.clientY - cardRect.height / 2}px`;
+  // cardContainerRef.value.style.transform = `translate${event.clientY - cardRect.height / 2}px`;
 }
 function snap(event) {
   if (!dragging.value) { return }
@@ -72,52 +87,54 @@ function snap(event) {
   let action = null;
   closestSnap.value = null
 
-  for (const actionDiv of gameStore.actionDivs) {
-    if (!actionDiv.ref) { continue }
+  for (const actionObject of gameStore.actionDivs) {
+    if (!actionObject.ref) { continue }
 
-    const snapRect = actionDiv.ref.getBoundingClientRect();
-    if (contains(event.clientX, event.clientY, snapRect) && actionDiv.active) {
-      closestSnap.value = actionDiv;
-      action = actionDiv.action;
+    const snapRect = actionObject.ref.getBoundingClientRect();
+    if (contains(event.clientX, event.clientY, snapRect) && actionObject.active) {
+      closestSnap.value = actionObject;
+      action = actionObject.action;
     }
   }
-
-  if (closestSnap.value) { // Adjust threshold as needed
-    gameStore.holdenCardAction = action
-
-    if (closestSnap.value.data?.familyId) {
-      const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
-      if (!socketStore.game.familyCards[closestSnap.value.data.familyId][type].includes(props.card)) {
-        socketStore.game.familyCards[closestSnap.value.data.familyId][type].push(props.card)
-        fakeCardsInDeck.value.push(socketStore.game.familyCards[closestSnap.value.data.familyId][type])
-        hidden.value = true
-      }
-    }
-
-    if (closestSnap.value?.action !== lastSnap.value?.action) {
-      for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
-        fakeCardsInDeckElement.remove(props.card)
-      }
-      hidden.value = false
-    }
-
-    const snapRect = closestSnap.value.ref.getBoundingClientRect();
-    cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
-    cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
-
-
-  } else {
-    for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
-      fakeCardsInDeckElement.remove(props.card)
-    }
-    hidden.value = false
-    closestSnap.value = null
-    gameStore.holdenCardAction = null
-  }
-  lastSnap.value = closestSnap.value
+  //
+  // if (closestSnap.value) { // Adjust threshold as needed
+  //   gameStore.holdenCardAction = action
+  //
+  //   if (closestSnap.value.data?.familyId) {
+  //     const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
+  //     if (!socketStore.game.familyCards[closestSnap.value.data.familyId][type].includes(props.card)) {
+  //       socketStore.game.familyCards[closestSnap.value.data.familyId][type].push(props.card)
+  //       fakeCardsInDeck.value.push(socketStore.game.familyCards[closestSnap.value.data.familyId][type])
+  //       hidden.value = true
+  //     }
+  //   }
+  //
+  //   if (closestSnap.value?.action !== lastSnap.value?.action) {
+  //     for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
+  //       fakeCardsInDeckElement.remove(props.card)
+  //     }
+  //     hidden.value = false
+  //   }
+  //
+  //   const snapRect = closestSnap.value.ref.getBoundingClientRect();
+  //   cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
+  //   cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
+  //
+  //
+  // } else {
+  //   for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
+  //     fakeCardsInDeckElement.remove(props.card)
+  //   }
+  //   hidden.value = false
+  //   closestSnap.value = null
+  //   gameStore.holdenCardAction = null
+  // }
+  // lastSnap.value = closestSnap.value
 }
 function updateRotation(event) {
-  if (!hovering.value) { return }
+  if (!hovering.value) {
+    return
+  }
   const rect = cardContainerRef.value.getBoundingClientRect();
   const x = event.clientX - rect.left; // Mouse X relative to container
   const y = event.clientY - rect.top; // Mouse Y relative to container
@@ -127,52 +144,33 @@ function updateRotation(event) {
   const rotateY = ((x - centerX) / centerX) * tilt.value; // Tilt based on X-axis
   cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
 }
-function playSound(event) {
-  // if (!dragging.value) { return }
-  if (!hovering.value) { return }
-
-}
-
-function onMouseDown(e) {
-  if (!props.movable) { return }
-  if (e.button !== 0) { return }
-
-  const cardRect = cardContainerRef.value.getBoundingClientRect();
-  cardContainerRef.value.style.left = `${e.clientX - cardRect.width / 2}px`;
-  cardContainerRef.value.style.top = `${e.clientY - cardRect.height / 2}px`;
-
-  initialBBox = cardContainerRef.value.getBoundingClientRect();
-  gameStore.holdenCard = props.card
-  cardContainerRef.value.style.zIndex = 1;
-  chatStore.postMessage(`[debug] ${props.card.id} taken`)
-  dragging.value = true
-}
 const onMouseUp = () => {
   if (!dragging.value) { return }
-
-  if (gameStore.holdenCardAction) {
-    socketStore.emit('client/play', {
-      action: gameStore.holdenCardAction,
-      cardId: gameStore.holdenCard?.id,
-      userId: socket?.id,
-      ...closestSnap.value?.data ?? {}
-    })
-    cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
-  } else {
-    cardRef.value.style.transition = "transform 1s ease";
-    cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
 
     cardContainerRef.value.style.left = `${initialBBox.left}px`;
     cardContainerRef.value.style.top = `${initialBBox.top}px`;
 
-    hidden.value = false
-
-    setTimeout(() => {
-      if (cardRef.value) {
-        cardRef.value.style.transition = "none"; // Remove transition after reset
-      }
-    }, 300);
-  }
+  // if (gameStore.holdenCardAction) {
+  //   socketStore.emit('client/play', {
+  //     action: gameStore.holdenCardAction,
+  //     cardId: gameStore.holdenCard?.id,
+  //     userId: socket?.id,
+  //     ...closestSnap.value?.data ?? {}
+  //   })
+  //   cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
+  // } else {
+  //   cardRef.value.style.transition = "transform 5s ease";
+  //   cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+  //
+  //
+  //   hidden.value = false
+  //
+  //   setTimeout(() => {
+  //     if (cardRef.value) {
+  //       // cardRef.value.style.transition = "none"; // Remove transition after reset
+  //     }
+  //   }, 300);
+  // }
 
   cardContainerRef.value.style.zIndex = 0;
   gameStore.holdenCard = null
@@ -181,26 +179,38 @@ const onMouseUp = () => {
   chatStore.postMessage(`[debug] ${props.card.id} dropped`)
 
   dragging.value = false
-  cardContainerRef.value?.classList.remove('moving')
 };
+
 
 
 function onMouseEnter(e) {
   hovering.value = true
   if (props.movable) {
     sounds[Math.floor(Math.random()*sounds.length)].play()
+    clearTimeout(resetRotationTimeOut)
   }
 }
 function onMouseLeave(e) {
   hovering.value = false
-  cardRef.value.style.transition = "transform 1s ease";
+  // cardRef.value.style.transition = "transform 1s ease";
   cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
-  setTimeout(() => {
+  resetRotationTimeOut = setTimeout(() => {
     if (cardRef.value) {
-      cardRef.value.style.transition = "none"; // Remove transition after reset
+      // cardRef.value.style.transition = "none"; // Remove transition after reset
     }
-  }, 300);
+  }, 1000);
 }
+
+function updateRotationn() {
+  rotation.value = Math.sin(gameStore.animationFrames / 60 + (props?.index ?? 0) * 2)
+}
+gameStore.useAnimation(() => {
+  updateRotationn()
+  if (cardContainerRef.value) {
+    cardContainerRef.value.style.transform = `rotate(${rotation.value}deg)`;
+
+  }
+})
 
 function getImgSrc() {
   if (props.showBackFace) {
@@ -245,7 +255,7 @@ function getImgSrc() {
   >
     <Action v-if="!movable && action" :action="action"></Action>
     <div class="">
-      <div v-if="gameStore.debug" class="card-info">
+      <div v-if="gameStore.debug" class="">
         <p class="card-title">{{ card.family.title }}</p>
         <p>drag : {{ dragging }}</p>
         <p>hover : {{ hovering }}</p>
@@ -310,7 +320,7 @@ function getImgSrc() {
   position: absolute;
 }
 .hovering {
-  box-shadow: 0px 0px 44px 33px rgba(239, 228, 2, 0.5);
+  box-shadow: 0px 0px 10px 10px rgba(239, 228, 2, 0.5);
 }
 .hidden {
   opacity: 0;

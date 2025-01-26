@@ -10,7 +10,7 @@ export const useSocketStore = defineStore("socket", () => {
     const game = ref({})
 
     const currentPlayer = computed(() => {
-        const user = game.value?.users?.filter(user => user.socket === socket.id)
+        const user = game.value?.users?.filter(user => user.socket.id === socket.id)
         return user?.length > 0 ? user[0] : null
     })
 
@@ -25,6 +25,7 @@ export const useSocketStore = defineStore("socket", () => {
     function bindEvents() {
         socket.on("connect", () => {
             isConnected.value = true;
+
         });
         socket.on("disconnect", () => {
             isConnected.value = false;

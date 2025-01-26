@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Card from "@/components/cards/Card.vue";
+import NewCard from "@/components/cards/DeckCard.vue";
 
 const props = defineProps([
     'cards',
@@ -10,15 +10,14 @@ const props = defineProps([
 
 <template>
 
-  <div class="deck-container">
-    <Card v-for="card of cards" :card="card" :showBackFace="showBackFace"/>
+  <div class="deck-container position-relative d-flex flex-column">
+    <NewCard v-for="[i, card] of cards.entries()" :card="card" :index="i" :showBackFace="showBackFace"/>
   </div>
 
 </template>
 
 <style scoped>
 .deck-container {
-  display: flex;
-  flex-direction: column;
+
 }
 </style>

@@ -2,11 +2,16 @@ import User from "./user.js";
 import Card from "./cards/card.js";
 import POWERS from "./data/powers.js";
 import FAMILIES from "./data/families.js";
+import MISSIONS from "./data/missions.js";
+import STATE from "./shared/gameState.js";
 import {shuffleArray} from "./utils.js";
 import ActionValidator from "./logic/actionValidator.js";
-import MISSIONS from "./data/missions.js";
 import MissionCard from "./cards/missionCard.js";
-import STATE from "./shared/gameState.js";
+import fillCardsTest from "./tests/fillCardsTest.js";
+import EventDispatcher from "./EventDispatcher.js";
+
+import { fakerFR as faker } from '@faker-js/faker';
+import UserUtility from "./utility/UserUtility.js";
 
 export default class Game {
 
@@ -18,6 +23,11 @@ export default class Game {
         this.io = io;
         this.roomId = '0000'
 
+        this.eventDispatcher = new EventDispatcher()
+        this.actionValidator = new ActionValidator(this);
+
+        this.userUtility = new UserUtility(this);
+
         this.state = STATE.WAITING_FOR_PLAYERS
         this.started = false
         this.userTurnId = null
@@ -28,15 +38,18 @@ export default class Game {
         this.missionCards = []
         this.familyCards = {}
 
-        this.actionValidator = new ActionValidator(this);
 
         this.init()
         this.bind()
+
+        this.tests = {}
+        this.tests.fillCards = new fillCardsTest(this)
+        this.tests.fillCards.test()
     }
 
     init() {
         this.started = false
-        this.state = STATE.WAITING_FOR_PLAYERS
+        this.changeState(STATE.WAITING_FOR_PLAYERS)
 
         for (const family of Object.values(FAMILIES)) {
             this.familyCards[family.id] = {
@@ -91,19 +104,44 @@ export default class Game {
         this.io.on('connection', (socket) => {
             this.handleConnect(socket)
         });
+
+        // SOCKET
+        this.eventDispatcher.on('game:user:disconnect:disconnected', (user, socket) => {
+            const connectedUsers = this.users.filter(user => user.socket.connected)
+            if (connectedUsers <= 2 && this.state === STATE.WAITING_FOR_START) {
+                this.changeState(STATE.WAITING_FOR_PLAYERS)
+            }
+            console.log(`user left, still have ${User.disconnectTimeOut / 1000}sec to reconnect`, socket.id);
+            this.update()
+        })
+        this.eventDispatcher.on('game:user:disconnect:timeout', (user, socket) => {
+            this.users.splice(this.users.indexOf(user), 1)
+            if (this.users.length <= 1 && this.state === STATE.WAITING_FOR_START) {
+                this.changeState(STATE.WAITING_FOR_PLAYERS)
+            }
+            console.log('a user disconnected', socket.id);
+            this.update()
+        })
+
+        // GAME
+        this.eventDispatcher.on('client/play', (data, socket) => {
+            this.playAction(data, socket)
+        })
+        this.eventDispatcher.on('changeState', state => {
+
+        })
     }
 
     handleConnect(socket) {
-        const user = new User('todo', socket);
+        const user = new User(faker.person.fullName(), socket);
 
         socket.on('disconnect', () => {
-            this.users.splice(this.users.indexOf(user), 1)
-            if (this.users.length <= 1 && this.state === STATE.WAITING_FOR_START) {
-                this.state = STATE.WAITING_FOR_PLAYERS
-            }
-            this.update()
+            this.eventDispatcher.emit('game:user:disconnect:disconnected', user, socket)
+            setTimeout(() => {
+                this.eventDispatcher.emit('game:user:disconnect:timeout', user, socket)
+            }, User.disconnectTimeOut)
         })
-        this.bindSocket(socket, user)
+        this.bindSocket(socket)
 
         if (this.users.length === 0) {
             user.admin = true
@@ -115,16 +153,16 @@ export default class Game {
             this.users.length > 1 &&
             this.state === STATE.WAITING_FOR_PLAYERS
         ) {
-            this.state = STATE.WAITING_FOR_START
+            this.changeState(STATE.WAITING_FOR_START)
         }
 
         this.update()
         console.log('a user connected', socket.id);
     }
 
-    bindSocket(socket, user) {
+    bindSocket(socket) {
         // ADMIN
-        socket.on('client/start-request', (data) => {
+        socket.on('client/admin/start', (data) => {
             console.log(socket.id, 'starting the game')
             if (this.users.length > 1) {
                 this.start()
@@ -137,30 +175,7 @@ export default class Game {
 
         // GAME actions
         socket.on('client/play', (data) => {
-            if (!this.actionValidator.isValidAction(socket)) { return }
-            const validationResult = this.actionValidator.validate(data, user)
-
-            socket.emit('client/validationResult', {valid: validationResult.isValid})
-            if (!validationResult.isValid) {
-                console.log(socket.id, data, validationResult.reason)
-                return
-            }
-
-            if (user.handCards.length < 1) {
-                // fill cards from deck
-                this.drawCardsForUser(user)
-
-                // next player
-                const index = this.users.indexOf(user)
-                if (index === this.users.length - 1) {
-                    this.userTurnId = this.users[0].socket.id
-                } else {
-                    this.userTurnId = this.users[index + 1].socket.id
-                }
-                this.actionValidator.initForCurrentUser()
-            }
-
-            this.update()
+            this.playAction(data, socket)
         })
     }
 
@@ -184,8 +199,38 @@ export default class Game {
         this.userTurnId = this.users[0].socket.id
         this.actionValidator.initForCurrentUser()
 
+        this.users = this.users.filter(user => user.socket.connected)
         this.started = true
-        this.state = STATE.PLAYING
+        this.changeState(STATE.PLAYING)
+        this.update()
+    }
+
+    playAction(data, socket) {
+        if (!this.actionValidator.isValidAction(socket)) { return }
+
+        const user = this.userUtility.findUserFromSocket(socket)
+        const validationResult = this.actionValidator.validate(data, user)
+
+        socket.emit('client/validationResult', {valid: validationResult.isValid})
+        if (!validationResult.isValid) {
+            console.log(socket.id, data, validationResult.reason)
+            return
+        }
+
+        if (user.handCards.length < 1) {
+            // fill cards from deck
+            this.drawCardsForUser(user)
+
+            // next player
+            const index = this.users.indexOf(user)
+            if (index === this.users.length - 1) {
+                this.userTurnId = this.users[0].socket.id
+            } else {
+                this.userTurnId = this.users[index + 1].socket.id
+            }
+            this.actionValidator.initForCurrentUser()
+        }
+
         this.update()
     }
 
@@ -229,6 +274,11 @@ export default class Game {
         return cards
     }
 
+    changeState(newState) {
+        this.state = newState
+        this.eventDispatcher.emit('changeState', newState)
+    }
+
     /**
      * Update state for every player
      */
@@ -236,7 +286,7 @@ export default class Game {
         this.io.emit('game:update', this.toJson())
 
         if (this.cards.length <= 0) {
-            this.state = STATE.COUNTING
+            this.changeState(STATE.COUNTING)
             this.io.emit('game:end:start', this.toJson())
         }
     }

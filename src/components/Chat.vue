@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useChatStore} from "@/stores/chat.ts";
-import {ref, watch} from "vue";
+import {nextTick, ref, watch} from "vue";
 import {useSocketStore} from "@/stores/socket.ts";
 
 const socketStore = useSocketStore()
@@ -14,7 +14,9 @@ function sendMessage() {
 }
 
 watch(chatStore.messages, (newValue) => {
-  messagesDivRef.value.scrollTop = messagesDivRef.value.scrollHeight
+  nextTick(() => {
+    messagesDivRef.value.scrollTop = messagesDivRef.value.scrollHeight
+  })
 })
 
 watch(() => socketStore.game?.state, (newValue) => {

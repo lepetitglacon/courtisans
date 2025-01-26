@@ -9,7 +9,7 @@ const socketStore = useSocketStore()
 <template>
 	<div class="players-container w-100 h-100 d-flex justify-content-evenly">
     <template v-for="user of socketStore.game.users ?? []">
-		  <Player v-if="user.socket !== socket.id" :user="user" />
+		  <Player v-if="user.socket.id !== socket.id" :user="user" />
     </template>
 	</div>
 </template>

@@ -8,6 +8,7 @@ import OwnPlayer from "@/components/OwnPlayer.vue";
 import Plateau from "@/components/plateau/Plateau.vue";
 import Players from "@/components/players/Players.vue";
 import AppContainer from "@/components/AppContainer.vue";
+import UI from "@/components/UI/UI.vue";
 const gameStore = useSocketStore()
 gameStore.bindEvents()
 
@@ -34,8 +35,10 @@ function onStartSubmit() {
   </AppContainer>
 
   <AppContainer>
-    <div><p>OWN</p></div>
+    <OwnPlayer/>
   </AppContainer>
+
+  <UI/>
 
 </div>
 

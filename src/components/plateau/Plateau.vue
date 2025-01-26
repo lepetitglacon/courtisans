@@ -5,20 +5,40 @@ import Action from "@/components/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
 import Card from "@/components/cards/Card.vue";
 import Deck from "@/components/cards/Deck.vue";
+import {ref} from "vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
+
+const plateauRef = ref()
 </script>
 
 <template>
 
-  <div class="plateau h-100 w-100 d-flex">
+  <div
+      ref="plateauRef"
+      class="plateau h-100 w-100 d-flex"
+  >
 
     <div class="side bg-info">
-      <p>Pioche</p>
+      <p>Cartes mission</p>
     </div>
-    <div class="w-100 bg-dark">
+    <div class="w-100 d-flex justify-content-between bg-dark">
+      <div
+          class="w-100 d-flex flex-column justify-content-center position-relative"
+          v-for="family of socketStore?.game?.infos?.FAMILIES"
+          :style="{
+                  backgroundColor: family.color,
+                  width: plateauRef?.getBoundingClientRect().width / 7 - 0.1 + 'px'
+                }"
+      >
+        <Action class="w-100 h-50 top-0 position-absolute" action="enlight"/>
+        <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
+        <p>{{ family.title}}</p>
+        <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
+        <Action class="w-100 h-50 bottom-0 position-absolute" action="shadow"/>
 
+      </div>
     </div>
     <div class="side bg-info">
       <p>Pioche</p>
@@ -81,7 +101,7 @@ const gameStore = useGameStore()
 
 }
 .side {
-  width: 10%;
+  width: 15%;
 }
 .plateau-family {
   color: white;
