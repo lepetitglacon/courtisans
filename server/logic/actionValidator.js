@@ -33,7 +33,7 @@ export default class ActionValidator {
         }
 
         const otherUser = this.game.users.find(User => User.socket.id === data?.toUserId)
-        if (!otherUser && (data.action === 'give' || ['kill_other', 'kill_own'].includes(data.action))) {
+        if (!otherUser && (['give', 'kill_other', 'kill_own'].includes(data.action))) {
             return {
                 isValid: false,
                 reason: 'Other user was not found'

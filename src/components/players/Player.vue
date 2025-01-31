@@ -2,10 +2,13 @@
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
 import {computed, onMounted, ref} from "vue";
-import {socket} from "../../socket.ts";
+import {socket} from "@/socket.ts";
 import Deck from "@/components/cards/Deck.vue";
+import Action from "@/components/actions/Action.vue";
 
-const props = defineProps(['user'])
+const props = defineProps<{
+  user: object
+}>()
 
 const playerContainerRef = ref<HTMLDivElement|null>(null)
 const playerRef = ref<HTMLDivElement|null>(null)
@@ -34,13 +37,17 @@ const color = computed(() => {
             !user.socket.connected && 'disconnected'
         ]"
     >
-
-<!--      <Action action="give" :data="{toUserId: user.socket}" class="player">-->
-
 	      <div ref="playerRef" class="player d-flex flex-wrap">
           <div class="d-flex flex-column justify-content-center align-items-center w-100 h-50">
-            <p>{{ user.name }}</p>
-            <p>{{ user.socket.id }}</p>
+            <Action
+                :action="user.socket.id === socket.id ? 'keep' : 'give'"
+                :data="{
+                  toUserId: user.socket.id !== socket.id ? user.socket.id : ''
+                }"
+                class="player d-flex flex-column justify-content-center align-items-center">
+              <p>{{ user.name }}</p>
+              <p>{{ user.socket.id }}</p>
+            </Action>
           </div>
           <div class="d-flex h-50 flex-wrap">
             <div
