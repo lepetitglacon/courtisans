@@ -5,32 +5,39 @@ import {useGameStore} from "@/stores/game.ts";
 import {onMounted, ref, watch} from "vue";
 import Rule from "@/components/actions/rule.ts";
 
-const props = defineProps([
-  'action',
-  'data',
-  'divOption'
-])
+const props = defineProps<{
+  action: string,
+  data: {
+    relatedDeck: object|null
+    familyId: string|null
+  }|null,
+}>()
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
 
 const divRef = ref()
-const active = ref(false)
+const active = ref(true)
 const hovered = ref(false)
 
 gameStore.registerActionDiv(props.action, divRef, props.data, hovered, active)
 
 function onMouseEnter(e) {
+  console.log(e)
   hovered.value = true
+
+  if (gameStore.holdenCard && props.data.relatedDeck) {
+    console.log(props.data.relatedDeck)
+  }
 }
 function onMouseLeave(e) {
   hovered.value = false
 }
 
 watch(() => gameStore.holdenCard, (heldCard) => {
-  if (!socketStore.isYourTurn) {
-    return active.value = false
-  }
+  // if (!socketStore.isYourTurn) {
+  //   return active.value = false
+  // }
 
   // const familyRule = new Rule().setHigherAction('test')
   //
@@ -99,7 +106,7 @@ watch(() => gameStore.holdenCard, (heldCard) => {
   <div
       ref="divRef"
       class="action"
-      :class="[hovered && gameStore.holdenCard && 'hovered', active && 'hovered']"
+      :class="[hovered && 'hovered', active && 'hovered']"
       :title="props.action"
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"
@@ -114,6 +121,6 @@ watch(() => gameStore.holdenCard, (heldCard) => {
   background-color: rgba(0, 0, 0, 0.5);
 }
 .hovered {
-  box-shadow: 0px 0px 44px 33px rgba(237,226,19,0.35);
+  box-shadow: 0px 0px 10px 10px rgba(237,226,19,0.35);
 }
 </style>

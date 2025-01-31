@@ -25,7 +25,6 @@ export const useGameStore = defineStore('game', () => {
     active: Ref
   }
 
-
   const animationHooks = ref<Array<Function>>([])
   const animationFrames = ref(0)
   function useAnimation(animationHook: Function) {

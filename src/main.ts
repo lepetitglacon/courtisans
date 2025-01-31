@@ -4,6 +4,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 
+import './utils/Array.ts'
+
 const app = createApp(App)
 
 app.use(createPinia())

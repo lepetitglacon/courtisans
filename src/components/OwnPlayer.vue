@@ -47,7 +47,7 @@
       </div>
 
       <div>
-        {{ socketStore?.game.userActionsToPlay}}
+        <p v-if="socketStore?.isYourTurn">Your turn {{ socketStore?.game.userActionsToPlay }}</p>
       </div>
 
       <pre></pre>
