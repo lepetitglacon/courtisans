@@ -23,11 +23,9 @@ const hovered = ref(false)
 gameStore.registerActionDiv(props.action, divRef, props.data, hovered, active)
 
 function onMouseEnter(e) {
-  console.log(e)
   hovered.value = true
 
   if (gameStore.holdenCard && props.data.relatedDeck) {
-    console.log(props.data.relatedDeck)
   }
 }
 function onMouseLeave(e) {

@@ -98,8 +98,9 @@ function snap(event) {
     if (closestSnap.value.data?.familyId) {
       const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
       const familyDeck = socketStore.game.familyCards[closestSnap.value.data.familyId][type]
-      console.log(familyDeck)
       if (!familyDeck.includes(props.card)) {
+        console.log(familyDeck)
+        console.log(props.card)
         familyDeck.push(props.card)
         fakeCardsInDeck.value.push(familyDeck)
         hidden.value = true
@@ -108,7 +109,6 @@ function snap(event) {
 
     if (closestSnap.value !== lastSnap.value) {
       for (const fakeCardInDeck of fakeCardsInDeck.value) {
-        console.log(fakeCardInDeck)
         fakeCardInDeck.remove(props.card)
       }
       hidden.value = false

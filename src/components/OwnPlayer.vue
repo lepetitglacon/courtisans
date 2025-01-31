@@ -34,6 +34,7 @@
              v-for="[i, card] of socketStore.currentPlayer?.handCards.entries() ?? []"
         >
           <Card
+              :key="card.id"
               class="m-2 col"
 
               :card="card"

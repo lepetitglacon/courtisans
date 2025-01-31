@@ -20,7 +20,6 @@ watch(chatStore.messages, (newValue) => {
 })
 
 watch(() => socketStore.game?.state, (newValue) => {
-  console.log(newValue)
   chatStore.postMessage(`[STATE] -> ${newValue}`)
 })
 </script>
