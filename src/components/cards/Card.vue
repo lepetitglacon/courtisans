@@ -74,6 +74,7 @@ function onValidationResult(e) {
 
   }
   resetCard()
+  socketStore.off('server/validationResult', onValidationResult)
 }
 const onMouseMove = (event) => {
   updateRotation(event)
@@ -183,8 +184,6 @@ const onMouseUp = () => {
   gameStore.holdenCardAction = null
   gameStore.holdenCardData = null
   chatStore.postMessage(`[debug] ${props.card.id} dropped`)
-
-  socketStore.off('server/validationResult', onValidationResult)
 
   dragging.value = false
 };

@@ -11,13 +11,18 @@ provide('killAction', 'kill_other')
 
 <template>
 	<div class="players-container w-100 h-100 d-flex justify-content-evenly">
-    <template v-for="user of socketStore.game.users ?? []">
+    <template v-if="socketStore.game.users.length > 1"
+              v-for="user of socketStore.game.users ?? []"
+    >
 		  <Player
           v-if="user.socket.id !== socket.id"
           :key="user.socket.id"
           :user="user"
       />
     </template>
+
+    <p v-else>En attente d'autre joueur</p>
+
 	</div>
 </template>
 

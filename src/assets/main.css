@@ -1,11 +1,18 @@
 @import 'base.css';
 
+@font-face {
+  font-family: medieval;
+  src: url('./fonts/MedievalSharp-Book.ttf');
+}
+
 #app {
   width: 100vw;
   height: 100vh;
 
   color: white;
   background-color: #282828;
+
+  font-family: medieval, "Roboto Mono", monospace;
 }
 
 .scaled {

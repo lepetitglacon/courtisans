@@ -129,9 +129,9 @@ watch(() => gameStore.holdenCard, (heldCard) => {
 
 <style scoped>
 .action {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.1);
 }
-.hovered {
-  box-shadow: 0px 0px 10px 10px rgba(237,226,19,0.35);
+.action .hovered {
+  box-shadow: inset 0px 0px 10px 10px rgba(0, 0, 0, 0.35);
 }
 </style>

@@ -19,7 +19,7 @@
 
   <div class="h-100 w-100 d-flex">
 
-    <div class="side d-flex bg-danger">
+    <div class="side d-flex">
       <Chat/>
       <div>
         <pre>{{ gameStore.holdenCard }}</pre>
@@ -29,7 +29,7 @@
     <div class="player-deck bg-dark">
       <Player class="h-100" v-if="socketStore.currentPlayer" :user="socketStore.currentPlayer" />
     </div>
-    <div class="side bg-danger">
+    <div class="side">
       <p>Cartes</p>
 
       <div class="w-100 d-flex ">

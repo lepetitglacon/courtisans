@@ -49,7 +49,7 @@ export default class Game {
 
         this.tests = {}
         this.tests.fillCards = new fillCardsTest(this)
-        this.tests.fillCards.test()
+
     }
 
     init() {
@@ -183,6 +183,10 @@ export default class Game {
         socket.on('client/admin/restart', (data) => {
             console.log(socket.id, 'restarting the game')
             this.restart()
+        })
+        socket.on('client/admin/test', (data) => {
+            console.log('run tests')
+            this.tests.fillCards.test()
         })
 
         // GAME actions

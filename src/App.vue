@@ -4,21 +4,29 @@ import 'bootstrap/dist/css/bootstrap.css'
 
 
 import {useSocketStore} from "@/stores/socket.ts";
+import {useSoundStore} from "@/stores/sound.ts";
 import OwnPlayer from "@/components/OwnPlayer.vue";
 import Plateau from "@/components/plateau/Plateau.vue";
 import Players from "@/components/players/Players.vue";
 import AppContainer from "@/components/AppContainer.vue";
 import UI from "@/components/UI/UI.vue";
+import {onMounted, ref} from "vue";
+
+const soundStore = useSoundStore()
 const gameStore = useSocketStore()
 gameStore.bindEvents()
 
-function onRestartClick() {
-  gameStore.emit('client/admin/restart')
-}
-function onStartSubmit() {
-  gameStore.emit('client/start-request')
-}
+const playing = ref(false)
 
+function handleStartPlaying() {
+  playing.value = true
+  const sound = soundStore.sounds.get('ambiance')
+  sound.addEventListener('ended', () => {
+    sound.currentTime = 0
+    sound.play()
+  })
+  const res = sound.play()
+}
 
 </script>
 
@@ -26,19 +34,24 @@ function onStartSubmit() {
 
 <div id="app-root" class="d-flex flex-column justify-content-evenly">
 
-  <AppContainer>
-    <Players/>
-  </AppContainer>
+  <template v-if="playing">
+    <AppContainer>
+      <Players/>
+    </AppContainer>
 
-  <AppContainer>
-    <Plateau/>
-  </AppContainer>
+    <AppContainer>
+      <Plateau/>
+    </AppContainer>
 
-  <AppContainer>
-    <OwnPlayer/>
-  </AppContainer>
+    <AppContainer>
+      <OwnPlayer/>
+    </AppContainer>
 
-  <UI/>
+    <UI/>
+  </template>
+  <template v-else>
+    <button @click="handleStartPlaying">Play</button>
+  </template>
 
 </div>
 

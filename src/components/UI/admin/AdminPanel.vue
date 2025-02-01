@@ -19,6 +19,7 @@ function handleClick(e) {
 
     <button @click="handleClick" data-action="start">Start</button>
     <button @click="handleClick" data-action="restart">Restart</button>
+    <button @click="handleClick" data-action="test">Test</button>
 
   </div>
 

@@ -98,7 +98,7 @@ function onMouseLeave(e) {
 
 <style scoped>
 .card-container {
-  min-width: 50px;
+  min-width: 100px;
 }
 .img {
   width: 100%;
@@ -106,8 +106,8 @@ function onMouseLeave(e) {
 .dragging {
 }
 
-.hovered {
-  box-shadow: 0px 0px 10px 10px rgba(239, 228, 2, 0.5);
+.card-container .hovered not .action {
+  box-shadow: 0px 0px 10px 10px rgba(237, 218, 18, 0.68);
 }
 
 </style>

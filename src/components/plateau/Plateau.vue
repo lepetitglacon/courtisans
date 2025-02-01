@@ -22,8 +22,13 @@ const plateauRef = ref()
       class="plateau h-100 w-100 d-flex"
   >
 
-    <div class="side bg-info">
+    <div class="side">
       <p>Cartes mission</p>
+
+      <p class="mission-card" v-for="card of socketStore?.currentPlayer?.missionCards ?? []">
+        {{ card.text }}
+      </p>
+
     </div>
     <div class="w-100 d-flex justify-content-between bg-dark">
       <div
@@ -34,15 +39,25 @@ const plateauRef = ref()
                   width: plateauRef?.getBoundingClientRect().width / 7 - 0.1 + 'px'
                 }"
       >
-        <Action class="w-100 h-50 top-0 position-absolute" action="enlight" :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].enlighten}"/>
-        <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
+        <Action
+            class="w-100 h-50 top-0 position-absolute"
+            action="enlight"
+            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].enlighten}"
+        >
+          <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
+        </Action>
         <p>{{ family.title}}</p>
-        <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
-        <Action class="w-100 h-50 bottom-0 position-absolute" action="shadow"  :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].shadowed}"/>
+        <Action
+            class="w-100 h-50 bottom-0 position-absolute"
+            action="shadow"
+            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].shadowed}"
+        >
+          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
+        </Action>
 
       </div>
     </div>
-    <div class="side bg-info">
+    <div class="side">
       <p>Pioche</p>
     </div>
 
@@ -149,10 +164,11 @@ const plateauRef = ref()
   background-color: #fbedd6;
   border-radius: 10px;
   border: solid 5px #774f36;
+  color: #774f36 !important;
 }
 .mission-card p {
   word-break: break-word;
   font-weight: 800;
-  color: #774f36;
+
 }
 </style>

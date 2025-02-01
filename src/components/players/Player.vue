@@ -40,30 +40,35 @@ const color = computed(() => {
         ]"
     >
 	      <div ref="playerRef" class="player d-flex flex-wrap">
-          <div class="d-flex flex-column justify-content-center align-items-center w-100 h-50">
-            <Action
-                :action="user.socket.id === socket.id ? 'keep' : 'give'"
-                :data="{
+
+          <Action
+              :action="user.socket.id === socket.id ? 'keep' : 'give'"
+              :data="{
                   toUserId: user.socket.id !== socket.id ? user.socket.id : ''
                 }"
-                class="player d-flex flex-column justify-content-center align-items-center">
-              <p>{{ user.name }}</p>
-              <p>{{ user.socket.id }}</p>
+              class="player d-flex justify-content-center align-items-center"
+          >
+
+          <div class="d-flex flex-column justify-content-center align-items-center w-25 h-25">
+
+              <div class="mx-3">
+                <p>{{ user.name }}</p>
+                <p>{{ user.socket.id }}</p>
+              </div>
               <div v-if="socketStore.game.score">
                 <h2>SCORE</h2>
                 <pre>{{ Object.values(socketStore.game.score.users[user.socket.id] ?? []).reduce((acc: Number, el: Number) => {
                   return acc += el
                 }, 0)  }}</pre>
               </div>
-            </Action>
+
           </div>
-          <div class="d-flex h-50 flex-wrap">
+          <div class="w-100 h-50 d-flex justify-content-around align-items-start flex-wrap">
             <div
                 class="d-flex justify-content-center"
                 v-for="family of socketStore?.game?.infos?.FAMILIES"
                 :style="{
                   backgroundColor: family.color,
-                  width: playerRef?.getBoundingClientRect().width / 7 - 0.1 + 'px'
                 }"
             >
 
@@ -81,21 +86,18 @@ const color = computed(() => {
 
             </div>
           </div>
+
+          </Action>
 	      </div>
 
     </div>
 </template>
 
 <style scoped>
-.player-container {
-
-}
 .player {
   width: 90%;
   height: 90%;
   background-color: rgba(0, 0, 0, 0.17);
-}
-.family {
 }
 
 .disconnected {
