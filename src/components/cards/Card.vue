@@ -3,7 +3,7 @@ import sound_hover_1 from '../../assets/sounds/cards_handle/hover_1.wav'
 import sound_hover_2 from '../../assets/sounds/cards_handle/hover_2.wav'
 
 import {useSocketStore} from "@/stores/socket.ts";
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
 import Action from "@/components/actions/Action.vue";
@@ -26,6 +26,8 @@ const props = defineProps([
     'isPlayerDeck',
     'showBackFace'
 ])
+
+const deck = inject('deck')
 
 const cardContainerRef = ref<HTMLDivElement>()
 const cardRef = ref<HTMLDivElement>()
@@ -86,6 +88,15 @@ function snap(event) {
 
     const snapRect = actionObject.ref.getBoundingClientRect();
     if (contains(event.clientX, event.clientY, snapRect) && actionObject.active) {
+
+      if (actionObject.action === 'kill') {
+        if (props.card.power === 'rogue' && props.card.id !== actionObject.data.otherCardId) {
+            closestSnap.value = actionObject;
+            action = actionObject.data.killAction
+        }
+        continue
+      }
+
       closestSnap.value = actionObject;
       action = actionObject.action;
     }
@@ -177,8 +188,6 @@ const onMouseUp = () => {
 
   dragging.value = false
 };
-
-
 
 function onMouseEnter(e) {
   hovering.value = true

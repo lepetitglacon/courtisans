@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {inject, onMounted, ref} from "vue";
+import Action from "@/components/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
 
 const gameStore = useGameStore()
@@ -83,10 +84,15 @@ function onMouseLeave(e) {
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"
   >
+    <Action action="kill" :data="{
+      familyId: props.card.family.id,
+      otherCardId: props.card.id,
+    }">
     <img
         class="img"
         :src="`/cards/${getImgSrc()}.png`"
     >
+    </Action>
   </div>
 </template>
 

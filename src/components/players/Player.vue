@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, provide, ref} from "vue";
 import {socket} from "@/socket.ts";
 import Deck from "@/components/cards/Deck.vue";
 import Action from "@/components/actions/Action.vue";
@@ -9,6 +9,8 @@ import Action from "@/components/actions/Action.vue";
 const props = defineProps<{
   user: object
 }>()
+
+provide('otherUser', props.user)
 
 const playerContainerRef = ref<HTMLDivElement|null>(null)
 const playerRef = ref<HTMLDivElement|null>(null)
@@ -59,7 +61,7 @@ const color = computed(() => {
                 }"
             >
 
-              <Deck :cards="user.cards.filter(card => card.family.id === family.id)"/>
+              <Deck :cards="user.cards.filter(card => card.family.id === family.id)" :show-back-face="false"/>
 
             </div>
           </div>

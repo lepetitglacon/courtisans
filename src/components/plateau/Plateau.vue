@@ -5,10 +5,12 @@ import Action from "@/components/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
 import Card from "@/components/cards/Card.vue";
 import Deck from "@/components/cards/Deck.vue";
-import {ref} from "vue";
+import {provide, ref} from "vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
+
+provide('killAction', 'kill_crown')
 
 const plateauRef = ref()
 </script>

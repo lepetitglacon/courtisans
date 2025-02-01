@@ -7,9 +7,12 @@
   import {useGameStore} from "@/stores/game.ts";
   import Player from "@/components/players/Player.vue";
   import NewCard from "@/components/cards/DeckCard.vue";
+  import {provide} from "vue";
 
   const socketStore = useSocketStore()
   const gameStore = useGameStore()
+
+  provide('killAction', 'kill_own')
 </script>
 
 <template>

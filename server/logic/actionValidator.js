@@ -33,7 +33,7 @@ export default class ActionValidator {
         }
 
         const otherUser = this.game.users.find(User => User.socket.id === data?.toUserId)
-        if (!otherUser && (['give', 'kill_other', 'kill_own'].includes(data.action))) {
+        if (!otherUser && (['give', 'kill_other'].includes(data.action))) {
             return {
                 isValid: false,
                 reason: 'Other user was not found'
@@ -101,15 +101,46 @@ export default class ActionValidator {
 
                 user.handCards.splice(user.handCards.indexOf(card), 1)
                 break;
-            case 'kill_crown':
-                console.log(this.game.familyCards[data.familyId])
-                this.game.familyCards[data.familyId].splice(this.game.familyCards[data.familyId].indexOf(card), 1)
+            case 'kill_crown': {
+                const otherCard = this.game.familyCards[data.familyId].find(card => card.id === data.otherCardId)
+                if (!otherCard) {
+                    return {
+                        isValid: false,
+                        reason: `Card to kill of family ${data.familyId} was not found "${data.otherCardId}"`,
+                    }
+                }
+                otherUser.cards.splice(user.cards.indexOf(otherCard), 1)
+                otherUser.cards.push(card)
+                otherUser.handCards.splice(user.handCards.indexOf(card), 1)
+                break;
+            }
+            case 'kill_other': {
+                const otherCard = otherUser.cards.find(card => card.id === data.otherCardId)
+                if (!otherCard) {
+                    return {
+                        isValid: false,
+                        reason: `Card to kill of user ${otherUser.socket.id} was not found "${data.otherCardId}"`,
+                    }
+                }
+                otherUser.cards.splice(otherUser.cards.indexOf(otherCard), 1)
+                otherUser.cards.push(card)
                 user.handCards.splice(user.handCards.indexOf(card), 1)
                 break;
-            case 'kill_other':
-            case 'kill_own':
+            }
+            case 'kill_own': {
                 // TODO
+                const otherCard = user.cards.find(card => card.id === data.otherCardId)
+                if (!otherCard) {
+                    return {
+                        isValid: false,
+                        reason: `Card to kill was not found "${data.otherCardId}"`,
+                    }
+                }
+                user.cards.splice(user.cards.indexOf(otherCard), 1)
+                user.cards.push(card)
+                user.handCards.splice(user.handCards.indexOf(card), 1)
                 break
+            }
             case 'give':
                 otherUser.cards.push(card)
                 user.handCards.splice(user.handCards.indexOf(card), 1)

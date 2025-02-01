@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import NewCard from "@/components/cards/DeckCard.vue";
+import DeckCard from "@/components/cards/DeckCard.vue";
+import {provide} from "vue";
 
-const props = defineProps([
-    'cards',
-    'vertical',
-    'showBackFace'
-])
+const props = defineProps<{
+  cards: object,
+  showBackFace: boolean|null,
+}>()
+
 </script>
 
 <template>
 
   <div class="deck-container position-relative d-flex flex-column">
-    <NewCard v-for="[i, card] of cards.entries()" :card="card" :index="i" :showBackFace="showBackFace"/>
+    <DeckCard
+        v-for="[i, card] of cards.entries()"
+        :key="card.id"
+        :card="card"
+        :index="i"
+        :showBackFace="showBackFace"
+    />
   </div>
 
 </template>

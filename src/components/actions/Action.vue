@@ -2,7 +2,7 @@
 import {socket} from "@/socket.ts";
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
-import {onMounted, ref, watch} from "vue";
+import {inject, onMounted, ref, watch} from "vue";
 import Rule from "@/components/actions/rule.ts";
 
 const props = defineProps<{
@@ -16,11 +16,25 @@ const props = defineProps<{
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
 
+const killAction = inject('killAction')
+const otherUser = inject('otherUser', null)
+console.log(otherUser, props.action, killAction)
+
 const divRef = ref()
 const active = ref(true)
 const hovered = ref(false)
 
-gameStore.registerActionDiv(props.action, divRef, props.data, hovered, active)
+gameStore.registerActionDiv(
+    props.action,
+    divRef,
+    {
+      ...props.data,
+      killAction,
+      toUserId: otherUser?.socket?.id
+    },
+    hovered,
+    active
+)
 
 function onMouseEnter(e) {
   hovered.value = true
