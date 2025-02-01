@@ -21,8 +21,8 @@ export const useSocketStore = defineStore("socket", () => {
     function on(type, cb) {
         socket.on(type, cb);
     }
-    function off(type) {
-        socket.removeAllListeners(type);
+    function off(type, cb) {
+        socket.off(type, cb);
     }
 
     function bindEvents() {
@@ -37,10 +37,6 @@ export const useSocketStore = defineStore("socket", () => {
         socket.on("game:update", (data) => {
             // game.value = {}
             game.value = data
-        });
-
-        socket.on('client/validationResult', (data) => {
-
         });
     }
 

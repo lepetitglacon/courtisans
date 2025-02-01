@@ -1,4 +1,5 @@
 import HIGHER_ACTIONS from "../shared/higherActions.js";
+import STATE from "../shared/gameState.js";
 
 export default class ActionValidator {
 
@@ -20,6 +21,10 @@ export default class ActionValidator {
     isValidAction(socket) {
         if (socket.id !== this.game.userTurnId) {
             console.warn('not your turn', socket.id)
+            return false
+        }
+        if (this.game.state !== STATE.PLAYING) {
+            console.warn(`the game is not in playing state`)
             return false
         }
         return true

@@ -64,15 +64,16 @@ function onMouseDown(e) {
   cardContainerRef.value.style.zIndex = 1;
   chatStore.postMessage(`[debug] ${props.card.id} taken`)
 
-  socketStore.on('server/validationResult', e => {
-    console.log(e)
-    if (!e.valid) {
-
-    }
-    resetCard()
-  })
+  socketStore.on('server/validationResult', onValidationResult)
 
   dragging.value = true
+}
+function onValidationResult(e) {
+  console.log(e)
+  if (!e.valid) {
+
+  }
+  resetCard()
 }
 const onMouseMove = (event) => {
   updateRotation(event)
@@ -182,6 +183,8 @@ const onMouseUp = () => {
   gameStore.holdenCardAction = null
   gameStore.holdenCardData = null
   chatStore.postMessage(`[debug] ${props.card.id} dropped`)
+
+  socketStore.off('server/validationResult', onValidationResult)
 
   dragging.value = false
 };

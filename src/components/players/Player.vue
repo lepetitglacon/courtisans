@@ -49,6 +49,12 @@ const color = computed(() => {
                 class="player d-flex flex-column justify-content-center align-items-center">
               <p>{{ user.name }}</p>
               <p>{{ user.socket.id }}</p>
+              <div v-if="socketStore.game.score">
+                <h2>SCORE</h2>
+                <pre>{{ Object.values(socketStore.game.score.users[user.socket.id] ?? []).reduce((acc: Number, el: Number) => {
+                  return acc += el
+                }, 0)  }}</pre>
+              </div>
             </Action>
           </div>
           <div class="d-flex h-50 flex-wrap">
