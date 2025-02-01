@@ -18,7 +18,6 @@ const gameStore = useGameStore()
 
 const killAction = inject('killAction')
 const otherUser = inject('otherUser', null)
-console.log(otherUser, props.action, killAction)
 
 const divRef = ref()
 const active = ref(true)

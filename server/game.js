@@ -211,7 +211,7 @@ export default class Game {
         const user = this.userUtility.findUserFromSocket(socket)
         const validationResult = this.actionValidator.validate(data, user)
 
-        socket.emit('client/validationResult', {valid: validationResult.isValid})
+        socket.emit('server/validationResult', {valid: validationResult.isValid})
         if (!validationResult.isValid) {
             console.log(socket.id, data, validationResult.reason)
             return

@@ -63,6 +63,15 @@ function onMouseDown(e) {
   gameStore.holdenCard = props.card
   cardContainerRef.value.style.zIndex = 1;
   chatStore.postMessage(`[debug] ${props.card.id} taken`)
+
+  socketStore.on('server/validationResult', e => {
+    console.log(e)
+    if (!e.valid) {
+
+    }
+    resetCard()
+  })
+
   dragging.value = true
 }
 const onMouseMove = (event) => {
@@ -110,8 +119,6 @@ function snap(event) {
       const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
       const familyDeck = socketStore.game.familyCards[closestSnap.value.data.familyId][type]
       if (!familyDeck.includes(props.card)) {
-        console.log(familyDeck)
-        console.log(props.card)
         familyDeck.push(props.card)
         fakeCardsInDeck.value.push(familyDeck)
         hidden.value = true
@@ -144,14 +151,16 @@ function updateRotation(event) {
   if (!hovering.value) {
     return
   }
-  const rect = cardContainerRef.value.getBoundingClientRect();
-  const x = event.clientX - rect.left; // Mouse X relative to container
-  const y = event.clientY - rect.top; // Mouse Y relative to container
-  const centerX = rect.width / 2; // Center of container (X)
-  const centerY = rect.height / 2; // Center of container (Y)
-  const rotateX = ((y - centerY) / centerY) * -tilt.value; // Tilt based on Y-axis
-  const rotateY = ((x - centerX) / centerX) * tilt.value; // Tilt based on X-axis
-  cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  if (cardContainerRef.value) {
+    const rect = cardContainerRef.value.getBoundingClientRect();
+    const x = event.clientX - rect.left; // Mouse X relative to container
+    const y = event.clientY - rect.top; // Mouse Y relative to container
+    const centerX = rect.width / 2; // Center of container (X)
+    const centerY = rect.height / 2; // Center of container (Y)
+    const rotateX = ((y - centerY) / centerY) * -tilt.value; // Tilt based on Y-axis
+    const rotateY = ((x - centerX) / centerX) * tilt.value; // Tilt based on X-axis
+    cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  }
 }
 const onMouseUp = () => {
   if (!dragging.value) { return }
@@ -165,19 +174,7 @@ const onMouseUp = () => {
     })
     cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
   } else {
-    cardRef.value.style.transition = "transform 5s ease";
-    cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
-
-    cardContainerRef.value.style.left = `${initialBBox.left}px`;
-    cardContainerRef.value.style.top = `${initialBBox.top}px`;
-
-    hidden.value = false
-
-    setTimeout(() => {
-      if (cardRef.value) {
-        // cardRef.value.style.transition = "none"; // Remove transition after reset
-      }
-    }, 300);
+    resetCard()
   }
 
   cardContainerRef.value.style.zIndex = 0;
@@ -188,6 +185,27 @@ const onMouseUp = () => {
 
   dragging.value = false
 };
+
+function resetCard() {
+  if (cardRef.value && cardContainerRef.value) {
+    cardRef.value.style.transition = "transform 5s ease";
+    cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+
+    cardContainerRef.value.style.left = `${initialBBox.left}px`;
+    cardContainerRef.value.style.top = `${initialBBox.top}px`;
+
+    for (const fakeCardInDeck of fakeCardsInDeck.value) {
+      fakeCardInDeck.remove(props.card)
+    }
+    hidden.value = false
+
+    setTimeout(() => {
+      if (cardRef.value) {
+        // cardRef.value.style.transition = "none"; // Remove transition after reset
+      }
+    }, 300);
+  }
+}
 
 function onMouseEnter(e) {
   hovering.value = true

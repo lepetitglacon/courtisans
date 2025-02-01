@@ -19,7 +19,10 @@ export const useSocketStore = defineStore("socket", () => {
     })
 
     function on(type, cb) {
-        socket.on('type', cb);
+        socket.on(type, cb);
+    }
+    function off(type) {
+        socket.removeAllListeners(type);
     }
 
     function bindEvents() {
@@ -68,6 +71,8 @@ export const useSocketStore = defineStore("socket", () => {
         getPlayableFamilies,
         emit,
         bindEvents,
+        on,
+        off,
         connect
     }
 });

@@ -6,6 +6,7 @@ export default class ActionValidator {
         this.game = game
 
         this.HIGHER_ACTIONS = HIGHER_ACTIONS
+        this.lastKillHigherAction = null
 
         this.actionsToPlay = new Set(Object.values(this.HIGHER_ACTIONS))
 
@@ -13,6 +14,7 @@ export default class ActionValidator {
 
     initForCurrentUser() {
         this.actionsToPlay = new Set(Object.values(this.HIGHER_ACTIONS))
+        this.lastKillHigherAction = null
     }
 
     isValidAction(socket) {
@@ -79,6 +81,15 @@ export default class ActionValidator {
         }
         console.log(data, higherAction)
 
+        if (this.lastKillHigherAction) {
+            if (this.lastKillHigherAction !== higherAction || data.action === 'kill_crown') {
+                return {
+                    isValid: false,
+                    reason: `You killed at crown "${higherAction}" you need to place your card`,
+                }
+            }
+        }
+
         switch (data.action) {
             case 'enlight':
             case 'shadow':
@@ -100,18 +111,37 @@ export default class ActionValidator {
                 }
 
                 user.handCards.splice(user.handCards.indexOf(card), 1)
+                this.lastKillHigherAction = null
                 break;
             case 'kill_crown': {
-                const otherCard = this.game.familyCards[data.familyId].find(card => card.id === data.otherCardId)
-                if (!otherCard) {
+
+                const family = this.game.familyCards[data.familyId]
+                let type, otherCard
+
+                otherCard = family.enlighten.find(card => card.id === data.otherCardId)
+                if (otherCard) {
+                    type = 'enlighten'
+                } else {
+                    otherCard = family.shadowed.find(card => card.id === data.otherCardId)
+                    if (otherCard) {
+                        type = 'shadowed'
+                    }
+                }
+
+                if (!otherCard || !type) {
                     return {
                         isValid: false,
                         reason: `Card to kill of family ${data.familyId} was not found "${data.otherCardId}"`,
                     }
                 }
-                otherUser.cards.splice(user.cards.indexOf(otherCard), 1)
-                otherUser.cards.push(card)
-                otherUser.handCards.splice(user.handCards.indexOf(card), 1)
+                if (otherCard.power === 'shield') {
+                    return {
+                        isValid: false,
+                        reason: `Can't kill a shield "${data.otherCardId}"`,
+                    }
+                }
+                this.lastKillHigherAction = higherAction
+                this.game.familyCards[data.familyId][type].splice(this.game.familyCards[data.familyId][type].indexOf(otherCard), 1)
                 break;
             }
             case 'kill_other': {
@@ -120,6 +150,12 @@ export default class ActionValidator {
                     return {
                         isValid: false,
                         reason: `Card to kill of user ${otherUser.socket.id} was not found "${data.otherCardId}"`,
+                    }
+                }
+                if (otherCard.power === 'shield') {
+                    return {
+                        isValid: false,
+                        reason: `Can't kill a shield "${data.otherCardId}"`,
                     }
                 }
                 otherUser.cards.splice(otherUser.cards.indexOf(otherCard), 1)
@@ -134,6 +170,12 @@ export default class ActionValidator {
                     return {
                         isValid: false,
                         reason: `Card to kill was not found "${data.otherCardId}"`,
+                    }
+                }
+                if (otherCard.power === 'shield') {
+                    return {
+                        isValid: false,
+                        reason: `Can't kill a shield "${data.otherCardId}"`,
                     }
                 }
                 user.cards.splice(user.cards.indexOf(otherCard), 1)
