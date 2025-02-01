@@ -67,7 +67,17 @@ const color = computed(() => {
                 }"
             >
 
-              <Deck :cards="user.cards.filter(card => card.family.id === family.id)" :show-back-face="false"/>
+              <Deck
+                  v-if="family.id !== 'assassin'"
+                  :cards="user.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')"
+                  :show-back-face="false"
+              />
+
+              <Deck
+                  v-if="family.id === 'assassin'"
+                  :cards="user.cards.filter(card => card.power === 'hidden')"
+                  :show-back-face="true"
+              />
 
             </div>
           </div>
