@@ -10,7 +10,7 @@ const socketStore = useSocketStore()
 
 <template>
 
-  <div id="ui" class="position-absolute top-0">
+  <div id="ui" class="position-absolute">
     <AdminPanel/>
 
     <div v-if="socketStore.game?.score?.users">

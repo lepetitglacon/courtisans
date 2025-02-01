@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export const useGameStore = defineStore('game', () => {
 
   const debug = ref(false)
+  const playing = ref(false)
 
   const holdenCard = ref(null)
   const holdenCardAction = ref(null)
@@ -43,6 +44,7 @@ export const useGameStore = defineStore('game', () => {
 
   return {
     debug,
+    playing,
     holdenCard,
     holdenCardAction,
     holdenCardActionData,
