@@ -22,5 +22,8 @@ const socketStore = useSocketStore()
 </template>
 
 <style scoped>
-
+#ui {
+  top: 0;
+  right: 0;
+}
 </style>

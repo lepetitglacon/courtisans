@@ -1,17 +1,18 @@
-import User from "./user.js";
-import Card from "./cards/card.js";
-import POWERS from "./data/powers.js";
-import FAMILIES from "./data/families.js";
-import MISSIONS from "./data/missions.js";
-import STATE from "./shared/gameState.js";
-import {shuffleArray} from "./utils.js";
-import ActionValidator from "./logic/actionValidator.js";
-import MissionCard from "./cards/missionCard.js";
-import fillCardsTest from "./tests/fillCardsTest.js";
-import EventDispatcher from "./EventDispatcher.js";
+import User from "../user.js";
+import Card from "../cards/card.js";
+import { Game as DBGame } from "../db/schema/game";
+import POWERS from "../data/powers.js";
+import FAMILIES from "../data/families.js";
+import MISSIONS from "../data/missions.js";
+import STATE from "../shared/gameState.js";
+import {shuffleArray} from "../utils.js";
+import ActionValidator from "../logic/actionValidator.js";
+import MissionCard from "../cards/missionCard.js";
+import fillCardsTest from "../tests/fillCardsTest.js";
+import EventDispatcher from "../EventDispatcher.js";
 
 import { fakerFR as faker } from '@faker-js/faker';
-import UserUtility from "./utility/UserUtility.js";
+import UserUtility from "../utility/UserUtility.js";
 
 export default class Game {
 
@@ -20,8 +21,11 @@ export default class Game {
         this.HAND_SIZE = 3
         this.MISSION_HAND_SIZE = 2
 
+        this.model = DBGame
+
         this.io = io;
-        this.roomId = '0000'
+        this.roomId = null
+        this.title = ''
 
         this.eventDispatcher = new EventDispatcher()
         this.actionValidator = new ActionValidator(this);
@@ -43,16 +47,12 @@ export default class Game {
         this.missionCards = []
         this.familyCards = {}
 
-
-        this.init()
-        this.bind()
-
         this.tests = {}
         this.tests.fillCards = new fillCardsTest(this)
 
     }
 
-    init() {
+    async init() {
         this.started = false
         this.changeState(STATE.WAITING_FOR_PLAYERS)
 
@@ -68,9 +68,18 @@ export default class Game {
             }
         }
 
+        if (this.roomId !== null) {
+            this.modelInstance = await this.model.findOne({_id: this.roomId})
+            this.roomId = this.modelInstance.id
+        } else {
+            this.modelInstance = new this.model({title: this.title, state: this.state})
+            await this.modelInstance.save()
+            this.roomId = this.modelInstance.id
+        }
+
         this.initCards()
         this.update()
-        console.log('game init')
+        console.log(`[${this.roomId}] init`)
     }
 
     initCards() {
@@ -110,7 +119,7 @@ export default class Game {
         shuffleArray(this.missionCards)
     }
 
-    bind() {
+    async bind() {
         this.io.on('connection', (socket) => {
             this.handleConnect(socket)
         });
@@ -145,7 +154,13 @@ export default class Game {
     }
 
     handleConnect(socket) {
+        const socketRoomId = socket.handshake.query.roomId
+        if (socketRoomId !== this.roomId) {
+            return
+        }
+
         const user = new User(faker.person.fullName(), socket);
+        socket.join(this.roomId)
 
         socket.on('disconnect', () => {
             this.eventDispatcher.emit('game:user:disconnect:disconnected', user, socket)
@@ -338,7 +353,7 @@ export default class Game {
      * Update state for every player
      */
     update() {
-        this.io.emit('game:update', this.toJson())
+        this.io.to(this.roomId).emit('game:update', this.toJson())
 
         if (this.getRemainingCardsToPlay() <= 0) {
             this.changeState(STATE.COUNTING)

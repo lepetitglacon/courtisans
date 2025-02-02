@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {socket} from "@/socket.ts";
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
 import {inject, onMounted, ref, watch} from "vue";
@@ -12,6 +11,8 @@ const props = defineProps<{
     familyId: string|null
   }|null,
 }>()
+
+const socket = inject('socket')
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()

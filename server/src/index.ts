@@ -1,30 +1,44 @@
 import 'dotenv/config'
 
-import express from 'express';
+import express, {Request, Response} from 'express';
 import cors from 'cors'
 import { createServer } from 'node:http';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import { Server } from 'socket.io';
-import Game from "./game.js";
 import { Game as DBGame} from "./db/schema/game.js";
-
 import mongoose from "mongoose";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import Game from "./game/game";
+import GameFactory from "./game/GameFactory";
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const server = createServer(app);
 const io = new Server(server);
 
+getDB()
+
+const gameFactory = new GameFactory(io)
+gameFactory.initFromDB()
+
 server.listen(3000, () => {
     console.log('server running at http://localhost:3000');
 });
-
-app.get('/games', async (req, res) => {
+app.get('/games',  async (req: Request, res: Response): Promise<any> => {
     return res.json(await DBGame.find({}))
+})
+app.post('/create',  async (req: Request, res: Response): Promise<any> => {
+    try {
+        const game = await gameFactory.create({
+            title: req.body.title
+        })
+
+        return res.json({
+            roomId: game.roomId
+        })
+    } catch (e) {
+
+    }
 })
 
 async function getDB() {
@@ -32,9 +46,4 @@ async function getDB() {
         dbName: 'Courtisans'
     });
     console.log('DB connected')
-    const game = new DBGame({title: 'TEST Game'})
-    await game.save()
 }
-getDB()
-
-const game = new Game(io);

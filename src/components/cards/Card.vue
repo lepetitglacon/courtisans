@@ -7,7 +7,6 @@ import {inject, onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
 import Action from "@/components/actions/Action.vue";
-import {socket} from "@/socket.ts";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
@@ -28,6 +27,7 @@ const props = defineProps([
 ])
 
 const deck = inject('deck')
+const socket = inject('socket')
 
 const cardContainerRef = ref<HTMLDivElement>()
 const cardRef = ref<HTMLDivElement>()

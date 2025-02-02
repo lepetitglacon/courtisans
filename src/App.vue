@@ -2,29 +2,7 @@
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 
-import {useSocketStore} from "@/stores/socket.ts";
-import {useSoundStore} from "@/stores/sound.ts";
-import {useGameStore} from "@/stores/game.ts";
-import {useRouter, RouterLink, useRoute} from "vue-router";
 import Navbar from "@/components/Navbar.vue";
-
-const router = useRouter()
-const route = useRoute()
-const soundStore = useSoundStore()
-const gameStore = useGameStore()
-const socketStore = useSocketStore()
-socketStore.bindEvents()
-
-function handleStartPlaying() {
-  gameStore.playing = true
-  const sound = soundStore.sounds.get('ambiance')
-  sound.addEventListener('ended', () => {
-    sound.currentTime = 0
-    sound.play()
-  })
-  const res = sound.play()
-}
-
 </script>
 
 <template>

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import {useSocketStore} from "@/stores/socket.ts";
 import Player from "@/components/players/Player.vue";
-import {socket} from "@/socket.ts";
-import {provide} from "vue";
+import {inject, provide} from "vue";
 
 const socketStore = useSocketStore()
 
 provide('killAction', 'kill_other')
+const socket = inject('socket')
 </script>
 
 <template>
 	<div class="players-container w-100 h-100 d-flex justify-content-evenly">
-    <template v-if="socketStore.game.users.length > 1"
+    <template v-if="socketStore.game?.users?.length > 1"
               v-for="user of socketStore.game.users ?? []"
     >
 		  <Player

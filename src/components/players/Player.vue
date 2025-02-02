@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
-import {computed, onMounted, provide, ref} from "vue";
-import {socket} from "@/socket.ts";
+import {computed, inject, onMounted, provide, ref} from "vue";
 import Deck from "@/components/cards/Deck.vue";
 import Action from "@/components/actions/Action.vue";
 
@@ -11,6 +10,7 @@ const props = defineProps<{
 }>()
 
 provide('otherUser', props.user)
+const socket = inject('socket')
 
 const playerContainerRef = ref<HTMLDivElement|null>(null)
 const playerRef = ref<HTMLDivElement|null>(null)
