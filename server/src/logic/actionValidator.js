@@ -8,6 +8,7 @@ export default class ActionValidator {
 
         this.HIGHER_ACTIONS = HIGHER_ACTIONS
         this.lastKillHigherAction = null
+        this.lastKillCardId = null
 
         this.actionsToPlay = new Set(Object.values(this.HIGHER_ACTIONS))
 
@@ -16,6 +17,7 @@ export default class ActionValidator {
     initForCurrentUser() {
         this.actionsToPlay = new Set(Object.values(this.HIGHER_ACTIONS))
         this.lastKillHigherAction = null
+        this.lastKillCardId = null
     }
 
     isValidAction(socket) {
@@ -87,13 +89,25 @@ export default class ActionValidator {
         console.log(data, higherAction)
 
         if (this.lastKillHigherAction) {
-            if (this.lastKillHigherAction !== higherAction || data.action === 'kill_crown') {
+            if (
+                this.lastKillHigherAction !== higherAction
+                || data.action === 'kill_crown'
+            ) {
                 return {
                     isValid: false,
                     reason: `You killed at crown "${higherAction}" you need to place your card`,
                 }
             }
+
+            if (card.id !== this.lastKillCardId) {
+                return {
+                    isValid: false,
+                    reason: `You killed at crown "${higherAction}" you need to place your card ${this.lastKillCardId}`,
+                }
+            }
         }
+
+
 
         switch (data.action) {
             case 'enlight':
@@ -117,19 +131,26 @@ export default class ActionValidator {
 
                 user.handCards.splice(user.handCards.indexOf(card), 1)
                 this.lastKillHigherAction = null
+                this.lastKillCardId = null
                 break;
             case 'kill_crown': {
+                const familiesToTest = [data.familyId, 'assassin']
+                let type, otherCard, familyId
 
-                const family = this.game.familyCards[data.familyId]
-                let type, otherCard
-
-                otherCard = family.enlighten.find(card => card.id === data.otherCardId)
-                if (otherCard) {
-                    type = 'enlighten'
-                } else {
-                    otherCard = family.shadowed.find(card => card.id === data.otherCardId)
+                for (const familyIdToTest of familiesToTest) {
+                    let family = this.game.familyCards[familyIdToTest]
+                    otherCard = family.enlighten.find(card => card.id === data.otherCardId)
                     if (otherCard) {
-                        type = 'shadowed'
+                        type = 'enlighten'
+                        familyId = familyIdToTest
+                        break
+                    } else {
+                        otherCard = family.shadowed.find(card => card.id === data.otherCardId)
+                        if (otherCard) {
+                            type = 'shadowed'
+                            familyId = familyIdToTest
+                            break
+                        }
                     }
                 }
 
@@ -146,7 +167,8 @@ export default class ActionValidator {
                     }
                 }
                 this.lastKillHigherAction = higherAction
-                this.game.familyCards[data.familyId][type].splice(this.game.familyCards[data.familyId][type].indexOf(otherCard), 1)
+                this.lastKillCardId = card.id
+                this.game.familyCards[familyId][type].splice(this.game.familyCards[familyId][type].indexOf(otherCard), 1)
                 break;
             }
             case 'kill_other': {
