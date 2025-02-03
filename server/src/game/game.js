@@ -146,7 +146,12 @@ export default class Game {
         this.eventDispatcher.on('client/play', (data, socket) => {
             this.playAction(data, socket)
         })
-        this.eventDispatcher.on('changeState', state => {
+        this.eventDispatcher.on('changeState', async (state) => {
+            if (this.modelInstance) {
+                this.modelInstance.state = state
+                await this.modelInstance.save()
+            }
+            console.log(`[${this.roomId}] saved`)
             if (state === STATE.COUNTING) {
                 this.countCardForEndgame()
             }
@@ -198,6 +203,10 @@ export default class Game {
         socket.on('client/admin/restart', (data) => {
             console.log(socket.id, 'restarting the game')
             this.restart()
+        })
+        socket.on('client/admin/delete', (data) => {
+            console.log(socket.id, 'deleting the game')
+            this.delete()
         })
         socket.on('client/admin/test', (data) => {
             console.log('run tests')
@@ -376,5 +385,10 @@ export default class Game {
         }
         state.score = this.score
         return state
+    }
+
+    delete() {
+        this.modelInstance.remove()
+        this.state = STATE.ENDED
     }
 }
