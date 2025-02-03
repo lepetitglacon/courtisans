@@ -4,5 +4,6 @@ const STATE = {
     DRAWING: 'DRAWING',
     PLAYING: 'PLAYING',
     COUNTING: 'COUNTING',
+    ENDED: 'ENDED',
 }
 export default STATE

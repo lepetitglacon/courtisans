@@ -46,6 +46,7 @@ async function createGame(e) {
             v-for="game of games"
         >
           <td>{{ game.title }}</td>
+          <td>{{ game.state }}</td>
           <td><RouterLink :to="`/games/${game._id}`" class="btn btn-success">Join</RouterLink></td>
         </tr>
         <tr v-else>No games for now, you can create one</tr>
