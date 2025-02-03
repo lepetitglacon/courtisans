@@ -11,10 +11,10 @@ export default class GameFactory {
         this.games = new Map<String, Game>()
     }
 
-    async create(options) {
+    async create(options: any) {
         const game = new Game(this.io)
-        game.title = options.title ?? 'No title'
-        game.roomId = options.roomId ?? null
+        game.title = options?.title ?? 'No title'
+        game.roomId = options?.roomId ?? null
         await game.bind()
         await game.init()
         this.games.set(game.roomId, game)
@@ -25,14 +25,14 @@ export default class GameFactory {
     async initFromDB() {
         const gamesToLoad = await DBGame.find({})
         console.log(`[DB] games to init {${gamesToLoad.length}}`)
-        await new Promise(async (res, rej) => {
+        await new Promise(async (res, rej): Promise<any> => {
             for (const gameFromDB of gamesToLoad) {
                 await this.create({
                     title: gameFromDB.title,
                     roomId: gameFromDB._id
                 })
             }
-            res()
+            return res(true)
         })
 
         console.log(`[DB] all games are init`)
