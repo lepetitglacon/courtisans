@@ -47,7 +47,7 @@ gameStore.useAnimation(() => {
 
 function getStyle() {
   return {
-    top: 10 * props.index + '%'
+    top: 20 * props.index + 'px'
   }
 }
 
