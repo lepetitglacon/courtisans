@@ -17,6 +17,7 @@ const server = createServer(app);
 const io = new Server(server);
 
 getDB()
+deleteEndedGames()
 
 const gameFactory = new GameFactory(io)
 gameFactory.initFromDB()
@@ -46,4 +47,17 @@ async function getDB() {
         dbName: 'Courtisans'
     });
     console.log('DB connected')
+}
+
+function deleteEndedGames() {
+    console.log('[DB] deleteEndedGames')
+    setInterval(async () => {
+        const games = await DBGame.find({})
+        for (const game of games) {
+            if (!game.crdate || game.crdate.getDate() + 50000 < Date.now()) {
+                await DBGame.deleteOne({_id: game.id})
+                console.log(`[DB] ${game.id} deleted by time`)
+            }
+        }
+    }, 50000)
 }

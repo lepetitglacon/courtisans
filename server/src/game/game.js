@@ -73,6 +73,7 @@ export default class Game {
             this.roomId = this.modelInstance.id
         } else {
             this.modelInstance = new this.model({title: this.title, state: this.state})
+            this.modelInstance.crdate = new Date()
             await this.modelInstance.save()
             this.roomId = this.modelInstance.id
         }

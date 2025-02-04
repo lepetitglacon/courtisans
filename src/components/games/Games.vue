@@ -47,6 +47,7 @@ async function createGame(e) {
         >
           <td>{{ game.title }}</td>
           <td>{{ game.state }}</td>
+          <td>{{ game.crdate.format() }}</td>
           <td><RouterLink :to="`/games/${game._id}`" class="btn btn-success">Join</RouterLink></td>
         </tr>
         <tr v-else>No games for now, you can create one</tr>

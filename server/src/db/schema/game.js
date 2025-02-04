@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const gameSchema = new mongoose.Schema({
     title: String,
-    state: String
+    state: String,
+    crdate: Date
 }, {
     collection: 'games'
 });
