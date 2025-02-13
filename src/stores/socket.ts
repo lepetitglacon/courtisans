@@ -29,6 +29,10 @@ export const useSocketStore = defineStore("socket", () => {
         return user?.length > 0 ? user[0] : null
     })
 
+    const otherPlayers = computed(() => {
+        return game.value?.users?.filter(user => user.socket.id !== currentPlayer.value?.socket?.id)
+    })
+
     const isYourTurn = computed(() => {
         return socket.value.id === game.value?.userTurnId
     })
@@ -79,6 +83,7 @@ export const useSocketStore = defineStore("socket", () => {
         isConnected,
         game,
         currentPlayer,
+        otherPlayers,
         isYourTurn,
         getPlayableFamilies,
         emit,

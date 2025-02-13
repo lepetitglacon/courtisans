@@ -47,15 +47,11 @@ onUnmounted(async () => {
 
 		<!-- Left Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
-
-			<Player :user="socketStore.game.users[0]"></Player>
-
-
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-
+			  <Player v-if="socketStore?.otherPlayers[0]" :user="socketStore.otherPlayers[0]"/>
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-
+        <Player v-if="socketStore?.otherPlayers[1]" :user="socketStore.otherPlayers[1]"/>
 			</div>
 		</div>
 
@@ -67,15 +63,16 @@ onUnmounted(async () => {
 		<!-- Right Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-
+        <Player v-if="socketStore?.otherPlayers[2]" :user="socketStore.otherPlayers[2]"/>
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-
+        <Player v-if="socketStore?.otherPlayers[3]" :user="socketStore.otherPlayers[3]"/>
 			</div>
 		</div>
 
+    <OwnPlayer/>
 
-	<!--    <UI/>-->
+	    <UI/>
 	</div>
 	<div
 		v-else
@@ -97,7 +94,7 @@ onUnmounted(async () => {
 	background-color: #2c3e50;
 	height: 25vh;
 	width: 100%;
-	position: fixed;
+	position: absolute;
 	bottom: 0;
 }
 #image-bg {

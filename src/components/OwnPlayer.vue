@@ -8,6 +8,7 @@
   import Player from "@/components/players/Player.vue";
   import NewCard from "@/components/cards/DeckCard.vue";
   import {provide} from "vue";
+  import useColor from "@/composables/useColor.ts";
 
   const socketStore = useSocketStore()
   const gameStore = useGameStore()
@@ -17,97 +18,77 @@
 
 <template>
 
-  <div class="h-100 w-100 d-flex">
+  <div class="ownplayer d-flex justify-content-center position-absolute"
 
-    <div class="side d-flex">
-      <Chat/>
-      <div>
-        <pre>{{ gameStore.holdenCard }}</pre>
-        <pre>{{ gameStore.holdenCardAction }}</pre>
+  >
+
+    <div class="ownplayer-inner d-flex justify-content-center">
+      <div
+          v-for="i in 3"
+          class="card-container"
+          :style="{
+            transform: `rotateZ(${i === 1 ? -.05 : i === 2 ? 0 : .05 }turn) translateY(${i === 1 || i === 3 ? 50 : 0}px)`
+          }"
+      >
+        <Card
+            v-if="socketStore.currentPlayer?.handCards[i - 1]"
+            :card="socketStore.currentPlayer?.handCards[i - 1]"
+            movable="true"
+        />
       </div>
     </div>
-    <div class="player-deck bg-dark">
-      <Player class="h-100" v-if="socketStore.currentPlayer" :user="socketStore.currentPlayer" />
-    </div>
-    <div class="side">
-      <p>Cartes</p>
 
-      <div class="w-100 d-flex ">
-        <div class="col"
-             v-for="[i, card] of socketStore.currentPlayer?.handCards.entries() ?? []"
-        >
-          <Card
-              :key="card.id"
-              class="m-2 col"
+<!--    <div class="side d-flex">-->
+<!--      <Chat/>-->
+<!--      <div>-->
+<!--        <pre>{{ gameStore.holdenCard }}</pre>-->
+<!--        <pre>{{ gameStore.holdenCardAction }}</pre>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="player-deck bg-dark">-->
+<!--      <Player class="h-100" v-if="socketStore.currentPlayer" :user="socketStore.currentPlayer" />-->
+<!--    </div>-->
+<!--    <div class="side">-->
+<!--      <p>Cartes</p>-->
 
-              :card="card"
-              :index="i"
-              :movable="true"
-              is-player-deck="true"
-          />
+<!--      <div class="w-100 d-flex ">-->
+<!--        <div class="col"-->
+<!--             v-for="[i, card] of socketStore.currentPlayer?.handCards.entries() ?? []"-->
+<!--        >-->
+<!--          <Card-->
+<!--              :key="card.id"-->
+<!--              class="m-2 col"-->
 
-        </div>
+<!--              :card="card"-->
+<!--              :index="i"-->
+<!--              :movable="true"-->
+<!--              is-player-deck="true"-->
+<!--          />-->
 
-      </div>
+<!--        </div>-->
 
-      <div>
-        <p v-if="socketStore?.isYourTurn">Your turn {{ socketStore?.game.userActionsToPlay }}</p>
-      </div>
+<!--      </div>-->
 
-      <pre></pre>
-    </div>
+<!--      <div>-->
+<!--        <p v-if="socketStore?.isYourTurn">Your turn {{ socketStore?.game.userActionsToPlay }}</p>-->
+<!--      </div>-->
+
+<!--      <pre></pre>-->
+<!--    </div>-->
 
   </div>
-<!--  <div class="own-player-container">-->
-
-<!--    <div class="floating-left-bottom">-->
-<!--      <pre>{{gameStore.holdenCard}}</pre>-->
-<!--      <pre>{{gameStore.holdenCardAction}}</pre>-->
-<!--    </div>-->
-
-<!--    <Chat/>-->
-
-<!--    <div class="own-player">-->
-<!--      <Action action="keep">-->
-<!--      <div class="families scaled">-->
-<!--        <div-->
-<!--            class="family"-->
-<!--            v-for="family of socketStore?.game?.infos?.FAMILIES"-->
-<!--            :style="{backgroundColor: family.color}"-->
-<!--        >-->
-<!--          <Deck v-if="family.id !== 'assassin'" :cards="socketStore?.currentPlayer?.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')"/>-->
-<!--          <Deck v-else :cards="socketStore?.currentPlayer?.cards.filter(card => card.power === 'hidden')"/>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      </Action>-->
-
-<!--    </div>-->
-
-<!--    <div class="deck">-->
-<!--      <div class="row">-->
-<!--        <p class="isYourTurn" v-if="socketStore.isYourTurn">À vous de jouer !</p>-->
-<!--        <div class="actionsToPlay d-flex mb-5">-->
-<!--          <div class="action" v-if="socketStore.game.userActionsToPlay" v-for="action of socketStore.game.userActionsToPlay">{{action}}</div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="row">-->
-<!--        <div v-for="card in socketStore?.currentPlayer?.handCards ?? []" :key="card.id"-->
-<!--             class="col d-flex justify-content-center">-->
-<!--          <Card :card="card" :movable="true" :is-player-deck="true"/>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
 
 
 </template>
 
 <style scoped>
-.player-deck {
-  width: 50vw;
+.ownplayer {
+  bottom: 0;
+  width: 100vw;
+  height: 200px;
+  z-index: 5;
 }
-.side {
-  width: 25vw;
+.ownplayer-inner {
+  min-width: 50vw;
 }
 </style>

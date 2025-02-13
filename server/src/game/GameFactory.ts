@@ -29,7 +29,7 @@ export default class GameFactory {
             for (const gameFromDB of gamesToLoad) {
                 await this.create({
                     title: gameFromDB.title,
-                    roomId: gameFromDB._id
+                    roomId: gameFromDB.id
                 })
             }
             return res(true)

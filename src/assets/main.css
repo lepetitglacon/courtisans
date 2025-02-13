@@ -15,4 +15,8 @@
   background-color: #EFE9CC;
 
   font-family: medieval, "Roboto Mono", monospace;
+
+}
+html {
+  overflow: hidden;
 }

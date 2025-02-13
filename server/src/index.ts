@@ -6,7 +6,6 @@ import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { Game as DBGame} from "./db/schema/game.js";
 import mongoose from "mongoose";
-import Game from "./game/game";
 import GameFactory from "./game/GameFactory";
 
 const app = express();
@@ -51,13 +50,13 @@ async function getDB() {
 
 function deleteEndedGames() {
     console.log('[DB] deleteEndedGames')
-    setInterval(async () => {
-        const games = await DBGame.find({})
-        for (const game of games) {
-            if (!game.crdate || game.crdate.getDate() + 50000 < Date.now()) {
-                await DBGame.deleteOne({_id: game.id})
-                console.log(`[DB] ${game.id} deleted by time`)
-            }
-        }
-    }, 50000)
+    // setInterval(async () => {
+    //     const games = await DBGame.find({})
+    //     for (const game of games) {
+    //         if (!game.crdate || game.crdate.getDate() + 50000 < Date.now()) {
+    //             await DBGame.deleteOne({_id: game.id})
+    //             console.log(`[DB] ${game.id} deleted by time`)
+    //         }
+    //     }
+    // }, 50000)
 }

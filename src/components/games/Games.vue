@@ -7,7 +7,7 @@ const router = useRouter();
 const games = ref([])
 
 onMounted(async () => {
-  const res = await fetch('http://localhost:3000/games')
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}:${import.meta.env.VITE_SERVER_PORT}/games`)
   const json = await res.json()
   console.log(json)
   games.value = json
@@ -16,7 +16,7 @@ onMounted(async () => {
 async function createGame(e) {
   e.preventDefault()
   const formData = new FormData(e.target)
-  const res = await fetch('http://localhost:3000/create', {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}:${import.meta.env.VITE_SERVER_PORT}/create`, {
     method: 'POST',
     body: JSON.stringify(Object.fromEntries(formData)),
     headers: {
@@ -47,7 +47,7 @@ async function createGame(e) {
         >
           <td>{{ game.title }}</td>
           <td>{{ game.state }}</td>
-          <td>{{ game.crdate.format() }}</td>
+          <td>{{ game.crdate }}</td>
           <td><RouterLink :to="`/games/${game._id}`" class="btn btn-success">Join</RouterLink></td>
         </tr>
         <tr v-else>No games for now, you can create one</tr>
