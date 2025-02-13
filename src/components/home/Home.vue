@@ -11,6 +11,7 @@ onMounted(async () => {
 
 <template>
   <h2>Courtisans</h2>
+	{{  }}
 </template>
 
 <style scoped>

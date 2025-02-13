@@ -8,9 +8,11 @@ import Plateau from "@/components/plateau/Plateau.vue";
 import {onMounted, onUnmounted, provide, ref} from "vue";
 import {io} from "socket.io-client";
 import {useSocketStore} from "@/stores/socket.ts";
-
+import useColor, {BLUE} from "@/composables/useColor.ts";
+import Player from "@/components/players/Player.vue";
+console.log(import.meta.env)
 const route = useRoute()
-const socket = io("http://localhost:3000", {
+const socket = io(`${import.meta.env.VITE_SERVER_URL}:${import.meta.env.VITE_SERVER_PORT}`, {
   autoConnect: false,
   query: {
     roomId: route.params.id
@@ -32,7 +34,6 @@ socket.on("disconnect", (reason, description) => {
 
 onMounted(() => {
   console.log(route)
-
 })
 
 onUnmounted(async () => {
@@ -42,36 +43,47 @@ onUnmounted(async () => {
 
 <template>
 
+	<div v-if="socketStore.game" class="d-flex flex-column flex-xl-row w-100 h-100" :style="{backgroundColor: useColor()}">
 
-	<div class="d-flex justify-content-evenly w-100 h-100">
+		<!-- Left Column (2 Rows) -->
+		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
 
-		<div id="left">
+			<Player :user="socketStore.game.users[0]"></Player>
+
+
+			<div class="h-100" :style="{backgroundColor: useColor()}">
+
+			</div>
+			<div class="h-100" :style="{backgroundColor: useColor()}">
+
+			</div>
+		</div>
+
+		<!-- Center Column -->
+		<div class="d-flex flex-column col-6" >
 
 		</div>
 
-		<div id="center">
+		<!-- Right Column (2 Rows) -->
+		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
+			<div class="h-100" :style="{backgroundColor: useColor()}">
 
+			</div>
+			<div class="h-100" :style="{backgroundColor: useColor()}">
+
+			</div>
 		</div>
 
-		<div id="right">
 
-		</div>
-
-
-<!--    <AppContainer>-->
-<!--      <Players/>-->
-<!--    </AppContainer>-->
-
-<!--    <AppContainer>-->
-<!--      <Plateau/>-->
-<!--    </AppContainer>-->
-
-<!--    <AppContainer>-->
-<!--      <OwnPlayer/>-->
-<!--    </AppContainer>-->
-
-<!--    <UI/>-->
-  </div>
+	<!--    <UI/>-->
+	</div>
+	<div
+		v-else
+		class="d-flex justify-content-center align-items-center h-100 position-relative game-loader"
+		:style="{backgroundColor: BLUE}"
+	>
+		<p class=" text-center">Chargement... ({{ socketStore.isConnected ? 'Connecté' : 'En attente de connexion' }})</p>
+	</div>
 
 	<div id="image-bg"></div>
 	<div id="clip-path"></div>
@@ -100,5 +112,8 @@ onUnmounted(async () => {
 	z-index: 0;
 	user-select: none;
 	pointer-events: none;
+}
+.game-loader {
+	z-index: 999;
 }
 </style>

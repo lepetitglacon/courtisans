@@ -9,7 +9,20 @@ export const useSocketStore = defineStore("socket", () => {
     const socket = ref<Socket|null>(null)
 
     const isConnected = ref(false)
-    const game = ref({})
+    const game = ref<{
+        state: String,
+        started: Boolean,
+        users: [],
+        cards: [],
+        familyCards: [],
+        userTurnId: String,
+        userActionsToPlay: [],
+        infos: {
+            FAMILIES: {},
+            POWERS: {}
+        },
+        score: Number
+    }|null>(null)
 
     const currentPlayer = computed(() => {
         const user = game.value?.users?.filter(user => user.socket.id === socket.value.id)
@@ -58,7 +71,7 @@ export const useSocketStore = defineStore("socket", () => {
     }
 
     function findUserBySocket(socketId) {
-        return game.users
+        // return game.value.users
     }
 
     return {
