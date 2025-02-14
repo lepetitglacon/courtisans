@@ -25,7 +25,7 @@
     <div class="ownplayer-inner d-flex justify-content-center">
       <div
           v-for="i in 3"
-          class="card-container"
+          class="ownplayer-card-container"
           :style="{
             transform: `rotateZ(${i === 1 ? -.05 : i === 2 ? 0 : .05 }turn) translateY(${i === 1 || i === 3 ? 50 : 0}px)`
           }"
@@ -90,5 +90,8 @@
 }
 .ownplayer-inner {
   min-width: 50vw;
+}
+.ownplayer-card-container {
+  min-width: 150px;
 }
 </style>

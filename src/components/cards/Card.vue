@@ -42,6 +42,12 @@ const fakeCardsInDeck = ref<Array<Array<object>>>([])
 let resetRotationTimeOut = null
 let initialBBox = null
 const rotation = ref(0);
+const transform = ref({
+  translateX: 0,
+  translateY: 0,
+  rotateX: 0,
+  rotateY: 0,
+});
 
 
 function contains(x, y, rect) {
@@ -59,6 +65,8 @@ function onMouseDown(e) {
   if (e.button !== 0) { return }
 
   initialBBox = cardContainerRef.value.getBoundingClientRect();
+  cardContainerRef.value.style.top = `0px`;
+  cardContainerRef.value.style.left = `0px`;
 
   gameStore.holdenCard = props.card
   cardContainerRef.value.style.zIndex = 1;
@@ -77,16 +85,24 @@ function onValidationResult(e) {
   socketStore.off('server/validationResult', onValidationResult)
 }
 const onMouseMove = (event) => {
-  updateRotation(event)
+  followUserMouseRotation(event)
   move(event)
   snap(event)
 };
 function move(event) {
   if (!dragging.value) { return }
 
-  const cardRect = cardContainerRef.value.getBoundingClientRect();
-  cardContainerRef.value.style.left = `${event.clientX - cardRect.width / 2}px`;
-  cardContainerRef.value.style.top = `${event.clientY - cardRect.height / 2}px`;
+  // const cardRect = cardContainerRef.value.getBoundingClientRect();
+  // cardContainerRef.value.style.top = `0px`;
+  // cardContainerRef.value.style.left = `0px`;
+  transform.value.translateX = event.clientX
+  transform.value.translateY = event.clientY
+  // cardContainerRef.value.style.transform = `translateX(${event.clientX - cardRect.width / 2}px) translateY(${event.clientY - cardRect.height / 2}px)`;
+  // const cardRect = cardContainerRef.value.getBoundingClientRect();
+  // cardContainerRef.value.style.left = `${event.clientX - cardRect.width / 2}px`;
+  // cardContainerRef.value.style.top = `${event.clientY - cardRect.height / 2}px`;
+  // console.log(cardContainerRef.value.style.left)
+  // console.log(cardContainerRef.value.style.top)
 }
 function snap(event) {
   if (!dragging.value) { return }
@@ -149,7 +165,7 @@ function snap(event) {
   }
   lastSnap.value = closestSnap.value
 }
-function updateRotation(event) {
+function followUserMouseRotation(event) {
   if (!hovering.value) {
     return
   }
@@ -161,7 +177,9 @@ function updateRotation(event) {
     const centerY = rect.height / 2; // Center of container (Y)
     const rotateX = ((y - centerY) / centerY) * -tilt.value; // Tilt based on Y-axis
     const rotateY = ((x - centerX) / centerX) * tilt.value; // Tilt based on X-axis
-    cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    // cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    transform.value.rotateX = rotateX
+    transform.value.rotateY = rotateY
   }
 }
 const onMouseUp = () => {
@@ -174,7 +192,9 @@ const onMouseUp = () => {
       userId: socket?.id,
       ...closestSnap.value?.data ?? {}
     })
-    cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
+    // cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
+    transform.value.rotateX = 0
+    transform.value.rotateY = 0
   } else {
     resetCard()
   }
@@ -191,10 +211,12 @@ const onMouseUp = () => {
 function resetCard() {
   if (cardRef.value && cardContainerRef.value) {
     cardRef.value.style.transition = "transform 5s ease";
-    cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+    // cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+    transform.value.rotateX = 0
+    transform.value.rotateY = 0
 
-    cardContainerRef.value.style.left = `${initialBBox.left}px`;
-    cardContainerRef.value.style.top = `${initialBBox.top}px`;
+    // cardContainerRef.value.style.left = `${initialBBox.left}px`;
+    // cardContainerRef.value.style.top = `${initialBBox.top}px`;
 
     for (const fakeCardInDeck of fakeCardsInDeck.value) {
       fakeCardInDeck.remove(props.card)
@@ -219,7 +241,9 @@ function onMouseEnter(e) {
 function onMouseLeave(e) {
   hovering.value = false
   // cardRef.value.style.transition = "transform 1s ease";
-  cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+  // cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+  transform.value.rotateX = 0
+  transform.value.rotateY = 0
   resetRotationTimeOut = setTimeout(() => {
     if (cardRef.value) {
       // cardRef.value.style.transition = "none"; // Remove transition after reset
@@ -227,14 +251,14 @@ function onMouseLeave(e) {
   }, 1000);
 }
 
-function updateRotationn() {
+function updateStaticRotation() {
   rotation.value = Math.sin(gameStore.animationFrames / 60 + (props?.index ?? 0) * 2)
 }
 gameStore.useAnimation(() => {
-  updateRotationn()
+  updateStaticRotation()
   if (cardContainerRef.value) {
-    cardContainerRef.value.style.transform = `rotate(${rotation.value}deg)`;
-
+    // console.log(transform.value)
+    // cardContainerRef.value.style.transform = `rotate(${transform.value.rotateX + rotation.value}deg ${transform.value.rotateY + rotation.value}deg) translate(${transform.value.translateX}px ${transform.value.translateY}px)`;
   }
 })
 
@@ -266,6 +290,7 @@ function isMovable() {
     ]"
     :style="{
       color: 'white',
+      transform: `rotateX(${transform.rotateX + rotation}deg) rotateY(${transform.rotateY + rotation}deg) translate(${transform.translateX}px, ${transform.translateY}px)`
     }"
     @click="onCardClick"
     @mousedown="onMouseDown"
@@ -279,6 +304,7 @@ function isMovable() {
         isMovable() && (hovering || dragging) && 'hovering',
       ]"
   >
+    {{ `rotateX(${transform.rotateX + rotation}deg) rotateY(${transform.rotateY + rotation}deg) translate(${transform.translateX}px, ${transform.translateY}px)` }}
     <Action v-if="!isMovable() && action" :action="action"></Action>
     <div class="">
       <div v-if="gameStore.debug" class="">
@@ -311,7 +337,6 @@ function isMovable() {
 
   pointer-events: none;
 
-  border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -345,7 +370,8 @@ function isMovable() {
   user-select: none;
 }
 .moving {
-  position: absolute;
+  /*position: absolute;*/
+  top: 0;
 }
 .hovering {
   box-shadow: 0px 0px 10px 10px rgba(239, 228, 2, 0.5);
