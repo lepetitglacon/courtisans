@@ -15,9 +15,21 @@ const socket = inject('socket')
 
 const playerContainerRef = ref<HTMLDivElement|null>(null)
 const playerRef = ref<HTMLDivElement|null>(null)
+const hovered = ref(false)
+const active = ref(true)
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
+
+gameStore.registerActionDiv(
+    'give',
+    playerContainerRef,
+    {
+      toUserId: props.user?.socket?.id
+    },
+    hovered,
+    active
+)
 
 const color = computed(() => {
   const families = Object.values(socketStore.game?.infos?.FAMILIES ?? {})
@@ -27,8 +39,6 @@ const color = computed(() => {
   }
   return '#582'
 })
-
-
 </script>
 
 <template>
@@ -36,14 +46,12 @@ const color = computed(() => {
       ref="playerContainerRef"
       class="d-flex h-100 w-100"
       :class="[
+          hovered && gameStore.holdenCard && 'hovered',
           !user.socket.connected && 'disconnected'
       ]"
     >
-
-      <pre>{{ user.cards }}</pre>
-
       <div class="cards">
-        <Deck v-for="cards of user.cards.filter(card => card.power !== 'hidden')" :cards="cards" :show-back-face="false"/>
+<!--        <Deck v-for="cards of user.cards.filter(card => card.power !== 'hidden')" :cards="cards" :show-back-face="false"/>-->
       </div>
 
       <div class="info position-relative">
@@ -51,7 +59,7 @@ const color = computed(() => {
           <p>{{user.name}}</p>
           <p>{{user.socket.id}}</p>
         </div>
-        <Deck v-for="cards of user.cards.filter(card => card.power === 'hidden')" :cards="cards" :show-back-face="false"/>
+<!--        <Deck v-for="cards of user.cards.filter(card => card.power === 'hidden')" :cards="cards" :show-back-face="false"/>-->
       </div>
 
 <!--	      <div ref="playerRef" class="player d-flex flex-wrap">-->

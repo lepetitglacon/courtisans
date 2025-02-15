@@ -28,6 +28,7 @@
     <div class="ownplayer-inner d-flex justify-content-center">
       <div
           v-for="i in 3"
+          :key="i"
           class="ownplayer-card-container"
           :style="{
 
@@ -35,6 +36,7 @@
       >
         <Card
             v-if="socketStore.currentPlayer?.handCards[i - 1]"
+            :key="socketStore.currentPlayer?.handCards[i - 1].id"
             :card="socketStore.currentPlayer?.handCards[i - 1]"
             :index="i - 1"
             movable="true"

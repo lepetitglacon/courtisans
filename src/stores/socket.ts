@@ -2,9 +2,11 @@ import { defineStore } from "pinia";
 import {computed, ref} from "vue";
 import {useChatStore} from "@/stores/chat.ts";
 import {Manager, Socket} from "socket.io-client";
+import {useGameStore} from "@/stores/game.ts";
 
 export const useSocketStore = defineStore("socket", () => {
     const chatStore = useChatStore()
+    const gameStore = useGameStore()
 
     const socket = ref<Socket|null>(null)
 
@@ -64,6 +66,16 @@ export const useSocketStore = defineStore("socket", () => {
         socket.value.emit(type, data);
     }
 
+    function playAction(additionalData: any = null) {
+        const data = {
+            action: gameStore.holdenCardAction,
+            cardId: gameStore.holdenCard?.id,
+            userId: socket?.id,
+            ...additionalData
+        }
+        socket.value.emit('client/play', data);
+    }
+
     function connect() {
         socket.value.connect();
     }
@@ -87,6 +99,7 @@ export const useSocketStore = defineStore("socket", () => {
         isYourTurn,
         getPlayableFamilies,
         emit,
+        playAction,
         bindEvents,
         on,
         off,

@@ -37,7 +37,7 @@ const cardCenterRef = ref<HTMLDivElement>()
 const dragging = ref(false)
 const hovering = ref(false)
 const hidden = ref(false)
-const closestSnap = ref(null)
+const closestSnap = ref<|null>(null)
 const lastSnap = ref(null)
 const tilt = ref(20)
 const fakeCardsInDeck = ref<Array<Array<object>>>([])
@@ -97,9 +97,10 @@ function move(event: MouseEvent) {
   if (!dragging.value) { return }
 
   const rect = absoluteContainerRef.value.getBoundingClientRect();
-  const cardRect = absoluteContainerRef.value.getBoundingClientRect();
   transform.value.translateX = event.clientX + (rect.left - rect.width / 2) + (props.index === 0 ? 150 : props.index === 2 ? -150 : 0)
   transform.value.translateY = event.clientY - (rect.top + rect.height / 2)
+
+  // cardContainerRef.value.style.transformOrigin = `${event.clientX}px ${event.clientY}px`
 }
 function snap(event) {
   if (!dragging.value) { return }
@@ -123,33 +124,38 @@ function snap(event) {
 
       closestSnap.value = actionObject;
       action = actionObject.action;
+    } else {
+      actionObject.hovered = false
     }
   }
 
   if (closestSnap.value) {
     gameStore.holdenCardAction = action
 
-    // ajouter les cartes aux fakeDeck
-    if (closestSnap.value.data?.familyId) {
-      const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
-      const familyDeck = socketStore.game.familyCards[closestSnap.value.data.familyId][type]
-      if (!familyDeck.includes(props.card)) {
-        familyDeck.push(props.card)
-        fakeCardsInDeck.value.push(familyDeck)
-        hidden.value = true
-      }
-    }
+    closestSnap.value.hovered = true
 
-    if (closestSnap.value !== lastSnap.value) {
-      for (const fakeCardInDeck of fakeCardsInDeck.value) {
-        fakeCardInDeck.remove(props.card)
-      }
-      hidden.value = false
-    }
 
-    const snapRect = closestSnap.value.ref.getBoundingClientRect();
-    cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
-    cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
+    // // ajouter les cartes aux fakeDeck
+    // if (closestSnap.value.data?.familyId) {
+    //   const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
+    //   const familyDeck = socketStore.game.familyCards[closestSnap.value.data.familyId][type]
+    //   if (!familyDeck.includes(props.card)) {
+    //     familyDeck.push(props.card)
+    //     fakeCardsInDeck.value.push(familyDeck)
+    //     hidden.value = true
+    //   }
+    // }
+    //
+    // if (closestSnap.value !== lastSnap.value) {
+    //   for (const fakeCardInDeck of fakeCardsInDeck.value) {
+    //     fakeCardInDeck.remove(props.card)
+    //   }
+    //   hidden.value = false
+    // }
+    //
+    // const snapRect = closestSnap.value.ref.getBoundingClientRect();
+    // cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
+    // cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
 
 
   } else {
@@ -257,8 +263,8 @@ function isMovable() {
 
 function onTransition(e: TransitionEvent) {
   if (e.type === 'transitionend') {
-    console.log(e)
-    e.target.style.transition = 'none'
+  console.log(e)
+    cardContainerRef.value.style.transition = 'none';
   }
 
 }
@@ -297,7 +303,6 @@ function onTransition(e: TransitionEvent) {
         isMovable() && (hovering || dragging) && 'hovering',
       ]"
   >
-    <Action v-if="!isMovable() && action" :action="action"></Action>
     <div class="">
       <div v-if="gameStore.debug" class="">
         <p class="card-title">{{ card.family.title }}</p>
@@ -320,7 +325,6 @@ function onTransition(e: TransitionEvent) {
   perspective: 1000px;
   width: 4.5cm;
   height: 8cm;
-
 }
 .card {
   position: absolute;

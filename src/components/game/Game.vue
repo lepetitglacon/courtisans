@@ -48,10 +48,10 @@ onUnmounted(async () => {
 		<!-- Left Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-			  <Player v-if="socketStore?.otherPlayers[0]" :user="socketStore.otherPlayers[0]"/>
+			  <Player v-if="socketStore?.otherPlayers[0]" :user="socketStore.otherPlayers[0]" :key="socketStore.otherPlayers[0].socket.id"/>
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player v-if="socketStore?.otherPlayers[1]" :user="socketStore.otherPlayers[1]"/>
+        <Player v-if="socketStore?.otherPlayers[1]" :user="socketStore.otherPlayers[1]" :key="socketStore.otherPlayers[1].socket.id"/>
 			</div>
 		</div>
 
@@ -63,10 +63,10 @@ onUnmounted(async () => {
 		<!-- Right Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player v-if="socketStore?.otherPlayers[2]" :user="socketStore.otherPlayers[2]"/>
+        <Player v-if="socketStore?.otherPlayers[2]" :user="socketStore.otherPlayers[2]" :key="socketStore.otherPlayers[2].socket.id"/>
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player v-if="socketStore?.otherPlayers[3]" :user="socketStore.otherPlayers[3]"/>
+        <Player v-if="socketStore?.otherPlayers[3]" :user="socketStore.otherPlayers[3]" :key="socketStore.otherPlayers[3].socket.id"/>
 			</div>
 		</div>
 
