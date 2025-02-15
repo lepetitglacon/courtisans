@@ -23,11 +23,13 @@ const props = defineProps([
     'size',
     'offset',
     'isPlayerDeck',
-    'showBackFace'
+    'showBackFace',
+    'index'
 ])
 
 const deck = inject('deck')
 const socket = inject('socket')
+const absoluteContainerRef = inject('absoluteContainerRef')
 
 const cardContainerRef = ref<HTMLDivElement>()
 const cardRef = ref<HTMLDivElement>()
@@ -47,8 +49,8 @@ const transform = ref({
   translateY: 0,
   rotateX: 0,
   rotateY: 0,
+  rotateZ: 0,
 });
-
 
 function contains(x, y, rect) {
   return rect.x <= x && x <= rect.x + rect.width &&
@@ -65,11 +67,9 @@ function onMouseDown(e) {
   if (e.button !== 0) { return }
 
   initialBBox = cardContainerRef.value.getBoundingClientRect();
-  cardContainerRef.value.style.top = `0px`;
-  cardContainerRef.value.style.left = `0px`;
 
   gameStore.holdenCard = props.card
-  cardContainerRef.value.style.zIndex = 1;
+  cardContainerRef.value.style.zIndex = 99;
   chatStore.postMessage(`[debug] ${props.card.id} taken`)
 
   socketStore.on('server/validationResult', onValidationResult)
@@ -89,20 +89,17 @@ const onMouseMove = (event) => {
   move(event)
   snap(event)
 };
-function move(event) {
+const lastMousePosition = {
+  x: 0,
+  y: 0
+}
+function move(event: MouseEvent) {
   if (!dragging.value) { return }
 
-  // const cardRect = cardContainerRef.value.getBoundingClientRect();
-  // cardContainerRef.value.style.top = `0px`;
-  // cardContainerRef.value.style.left = `0px`;
-  transform.value.translateX = event.clientX
-  transform.value.translateY = event.clientY
-  // cardContainerRef.value.style.transform = `translateX(${event.clientX - cardRect.width / 2}px) translateY(${event.clientY - cardRect.height / 2}px)`;
-  // const cardRect = cardContainerRef.value.getBoundingClientRect();
-  // cardContainerRef.value.style.left = `${event.clientX - cardRect.width / 2}px`;
-  // cardContainerRef.value.style.top = `${event.clientY - cardRect.height / 2}px`;
-  // console.log(cardContainerRef.value.style.left)
-  // console.log(cardContainerRef.value.style.top)
+  const rect = absoluteContainerRef.value.getBoundingClientRect();
+  const cardRect = absoluteContainerRef.value.getBoundingClientRect();
+  transform.value.translateX = event.clientX + (rect.left - rect.width / 2) + (props.index === 0 ? 150 : props.index === 2 ? -150 : 0)
+  transform.value.translateY = event.clientY - (rect.top + rect.height / 2)
 }
 function snap(event) {
   if (!dragging.value) { return }
@@ -175,7 +172,7 @@ function followUserMouseRotation(event) {
     const y = event.clientY - rect.top; // Mouse Y relative to container
     const centerX = rect.width / 2; // Center of container (X)
     const centerY = rect.height / 2; // Center of container (Y)
-    const rotateX = ((y - centerY) / centerY) * -tilt.value; // Tilt based on Y-axis
+    const rotateX = ((y - centerY) / centerY) * -tilt.value + 5; // Tilt based on Y-axis
     const rotateY = ((x - centerX) / centerX) * tilt.value; // Tilt based on X-axis
     // cardRef.value.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     transform.value.rotateX = rotateX
@@ -210,24 +207,16 @@ const onMouseUp = () => {
 
 function resetCard() {
   if (cardRef.value && cardContainerRef.value) {
-    cardRef.value.style.transition = "transform 5s ease";
-    // cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
+    cardContainerRef.value.style.transition = "transform 0.1s ease-out";
     transform.value.rotateX = 0
     transform.value.rotateY = 0
-
-    // cardContainerRef.value.style.left = `${initialBBox.left}px`;
-    // cardContainerRef.value.style.top = `${initialBBox.top}px`;
+    transform.value.translateX = 0
+    transform.value.translateY = 0
 
     for (const fakeCardInDeck of fakeCardsInDeck.value) {
       fakeCardInDeck.remove(props.card)
     }
     hidden.value = false
-
-    setTimeout(() => {
-      if (cardRef.value) {
-        // cardRef.value.style.transition = "none"; // Remove transition after reset
-      }
-    }, 300);
   }
 }
 
@@ -240,15 +229,8 @@ function onMouseEnter(e) {
 }
 function onMouseLeave(e) {
   hovering.value = false
-  // cardRef.value.style.transition = "transform 1s ease";
-  // cardRef.value.style.transform = "rotateX(0deg) rotateY(0deg)";
   transform.value.rotateX = 0
   transform.value.rotateY = 0
-  resetRotationTimeOut = setTimeout(() => {
-    if (cardRef.value) {
-      // cardRef.value.style.transition = "none"; // Remove transition after reset
-    }
-  }, 1000);
 }
 
 function updateStaticRotation() {
@@ -256,10 +238,6 @@ function updateStaticRotation() {
 }
 gameStore.useAnimation(() => {
   updateStaticRotation()
-  if (cardContainerRef.value) {
-    // console.log(transform.value)
-    // cardContainerRef.value.style.transform = `rotate(${transform.value.rotateX + rotation.value}deg ${transform.value.rotateY + rotation.value}deg) translate(${transform.value.translateX}px ${transform.value.translateY}px)`;
-  }
 })
 
 function getImgSrc() {
@@ -276,6 +254,14 @@ function getImgSrc() {
 function isMovable() {
   return props.movable && socketStore.isYourTurn
 }
+
+function onTransition(e: TransitionEvent) {
+  if (e.type === 'transitionend') {
+    console.log(e)
+    e.target.style.transition = 'none'
+  }
+
+}
 </script>
 
 <template>
@@ -290,12 +276,19 @@ function isMovable() {
     ]"
     :style="{
       color: 'white',
-      transform: `rotateX(${transform.rotateX + rotation}deg) rotateY(${transform.rotateY + rotation}deg) translate(${transform.translateX}px, ${transform.translateY}px)`
+      transform: `
+      rotateZ(${dragging ? 0 : index === 0 ? -.05 : index === 1 ? 0 : .05 }turn)
+      rotate(${rotation}deg)
+      rotateX(${transform.rotateX + rotation}deg)
+      rotateY(${transform.rotateY + rotation}deg)
+      translate(${transform.translateX}px, ${transform.translateY + (dragging ? 0 : index === 0 || index === 2 ? 50 : 0)}px)`
     }"
     @click="onCardClick"
     @mousedown="onMouseDown"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
+    @transitionend="onTransition"
+    @transitionrun="onTransition"
 >
   <div
       ref="cardRef"
@@ -304,7 +297,6 @@ function isMovable() {
         isMovable() && (hovering || dragging) && 'hovering',
       ]"
   >
-    {{ `rotateX(${transform.rotateX + rotation}deg) rotateY(${transform.rotateY + rotation}deg) translate(${transform.translateX}px, ${transform.translateY}px)` }}
     <Action v-if="!isMovable() && action" :action="action"></Action>
     <div class="">
       <div v-if="gameStore.debug" class="">
@@ -342,7 +334,6 @@ function isMovable() {
   align-items: center;
 
   transform-style: preserve-3d;
-  transition: transform 0.1s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 .showFrontFace {

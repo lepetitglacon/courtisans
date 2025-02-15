@@ -7,19 +7,22 @@
   import {useGameStore} from "@/stores/game.ts";
   import Player from "@/components/players/Player.vue";
   import NewCard from "@/components/cards/DeckCard.vue";
-  import {provide} from "vue";
+  import {provide, ref} from "vue";
   import useColor from "@/composables/useColor.ts";
 
   const socketStore = useSocketStore()
   const gameStore = useGameStore()
 
+  const absoluteContainerRef = ref()
+
   provide('killAction', 'kill_own')
+  provide('absoluteContainerRef', absoluteContainerRef)
 </script>
 
 <template>
 
   <div class="ownplayer d-flex justify-content-center position-absolute"
-
+    ref="absoluteContainerRef"
   >
 
     <div class="ownplayer-inner d-flex justify-content-center">
@@ -27,12 +30,13 @@
           v-for="i in 3"
           class="ownplayer-card-container"
           :style="{
-            transform: `rotateZ(${i === 1 ? -.05 : i === 2 ? 0 : .05 }turn) translateY(${i === 1 || i === 3 ? 50 : 0}px)`
+
           }"
       >
         <Card
             v-if="socketStore.currentPlayer?.handCards[i - 1]"
             :card="socketStore.currentPlayer?.handCards[i - 1]"
+            :index="i - 1"
             movable="true"
         />
       </div>
