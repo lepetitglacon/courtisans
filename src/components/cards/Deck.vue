@@ -7,6 +7,8 @@ const props = defineProps<{
   showBackFace: boolean|null,
 }>()
 
+console.log(props.cards)
+
 </script>
 
 <template>
@@ -25,6 +27,5 @@ const props = defineProps<{
 
 <style scoped>
 .deck-container {
-
 }
 </style>

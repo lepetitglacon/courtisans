@@ -51,15 +51,6 @@ function getStyle() {
   }
 }
 
-function onMouseDown(e) {
-  dragging.value = true
-}
-function onMouseMove(e) {
-  dragging.value = true
-}
-function onMouseUp(e) {
-  dragging.value = false
-}
 function onMouseEnter(e) {
   hovered.value = true
 }
@@ -77,22 +68,18 @@ function onMouseLeave(e) {
       ]"
       :style="getStyle()"
       ref="cardContainerRef"
-      @mousedown="onMouseDown"
-      @mousemove="onMouseMove"
-      @mouseup="onMouseUp"
-
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"
   >
-    <Action action="kill" :data="{
-      familyId: props.card.family.id,
-      otherCardId: props.card.id,
-    }">
+<!--    <Action action="kill" :data="{-->
+<!--      familyId: props.card.family.id,-->
+<!--      otherCardId: props.card.id,-->
+<!--    }">-->
+<!--	  </Action>-->
     <img
         class="img"
         :src="`/cards/${getImgSrc()}.png`"
     >
-    </Action>
   </div>
 </template>
 
@@ -102,12 +89,6 @@ function onMouseLeave(e) {
 }
 .img {
   width: 100%;
-}
-.dragging {
-}
-
-.card-container .hovered not .action {
-  box-shadow: 0px 0px 10px 10px rgba(237, 218, 18, 0.68);
 }
 
 </style>

@@ -1,14 +1,9 @@
 <script setup lang="ts">
   import Card from "@/components/cards/Card.vue";
-  import Action from "@/components/actions/Action.vue";
-  import Chat from "@/components/Chat.vue";
 
   import {useSocketStore} from "@/stores/socket.ts";
   import {useGameStore} from "@/stores/game.ts";
-  import Player from "@/components/players/Player.vue";
-  import NewCard from "@/components/cards/DeckCard.vue";
   import {provide, ref} from "vue";
-  import useColor from "@/composables/useColor.ts";
 
   const socketStore = useSocketStore()
   const gameStore = useGameStore()

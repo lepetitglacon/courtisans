@@ -11,7 +11,7 @@ export default class fillCardsTest {
         this.game.eventDispatcher.on('changeState', (state) => {
             console.log(state)
             if (state === STATE.PLAYING) {
-                for (let i = 0; i < 15; i++) {
+                for (let i = 0; i < 3; i++) {
 
                     for (const user of this.game.users) {
                         if (user.socket.id === this.game.userTurnId) {

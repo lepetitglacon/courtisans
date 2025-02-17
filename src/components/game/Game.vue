@@ -46,12 +46,12 @@ onUnmounted(async () => {
 	<div v-if="socketStore.game" class="d-flex flex-column flex-xl-row w-100 h-100" :style="{backgroundColor: useColor()}">
 
 		<!-- Left Column (2 Rows) -->
-		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
+		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}" style="z-index: 1">
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-			  <Player v-if="socketStore?.otherPlayers[0]" :user="socketStore.otherPlayers[0]" :key="socketStore.otherPlayers[0].socket.id"/>
+			    <Player v-if="socketStore?.otherPlayers[0]" :user="socketStore.otherPlayers[0]" :key="socketStore.otherPlayers[0].socket.id"/>
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player v-if="socketStore?.otherPlayers[1]" :user="socketStore.otherPlayers[1]" :key="socketStore.otherPlayers[1].socket.id"/>
+                <Player v-if="socketStore?.otherPlayers[1]" :user="socketStore.otherPlayers[1]" :key="socketStore.otherPlayers[1].socket.id" />
 			</div>
 		</div>
 
@@ -61,12 +61,12 @@ onUnmounted(async () => {
 		</div>
 
 		<!-- Right Column (2 Rows) -->
-		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}">
+		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}" style="z-index: 1">
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player v-if="socketStore?.otherPlayers[2]" :user="socketStore.otherPlayers[2]" :key="socketStore.otherPlayers[2].socket.id"/>
+                <Player v-if="socketStore?.otherPlayers[2]" :user="socketStore.otherPlayers[2]" :key="socketStore.otherPlayers[2].socket.id"/>
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player v-if="socketStore?.otherPlayers[3]" :user="socketStore.otherPlayers[3]" :key="socketStore.otherPlayers[3].socket.id"/>
+                <Player v-if="socketStore?.otherPlayers[3]" :user="socketStore.otherPlayers[3]" :key="socketStore.otherPlayers[3].socket.id"/>
 			</div>
 		</div>
 
@@ -96,6 +96,7 @@ onUnmounted(async () => {
 	width: 100%;
 	position: absolute;
 	bottom: 0;
+	z-index: 0;
 }
 #image-bg {
 	background-image: url("@/assets/img/courtisans-bg.svg");

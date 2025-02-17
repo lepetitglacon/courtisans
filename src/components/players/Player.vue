@@ -4,6 +4,7 @@ import {useGameStore} from "@/stores/game.ts";
 import {computed, inject, onMounted, provide, ref} from "vue";
 import Deck from "@/components/cards/Deck.vue";
 import Action from "@/components/actions/Action.vue";
+import useColor from "@/composables/useColor.ts";
 
 const props = defineProps<{
   user: object
@@ -44,74 +45,36 @@ const color = computed(() => {
 <template>
     <div
       ref="playerContainerRef"
-      class="d-flex h-100 w-100"
+      class="d-flex h-100 w-100 p-2 row"
       :class="[
           hovered && gameStore.holdenCard && 'hovered',
           !user.socket.connected && 'disconnected'
       ]"
     >
-      <div class="cards">
-<!--        <Deck v-for="cards of user.cards.filter(card => card.power !== 'hidden')" :cards="cards" :show-back-face="false"/>-->
+
+	<!-- DECKS CARTES -->
+      <div class="col-10 d-flex flex-wrap">
+	      <template v-for="family of socketStore?.game?.infos?.FAMILIES ?? []" >
+		      <div
+			      v-if="family.id !== 'assassin'"
+			      class="family-deck-container"
+		      >
+		            <Deck
+		                v-if="user?.cards"
+		                :cards="user?.cards?.filter(card => card.family.id === family.id && card.power !== 'hidden') ?? {}"
+		                :show-back-face="false"
+		            />
+		      </div>
+	      </template>
       </div>
 
-      <div class="info position-relative">
-        <div class="position-absolute">
+      <div class="col-2 info position-relative">
+        <div class="player-info">
           <p>{{user.name}}</p>
           <p>{{user.socket.id}}</p>
         </div>
 <!--        <Deck v-for="cards of user.cards.filter(card => card.power === 'hidden')" :cards="cards" :show-back-face="false"/>-->
       </div>
-
-<!--	      <div ref="playerRef" class="player d-flex flex-wrap">-->
-
-<!--          <Action-->
-<!--              :action="user.socket.id === socket.id ? 'keep' : 'give'"-->
-<!--              :data="{-->
-<!--                  toUserId: user.socket.id !== socket.id ? user.socket.id : ''-->
-<!--                }"-->
-<!--              class="player d-flex justify-content-center align-items-center"-->
-<!--          >-->
-
-<!--          <div class="d-flex flex-column justify-content-center align-items-center w-25 h-25">-->
-
-<!--              <div class="mx-3">-->
-<!--                <p>{{ user.name }}</p>-->
-<!--                <p>{{ user.socket.id }}</p>-->
-<!--              </div>-->
-<!--              <div v-if="socketStore.game.score">-->
-<!--                <h2>SCORE</h2>-->
-<!--                <pre>{{ Object.values(socketStore.game.score.users[user.socket.id] ?? []).reduce((acc: Number, el: Number) => {-->
-<!--                  return acc += el-->
-<!--                }, 0)  }}</pre>-->
-<!--              </div>-->
-
-<!--          </div>-->
-<!--          <div class="w-100 h-50 d-flex justify-content-around align-items-start flex-wrap">-->
-<!--            <div-->
-<!--                class="d-flex justify-content-center"-->
-<!--                v-for="family of socketStore?.game?.infos?.FAMILIES"-->
-<!--                :style="{-->
-<!--                  backgroundColor: family.color,-->
-<!--                }"-->
-<!--            >-->
-
-<!--              <Deck-->
-<!--                  v-if="family.id !== 'assassin'"-->
-<!--                  :cards="user.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')"-->
-<!--                  :show-back-face="false"-->
-<!--              />-->
-
-<!--              <Deck-->
-<!--                  v-if="family.id === 'assassin'"-->
-<!--                  :cards="user.cards.filter(card => card.power === 'hidden')"-->
-<!--                  :show-back-face="true"-->
-<!--              />-->
-
-<!--            </div>-->
-<!--          </div>-->
-
-<!--          </Action>-->
-<!--	      </div>-->
 
     </div>
 </template>
@@ -124,6 +87,14 @@ const color = computed(() => {
 }
 
 .disconnected {
-  opacity: .5;
+  opacity: .3;
+}
+.family-deck-container {
+	width: 30%;
+}
+.player-info {
+	color: #32464D;
+	font-size: 1.5em;
+	font-weight: bolder;
 }
 </style>
