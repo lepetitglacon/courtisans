@@ -77,7 +77,6 @@ function onMouseDown(e) {
   dragging.value = true
 }
 function onValidationResult(e) {
-  console.log(e)
   if (!e.valid) {
 
   }
@@ -263,7 +262,6 @@ function isMovable() {
 
 function onTransition(e: TransitionEvent) {
   if (e.type === 'transitionend') {
-  console.log(e)
     cardContainerRef.value.style.transition = 'none';
   }
 

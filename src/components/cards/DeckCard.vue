@@ -19,8 +19,19 @@ const props = defineProps([
 const cardContainerRef = ref<HTMLDivElement|null>(null);
 const cardRef = ref(null);
 const rotation = ref(0);
+const active = ref(false);
 const dragging = ref(false);
 const hovered = ref(false);
+
+gameStore.registerActionDiv(
+    'give',
+    cardContainerRef,
+    {
+      toUserId: props.user?.socket?.id
+    },
+    hovered,
+    active
+)
 
 function getImgSrc() {
   if (props.showBackFace) {
@@ -39,23 +50,17 @@ function updateRotation() {
 
 gameStore.useAnimation(() => {
   updateRotation()
-  if (cardContainerRef.value) {
-    cardContainerRef.value.style.transform = `rotate(${rotation.value}deg)`;
-
-  }
 })
 
 function getStyle() {
-  return {
-    top: 20 * props.index + 'px'
-  }
+  return
 }
 
 function onMouseEnter(e) {
-  hovered.value = true
+  // hovered.value = true
 }
 function onMouseLeave(e) {
-  hovered.value = false
+  // hovered.value = false
 }
 </script>
 
@@ -66,7 +71,11 @@ function onMouseLeave(e) {
           dragging && 'dragging',
           hovered && 'hovered'
       ]"
-      :style="getStyle()"
+      :style="{
+
+        transition: 'transform .15s ease',
+        transform: `translateY(${(offset ?? 20) * index}px) rotate(${rotation}deg)`
+      }"
       ref="cardContainerRef"
       @mouseenter="onMouseEnter"
       @mouseleave="onMouseLeave"

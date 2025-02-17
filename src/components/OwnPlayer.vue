@@ -34,6 +34,7 @@
             :key="socketStore.currentPlayer?.handCards[i - 1].id"
             :card="socketStore.currentPlayer?.handCards[i - 1]"
             :index="i - 1"
+            :isPlayerDeck="true"
             movable="true"
         />
       </div>

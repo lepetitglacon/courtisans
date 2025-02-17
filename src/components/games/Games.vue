@@ -9,7 +9,6 @@ const games = ref([])
 onMounted(async () => {
   const res = await fetch(`${import.meta.env.VITE_SERVER_URL}:${import.meta.env.VITE_SERVER_PORT}/games`)
   const json = await res.json()
-  console.log(json)
   games.value = json
 })
 

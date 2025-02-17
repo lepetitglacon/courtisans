@@ -4,7 +4,7 @@ import {useGameStore} from "@/stores/game.ts";
 import {computed, inject, onMounted, provide, ref} from "vue";
 import Deck from "@/components/cards/Deck.vue";
 import Action from "@/components/actions/Action.vue";
-import useColor from "@/composables/useColor.ts";
+import useColor, {BLUE} from "@/composables/useColor.ts";
 
 const props = defineProps<{
   user: object
@@ -45,19 +45,26 @@ const color = computed(() => {
 <template>
     <div
       ref="playerContainerRef"
-      class="d-flex h-100 w-100 p-2 row"
+      class="d-flex h-100 w-100 p-5"
       :class="[
+          left ? '' : 'flex-row-reverse ',
           hovered && gameStore.holdenCard && 'hovered',
           !user.socket.connected && 'disconnected'
       ]"
     >
 
 	<!-- DECKS CARTES -->
-      <div class="col-10 d-flex flex-wrap">
+      <div
+          class="col-10 d-flex flex-wrap"
+          :class="[
+              left ? 'justify-content-start' : 'justify-content-end',
+          ]"
+      >
 	      <template v-for="family of socketStore?.game?.infos?.FAMILIES ?? []" >
 		      <div
 			      v-if="family.id !== 'assassin'"
-			      class="family-deck-container"
+			      class="family-deck-container m-1 rounded-1"
+            :style="{backgroundColor: family.color}"
 		      >
 		            <Deck
 		                v-if="user?.cards"
@@ -68,12 +75,12 @@ const color = computed(() => {
 	      </template>
       </div>
 
-      <div class="col-2 info position-relative">
-        <div class="player-info">
+      <div class="col-2 info position-relative d-flex flex-column">
+        <div class="player-info position-absolute z-1">
           <p>{{user.name}}</p>
           <p>{{user.socket.id}}</p>
         </div>
-<!--        <Deck v-for="cards of user.cards.filter(card => card.power === 'hidden')" :cards="cards" :show-back-face="false"/>-->
+        <Deck :cards="user?.cards?.filter(card => card.power === 'hidden') ?? []" :show-back-face="true"/>
       </div>
 
     </div>
@@ -93,8 +100,8 @@ const color = computed(() => {
 	width: 30%;
 }
 .player-info {
-	color: #32464D;
+	color: floralwhite;
 	font-size: 1.5em;
-	font-weight: bolder;
+	font-weight: bold;
 }
 </style>
