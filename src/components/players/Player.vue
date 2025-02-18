@@ -76,7 +76,12 @@ const color = computed(() => {
       </div>
 
       <div class="col-2 info position-relative d-flex flex-column">
-        <div class="player-info position-absolute z-1">
+        <div
+	        class="player-info position-absolute z-1"
+	        :class="[
+				left ? '' : 'text-end rtl',
+	        ]"
+        >
           <p>{{user.name}}</p>
           <p>{{user.socket.id}}</p>
         </div>
