@@ -65,11 +65,7 @@ onUnmounted(async () => {
 		</div>
 
 		<!-- Center Column -->
-		<div class="d-flex flex-column col-6" >
-			{{ useGameStore().holdenCard }}
-			{{ useGameStore().holdenCardAction }}
-			{{ useGameStore().holdenCardActionData }}
-		</div>
+    <Plateau/>
 
 		<!-- Right Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}" style="z-index: 1">

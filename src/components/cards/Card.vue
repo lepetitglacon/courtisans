@@ -120,7 +120,6 @@ function snap(event) {
       if (actionObject.action === 'kill') {
         if (props.card.power === 'rogue' && props.card.id !== actionObject.data.otherCardId) {
             closestSnap.value = actionObject;
-			console.log(actionObject.data)
             action = actionObject.data.killAction
         }
         continue

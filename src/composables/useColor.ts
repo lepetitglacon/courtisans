@@ -7,6 +7,6 @@ export default function useColor() {
     return ''
 }
 export const BLUE = '#2c3e50'
-export const YELLOW = '#2c3e50'
+export const YELLOW = '#A97A00'
 export const BACKGROUND = '#2c3e50'
 export const LIGHT_BLUE = '#2c3e50'

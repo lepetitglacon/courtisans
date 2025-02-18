@@ -6,6 +6,8 @@ import {useGameStore} from "@/stores/game.ts";
 import Card from "@/components/cards/Card.vue";
 import Deck from "@/components/cards/Deck.vue";
 import {provide, ref} from "vue";
+import useColor, {BLUE, YELLOW} from "@/composables/useColor.ts";
+import PlateauDeck from "@/components/plateau/PlateauDeck.vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
@@ -13,103 +15,108 @@ const gameStore = useGameStore()
 provide('killAction', 'kill_crown')
 
 const plateauRef = ref()
+const enlightenRef = ref()
+const shadowedRef = ref()
 </script>
 
 <template>
+  <div class="d-flex flex-column col-6" >
+    <div class="d-flex h-100" :style="{backgroundColor: useColor()}">
+      <div class="m-5 w-100 d-flex position-relative" :style="{backgroundColor: useColor()}">
 
-  <div
-      ref="plateauRef"
-      class="plateau h-100 w-100 d-flex"
-  >
-
-    <div class="side">
-      <p>Cartes mission</p>
-
-      <p class="mission-card" v-for="card of socketStore?.currentPlayer?.missionCards ?? []">
-        {{ card.text }}
-      </p>
-
-    </div>
-    <div class="w-100 d-flex justify-content-between bg-dark">
-      <div
-          class="w-100 d-flex flex-column justify-content-center position-relative"
-          v-for="family of socketStore?.game?.infos?.FAMILIES"
-          :style="{
-                  backgroundColor: family.color,
-                  width: plateauRef?.getBoundingClientRect().width / 7 - 0.1 + 'px'
-                }"
-      >
-        <Action
-            class="w-100 h-50 top-0 position-absolute"
-            action="enlight"
-            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].enlighten}"
+        <!-- PANEL -->
+        <div class="d-flex justify-content-evenly w-100 h-50 py-2 px-5 position-absolute"
+             :style="{
+                zIndex: '1',
+                backgroundColor: BLUE,
+                borderRadius: '5px',
+                border: `solid 5px ${YELLOW}`,
+                transform: 'translateY(50%) scaleX(1.1)'
+              }"
         >
-          <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>
-        </Action>
-        <p>{{ family.title}}</p>
-        <Action
-            class="w-100 h-50 bottom-0 position-absolute"
-            action="shadow"
-            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].shadowed}"
-        >
-          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>
-        </Action>
+            <div class="d-flex flex-wrap">
+              <p>CHAT</p>
+              <pre>
+                {{ useGameStore().holdenCard }}
+                {{ useGameStore().holdenCardAction }}
+                {{ useGameStore().holdenCardActionData }}
+              </pre>
+            </div>
+          <div>
+            <p>MENU</p>
+          </div>
+          <div>
+            <p>MISSIONS</p>
+          </div>
+          <div>
+            <p>DECK</p>
+          </div>
+        </div>
+
+        <!-- FAMILIES -->
+        <template v-for="family of Object.values(socketStore?.game?.infos?.FAMILIES ?? [])">
+
+          <div class="col d-flex flex-column" :style="{backgroundColor: family.color}">
+
+            <PlateauDeck class="h-100"  :cards="socketStore.game.familyCards[family.id].enlighten" />
+
+            <PlateauDeck class="h-100" :cards="socketStore.game.familyCards[family.id].shadowed" />
+
+          </div>
+
+        </template>
 
       </div>
     </div>
-    <div class="side">
-      <p>Pioche</p>
+
+    <div class="h-100" :style="{backgroundColor: useColor()}">
+      <p>own player</p>
     </div>
-
-<!--    <div class="col-2 position-relative">-->
-<!--        <Card :card="socketStore.game.cards[0]" :showBackFace="true" :movable="false"/>-->
-<!--    </div>-->
-
-<!--    <div class="col">-->
-
-<!--      <div class="row h-100 d-flex">-->
-<!--        <div-->
-<!--            v-for="[key, family] of Object.entries(socketStore?.game?.infos?.FAMILIES ?? [])"-->
-<!--            class="plateau-family col d-flex flex-column justify-content-evenly align-items-center"-->
-<!--            :style="{backgroundColor: family.color}"-->
-<!--        >-->
-
-<!--          <div class="row position-relative scaled">-->
-<!--            <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>-->
-<!--          </div>-->
-
-<!--          <div class="row position-relative">-->
-<!--            <div class="enlight position-absolute">-->
-<!--              <Action action="enlight" :data="{familyId: family.id}"/>-->
-<!--            </div>-->
-<!--            <img-->
-<!--                class="family-img"-->
-<!--                :src="`/cards/${family.id}.png`"-->
-<!--            >-->
-<!--            <div class="shadowed position-absolute">-->
-<!--              <Action action="shadow" :data="{familyId: family.id}"/>-->
-<!--            </div>-->
-<!--          </div>-->
-
-<!--          <div class="row position-relative scaled">-->
-<!--	          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>-->
-<!--          </div>-->
-
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    <div class="col-2">-->
-<!--      <div class="row h-100 d-flex flex-column justify-content-center align-items-center">-->
-<!--        <div-->
-<!--            v-for="card of socketStore.currentPlayer?.missionCards ?? []"-->
-<!--            class="col mission-card d-flex justify-content-center align-items-center"-->
-<!--        >-->
-<!--          <p>{{ card.text }}</p>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
+<!--  <div-->
+<!--      ref="plateauRef"-->
+<!--      class="plateau h-100 w-100 d-flex"-->
+<!--  >-->
+
+<!--    <div class="side">-->
+<!--      <p>Cartes mission</p>-->
+
+<!--      <p class="mission-card" v-for="card of socketStore?.currentPlayer?.missionCards ?? []">-->
+<!--        {{ card.text }}-->
+<!--      </p>-->
+
+<!--    </div>-->
+<!--    <div class="w-100 d-flex justify-content-between bg-dark">-->
+<!--      <div-->
+<!--          class="w-100 d-flex flex-column justify-content-center position-relative"-->
+<!--          v-for="family of socketStore?.game?.infos?.FAMILIES"-->
+<!--          :style="{-->
+<!--                  backgroundColor: family.color,-->
+<!--                  width: plateauRef?.getBoundingClientRect().width / 7 - 0.1 + 'px'-->
+<!--                }"-->
+<!--      >-->
+<!--        <Action-->
+<!--            class="w-100 h-50 top-0 position-absolute"-->
+<!--            action="enlight"-->
+<!--            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].enlighten}"-->
+<!--        >-->
+<!--          <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>-->
+<!--        </Action>-->
+<!--        <p>{{ family.title}}</p>-->
+<!--        <Action-->
+<!--            class="w-100 h-50 bottom-0 position-absolute"-->
+<!--            action="shadow"-->
+<!--            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].shadowed}"-->
+<!--        >-->
+<!--          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>-->
+<!--        </Action>-->
+
+<!--      </div>-->
+<!--    </div>-->
+<!--    <div class="side">-->
+<!--      <p>Pioche</p>-->
+<!--    </div>-->
+<!--  </div>-->
 
 </template>
 

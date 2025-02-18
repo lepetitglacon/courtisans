@@ -71,6 +71,7 @@ const color = computed(() => {
 		                v-if="user?.cards"
 		                :cards="user?.cards?.filter(card => card.family.id === family.id && card.power !== 'hidden') ?? {}"
 		                :show-back-face="false"
+                    :reversed="['grey', 'lightgreen', 'red'].includes(family.id)"
 		            />
 		      </div>
 	      </template>
