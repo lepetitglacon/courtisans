@@ -11,7 +11,8 @@ const props = defineProps<{
   left: boolean
 }>()
 
-provide('otherUser', props.user)
+provide('killAction', 'kill_other')
+provide('otherUser', props.user?.socket.id)
 const socket = inject('socket')
 
 const playerContainerRef = ref<HTMLDivElement|null>(null)
@@ -45,7 +46,7 @@ const color = computed(() => {
 <template>
     <div
       ref="playerContainerRef"
-      class="d-flex h-100 w-100 p-5"
+      class="d-flex h-100 w-100 "
       :class="[
           left ? '' : 'flex-row-reverse ',
           hovered && gameStore.holdenCard && 'hovered',
@@ -55,7 +56,7 @@ const color = computed(() => {
 
 	<!-- DECKS CARTES -->
       <div
-          class="col-10 d-flex flex-wrap"
+          class="col-10 d-flex flex-wrap m-2 p-2 rounded-2"
           :class="[
               left ? 'justify-content-start' : 'justify-content-end',
           ]"

@@ -44,13 +44,17 @@ const fakeCardsInDeck = ref<Array<Array<object>>>([])
 let resetRotationTimeOut = null
 let initialBBox = null
 const rotation = ref(0);
+const transitions = ref({
+	transform: 'transform 0.1s ease-out',
+	opacity: 'opacity 0.1s ease-out',
+})
 const transform = ref({
   translateX: 0,
   translateY: 0,
   rotateX: 0,
   rotateY: 0,
   rotateZ: 0,
-});
+})
 
 function contains(x, y, rect) {
   return rect.x <= x && x <= rect.x + rect.width &&
@@ -116,6 +120,7 @@ function snap(event) {
       if (actionObject.action === 'kill') {
         if (props.card.power === 'rogue' && props.card.id !== actionObject.data.otherCardId) {
             closestSnap.value = actionObject;
+			console.log(actionObject.data)
             action = actionObject.data.killAction
         }
         continue
@@ -126,11 +131,12 @@ function snap(event) {
     } else {
       actionObject.hovered = false
     }
+	  actionObject.hovered = false
   }
 
   if (closestSnap.value) {
+	  cardContainerRef.value.style.opacity = 0.5
     gameStore.holdenCardAction = action
-
     closestSnap.value.hovered = true
 
 
@@ -158,6 +164,7 @@ function snap(event) {
 
 
   } else {
+	  cardContainerRef.value.style.opacity = 1
     for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
       fakeCardsInDeckElement.remove(props.card)
     }
@@ -194,7 +201,6 @@ const onMouseUp = () => {
       userId: socket?.id,
       ...closestSnap.value?.data ?? {}
     })
-    // cardContainerRef.value.style.transform = `rotateX(0) rotateY(0)`;
     transform.value.rotateX = 0
     transform.value.rotateY = 0
   } else {
@@ -212,11 +218,14 @@ const onMouseUp = () => {
 
 function resetCard() {
   if (cardRef.value && cardContainerRef.value) {
-    cardContainerRef.value.style.transition = "transform 0.1s ease-out";
+    transitions.value.transform = "transform 0.1s ease-out";
     transform.value.rotateX = 0
     transform.value.rotateY = 0
     transform.value.translateX = 0
     transform.value.translateY = 0
+
+	  cardContainerRef.value.style.zIndex = 0;
+	  cardContainerRef.value.style.opacity = 1;
 
     for (const fakeCardInDeck of fakeCardsInDeck.value) {
       fakeCardInDeck.remove(props.card)
@@ -262,7 +271,7 @@ function isMovable() {
 
 function onTransition(e: TransitionEvent) {
   if (e.type === 'transitionend') {
-    cardContainerRef.value.style.transition = 'none';
+	  transitions.value.transform = 'transform none';
   }
 
 }
@@ -285,7 +294,8 @@ function onTransition(e: TransitionEvent) {
       rotate(${rotation}deg)
       rotateX(${transform.rotateX + rotation}deg)
       rotateY(${transform.rotateY + rotation}deg)
-      translate(${transform.translateX}px, ${transform.translateY + (dragging ? 0 : index === 0 || index === 2 ? 50 : 0)}px)`
+      translate(${transform.translateX}px, ${transform.translateY + (dragging ? 0 : index === 0 || index === 2 ? 50 : 0)}px)`,
+      transition: `${Object.values(transitions).join(', ')}`
     }"
     @click="onCardClick"
     @mousedown="onMouseDown"

@@ -5,7 +5,7 @@ import {inject, provide} from "vue";
 
 const socketStore = useSocketStore()
 
-provide('killAction', 'kill_other')
+
 const socket = inject('socket')
 </script>
 
@@ -16,7 +16,7 @@ const socket = inject('socket')
     >
 		  <Player
           v-if="user.socket.id !== socket.id"
-          :key="user.socket.id"
+          :key="user?.socket?.id"
           :user="user"
       />
     </template>

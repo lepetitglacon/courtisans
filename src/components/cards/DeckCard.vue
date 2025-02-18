@@ -16,18 +16,24 @@ const props = defineProps([
   'showBackFace'
 ])
 
+const killAction = inject('killAction')
+const toUserId = inject('otherUser')
+
 const cardContainerRef = ref<HTMLDivElement|null>(null);
 const cardRef = ref(null);
 const rotation = ref(0);
-const active = ref(false);
+const active = ref(true);
 const dragging = ref(false);
 const hovered = ref(false);
 
 gameStore.registerActionDiv(
-    'give',
+    'kill',
     cardContainerRef,
     {
-      toUserId: props.user?.socket?.id
+        familyId: props.card.family.id,
+        otherCardId: props.card?.id,
+	    killAction,
+	    toUserId
     },
     hovered,
     active

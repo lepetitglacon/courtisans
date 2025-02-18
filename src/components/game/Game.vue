@@ -10,6 +10,7 @@ import {io} from "socket.io-client";
 import {useSocketStore} from "@/stores/socket.ts";
 import useColor, {BLUE} from "@/composables/useColor.ts";
 import Player from "@/components/players/Player.vue";
+import {useGameStore} from "../../stores/game.ts";
 const route = useRoute()
 const socket = io(`${import.meta.env.VITE_SERVER_URL}:${import.meta.env.VITE_SERVER_PORT}`, {
   autoConnect: false,
@@ -65,7 +66,9 @@ onUnmounted(async () => {
 
 		<!-- Center Column -->
 		<div class="d-flex flex-column col-6" >
-
+			{{ useGameStore().holdenCard }}
+			{{ useGameStore().holdenCardAction }}
+			{{ useGameStore().holdenCardActionData }}
 		</div>
 
 		<!-- Right Column (2 Rows) -->
