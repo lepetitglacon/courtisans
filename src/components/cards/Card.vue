@@ -74,7 +74,6 @@ function onMouseDown(e) {
 
   gameStore.holdenCard = props.card
   cardContainerRef.value.style.zIndex = 99;
-  chatStore.postMessage(`[debug] ${props.card.id} taken`)
 
   socketStore.on('server/validationResult', onValidationResult)
 
@@ -210,7 +209,6 @@ const onMouseUp = () => {
   gameStore.holdenCard = null
   gameStore.holdenCardAction = null
   gameStore.holdenCardData = null
-  chatStore.postMessage(`[debug] ${props.card.id} dropped`)
 
   dragging.value = false
 };
@@ -229,6 +227,11 @@ function resetCard() {
     for (const fakeCardInDeck of fakeCardsInDeck.value) {
       fakeCardInDeck.remove(props.card)
     }
+
+    for (const actionObject of gameStore.actionDivs) {
+      actionObject.hovered = false
+    }
+
     hidden.value = false
   }
 }

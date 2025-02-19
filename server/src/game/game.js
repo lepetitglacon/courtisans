@@ -218,6 +218,10 @@ export default class Game {
         socket.on('client/play', (data) => {
             this.playAction(data, socket)
         })
+        // GAME actions
+        socket.on('client/message', (data) => {
+            this.io.to(this.roomId).emit('message', data)
+        })
     }
 
     restart() {

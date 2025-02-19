@@ -149,22 +149,5 @@ onBeforeRouteLeave((to, from) => {
   font-weight: 800;
 }
 
-.btn-game {
-	background-color: #2c3e50;
-	border: solid 2px ;
 
-	color: #efe9cc;
-	border-color: #A97A00;
-	font-weight: 900;
-	font-family: Amiri;
-}
-.btn-game:hover {
-	background-color: #efe9cc;
-	border: solid 2px ;
-
-	color: #2c3e50;
-	border-color: #A97A00;
-	font-weight: 900;
-	font-family: Amiri;
-}
 </style>

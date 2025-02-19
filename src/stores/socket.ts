@@ -62,7 +62,6 @@ export const useSocketStore = defineStore("socket", () => {
     }
 
     function emit(type: string, data: any = null) {
-        chatStore.postMessage(`[debug][emit] ${type} ${data}`)
         socket.value.emit(type, data);
     }
 

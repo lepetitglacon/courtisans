@@ -28,3 +28,20 @@ html {
 .rtl {
   direction: rtl;
 }
+
+.btn-game {
+  background-color: #2c3e50 !important;
+  border: solid 2px !important;
+
+  color: #efe9cc;
+  border-color: #A97A00 !important;
+  font-weight: 900 !important;
+}
+.btn-game:hover {
+  background-color: #efe9cc !important;
+  border: solid 2px !important;
+
+  color: #2c3e50;
+  border-color: #A97A00 !important;
+  font-weight: 900 !important;
+}

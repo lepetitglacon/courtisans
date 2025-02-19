@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import './assets/main.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 
