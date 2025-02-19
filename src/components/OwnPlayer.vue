@@ -20,6 +20,20 @@
     ref="absoluteContainerRef"
   >
 
+  <div
+	  v-if="socketStore?.isYourTurn"
+	  class="position-absolute d-flex"
+	  style="top: -60px"
+  >
+	    <p>Your turn</p>
+	    <div
+		    v-for="action of socketStore?.game.userActionsToPlay"
+		    class="mx-2 px-2 bg-light text-dark rounded-2"
+	    >
+	        <p>{{ action }}</p>
+	    </div>
+  </div>
+
     <div class="ownplayer-inner d-flex justify-content-center">
       <div
           v-for="i in 3"
@@ -39,44 +53,6 @@
         />
       </div>
     </div>
-
-<!--    <div class="side d-flex">-->
-<!--      <Chat/>-->
-<!--      <div>-->
-<!--        <pre>{{ gameStore.holdenCard }}</pre>-->
-<!--        <pre>{{ gameStore.holdenCardAction }}</pre>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="player-deck bg-dark">-->
-<!--      <Player class="h-100" v-if="socketStore.currentPlayer" :user="socketStore.currentPlayer" />-->
-<!--    </div>-->
-<!--    <div class="side">-->
-<!--      <p>Cartes</p>-->
-
-<!--      <div class="w-100 d-flex ">-->
-<!--        <div class="col"-->
-<!--             v-for="[i, card] of socketStore.currentPlayer?.handCards.entries() ?? []"-->
-<!--        >-->
-<!--          <Card-->
-<!--              :key="card.id"-->
-<!--              class="m-2 col"-->
-
-<!--              :card="card"-->
-<!--              :index="i"-->
-<!--              :movable="true"-->
-<!--              is-player-deck="true"-->
-<!--          />-->
-
-<!--        </div>-->
-
-<!--      </div>-->
-
-<!--      <div>-->
-<!--        <p v-if="socketStore?.isYourTurn">Your turn {{ socketStore?.game.userActionsToPlay }}</p>-->
-<!--      </div>-->
-
-<!--      <pre></pre>-->
-<!--    </div>-->
 
   </div>
 

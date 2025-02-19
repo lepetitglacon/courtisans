@@ -55,14 +55,6 @@ export default class ActionValidator {
             }
         }
 
-        // enlight -> même famille
-        // shadow -> même famille
-        // kill at table -> rogue + carte pas shield + puis placer la carte ou on veut sur la table
-        // kill other player -> rogue + carte pas shield + puis placer la carte ou on veut sur la table
-        // kill own card
-        // give card to other player
-        const authorizedActions = ['']
-
         // HIGHER ACTION
         let higherAction
         switch (data.action) {
@@ -112,12 +104,12 @@ export default class ActionValidator {
         switch (data.action) {
             case 'enlight':
             case 'shadow':
-                if (card.family.id !== data.familyId && data.familyId !== 'assassin') {
-                    return {
-                        isValid: false,
-                        reason: `Card ${card.family.id} has not the same family ${data.familyId}`
-                    }
-                }
+                // if (card.family.id !== data.familyId && data.familyId !== 'assassin') {
+                //     return {
+                //         isValid: false,
+                //         reason: `Card ${card.family.id} has not the same family ${data.familyId}`
+                //     }
+                // }
                 if (card.power === 'hidden') {
                     data.action === 'enlight'
                         ? this.game.familyCards['assassin'].enlighten.push(card)

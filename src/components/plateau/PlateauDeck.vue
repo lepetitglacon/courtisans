@@ -3,24 +3,24 @@ import {ref} from "vue";
 import useColor from "@/composables/useColor.ts";
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
+import Deck from "@/components/cards/Deck.vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
 
 const props = defineProps<{
   cards: Array<any>
+  action: string
 }>()
 
 const actionRef = ref<HTMLDivElement|null>(null)
 const hovered = ref(false)
 const active = ref(true)
 
-
 gameStore.registerActionDiv(
-    'place',
+    props.action,
     actionRef,
     {
-      toUserId: props.user?.socket?.id
     },
     hovered,
     active

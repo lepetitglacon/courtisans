@@ -1,26 +1,37 @@
 <script setup lang="ts">
-import draggable from "vuedraggable";
 import {useSocketStore} from "@/stores/socket.ts";
 import Action from "@/components/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
 import Card from "@/components/cards/Card.vue";
 import Deck from "@/components/cards/Deck.vue";
 import {provide, ref} from "vue";
-import useColor, {BLUE, YELLOW} from "@/composables/useColor.ts";
+import useColor, {BLUE, YELLOW, BACKGROUND, LIGHT_BLUE} from "@/composables/useColor.ts";
 import PlateauDeck from "@/components/plateau/PlateauDeck.vue";
+import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
+import PlateauPlayer from "@/components/plateau/PlateauPlayer.vue";
+import Chat from "@/components/Chat.vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
 
 provide('killAction', 'kill_crown')
 
-const plateauRef = ref()
-const enlightenRef = ref()
-const shadowedRef = ref()
+function warningBeforeLeavingRoom() {
+
+}
+onBeforeRouteLeave((to, from) => {
+	const answer = window.confirm(
+		'Do you really want to leave? you have unsaved changes!'
+	)
+	// cancel the navigation and stay on the same page
+	if (!answer) return false
+})
+
 </script>
 
 <template>
   <div class="d-flex flex-column col-6" >
+
     <div class="d-flex h-100" :style="{backgroundColor: useColor()}">
       <div class="m-5 w-100 d-flex position-relative" :style="{backgroundColor: useColor()}">
 
@@ -34,90 +45,50 @@ const shadowedRef = ref()
                 transform: 'translateY(50%) scaleX(1.1)'
               }"
         >
-            <div class="d-flex flex-wrap">
-              <p>CHAT</p>
-              <pre>
-                {{ useGameStore().holdenCard }}
-                {{ useGameStore().holdenCardAction }}
-                {{ useGameStore().holdenCardActionData }}
-              </pre>
+            <div class="d-flex p-2">
+	            <Chat/>
             </div>
-          <div>
+          <div class="d-flex flex-column p-2" :style="{backgroundColor: LIGHT_BLUE, borderRadius: '5px'}">
             <p>MENU</p>
+	          <RouterLink class="btn btn-game" to="/">Quitter</RouterLink>
+	          <button class="btn btn-game" @click="">Options</button>
           </div>
-          <div>
-            <p>MISSIONS</p>
+          <div class="d-flex flex-column justify-content-center align-items-center p-2">
+	          <p>MISSIONS</p>
+            <div
+	            class="m-2 w-100 h-100 text-center rounded-2 d-flex align-items-center text-center"
+	            v-for="card of socketStore?.currentPlayer?.missionCards ?? []"
+	            :style="{
+					backgroundColor: BACKGROUND,
+					color: YELLOW,
+					border: `solid 3.5px ${YELLOW}`,
+				}"
+            >
+              {{ card.text }}
+            </div>
           </div>
-          <div>
-            <p>DECK</p>
+          <div class="">
+	          <img
+		          class="img h-100"
+		          :src="`/cards/assassin.png`"
+	          >
           </div>
         </div>
 
         <!-- FAMILIES -->
         <template v-for="family of Object.values(socketStore?.game?.infos?.FAMILIES ?? [])">
-
           <div class="col d-flex flex-column" :style="{backgroundColor: family.color}">
-
-            <PlateauDeck class="h-100"  :cards="socketStore.game.familyCards[family.id].enlighten" />
-
-            <PlateauDeck class="h-100" :cards="socketStore.game.familyCards[family.id].shadowed" />
-
+            <PlateauDeck class="h-100" :cards="socketStore.game.familyCards[family.id].enlighten" action="enlight"/>
+            <PlateauDeck class="h-100" :cards="socketStore.game.familyCards[family.id].shadowed" action="shadow"/>
           </div>
-
         </template>
 
       </div>
     </div>
 
-    <div class="h-100" :style="{backgroundColor: useColor()}">
-      <p>own player</p>
-    </div>
+	  <PlateauPlayer />
+
   </div>
-<!--  <div-->
-<!--      ref="plateauRef"-->
-<!--      class="plateau h-100 w-100 d-flex"-->
-<!--  >-->
-
-<!--    <div class="side">-->
-<!--      <p>Cartes mission</p>-->
-
-<!--      <p class="mission-card" v-for="card of socketStore?.currentPlayer?.missionCards ?? []">-->
-<!--        {{ card.text }}-->
-<!--      </p>-->
-
-<!--    </div>-->
-<!--    <div class="w-100 d-flex justify-content-between bg-dark">-->
-<!--      <div-->
-<!--          class="w-100 d-flex flex-column justify-content-center position-relative"-->
-<!--          v-for="family of socketStore?.game?.infos?.FAMILIES"-->
-<!--          :style="{-->
-<!--                  backgroundColor: family.color,-->
-<!--                  width: plateauRef?.getBoundingClientRect().width / 7 - 0.1 + 'px'-->
-<!--                }"-->
-<!--      >-->
-<!--        <Action-->
-<!--            class="w-100 h-50 top-0 position-absolute"-->
-<!--            action="enlight"-->
-<!--            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].enlighten}"-->
-<!--        >-->
-<!--          <Deck :cards="socketStore.game.familyCards[family.id].enlighten"/>-->
-<!--        </Action>-->
-<!--        <p>{{ family.title}}</p>-->
-<!--        <Action-->
-<!--            class="w-100 h-50 bottom-0 position-absolute"-->
-<!--            action="shadow"-->
-<!--            :data="{familyId: family.id, relatedDeck: socketStore.game.familyCards[family.id].shadowed}"-->
-<!--        >-->
-<!--          <Deck :cards="socketStore.game.familyCards[family.id].shadowed"/>-->
-<!--        </Action>-->
-
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div class="side">-->
-<!--      <p>Pioche</p>-->
-<!--    </div>-->
-<!--  </div>-->
-
 </template>
 
 <style scoped>
@@ -176,6 +147,24 @@ const shadowedRef = ref()
 .mission-card p {
   word-break: break-word;
   font-weight: 800;
+}
 
+.btn-game {
+	background-color: #2c3e50;
+	border: solid 2px ;
+
+	color: #efe9cc;
+	border-color: #A97A00;
+	font-weight: 900;
+	font-family: Amiri;
+}
+.btn-game:hover {
+	background-color: #efe9cc;
+	border: solid 2px ;
+
+	color: #2c3e50;
+	border-color: #A97A00;
+	font-weight: 900;
+	font-family: Amiri;
 }
 </style>

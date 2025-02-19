@@ -26,14 +26,16 @@ watch(() => socketStore.game?.state, (newValue) => {
 
 <template>
 
-  <div class="chat-container">
+  <div class="d-flex flex-column w-100 h-100">
 
-    <div ref="messagesDivRef" class="messages">
-      <p v-for="message of chatStore.messages">{{ message }}</p>
-    </div>
+	  <div ref="messagesDivRef" class="messages">
+		  <p v-for="message of chatStore.messages">{{ message }}</p>
+	  </div>
 
-    <textarea v-model="textareaValue"></textarea>
-    <button @click="sendMessage">Send</button>
+	  <div class="d-flex">
+		  <textarea v-model="textareaValue"></textarea>
+		  <button @click="sendMessage">Send</button>
+	  </div>
   </div>
 
 </template>
@@ -41,6 +43,6 @@ watch(() => socketStore.game?.state, (newValue) => {
 <style scoped>
 .messages {
   overflow-y: scroll;
-  max-height: 20vh;
+  max-height: 100%;
 }
 </style>
