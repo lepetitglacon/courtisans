@@ -30,9 +30,12 @@ onBeforeRouteLeave((to, from) => {
 </script>
 
 <template>
-  <div class="d-flex flex-column col-6" >
+  <div class="d-flex flex-column col-6 m-2 rounded-2">
 
-    <div class="d-flex h-100" :style="{backgroundColor: useColor()}">
+    <div class="d-flex h-100 rounded-2 pb-2" :style="{
+		backdropFilter: 'blur(10px)',
+	  backgroundColor: 'rgba(100, 100, 100, 0.5)',
+    }">
       <div class="m-5 w-100 d-flex position-relative" :style="{backgroundColor: useColor()}">
 
         <!-- PANEL -->
@@ -77,7 +80,8 @@ onBeforeRouteLeave((to, from) => {
 
         <!-- FAMILIES -->
         <template v-for="family of Object.values(socketStore?.game?.infos?.FAMILIES ?? [])">
-          <div class="col d-flex flex-column" :style="{backgroundColor: family.color}">
+          <div class="col d-flex flex-column" :style="{
+          }">
             <PlateauDeck class="h-100" :cards="socketStore.game.familyCards[family.id].enlighten" action="enlight"/>
             <PlateauDeck class="h-100" :cards="socketStore.game.familyCards[family.id].shadowed" action="shadow"/>
           </div>

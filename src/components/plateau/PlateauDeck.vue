@@ -28,7 +28,8 @@ gameStore.registerActionDiv(
 </script>
 
 <template>
-  <div ref="actionRef" :style="{backgroundColor: useColor()}"
+  <div ref="actionRef" :style="{
+  }"
     :class="[
         hovered && 'hovered'
     ]"

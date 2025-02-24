@@ -42,6 +42,10 @@ onUnmounted(async () => {
 
 <template>
 
+
+	<div id="image-bg"></div>
+	<div id="clip-path"></div>
+
 	<div v-if="socketStore.game" class="d-flex flex-column flex-xl-row w-100 h-100" :style="{backgroundColor: useColor()}">
 
 		<!-- Left Column (2 Rows) -->
@@ -99,8 +103,6 @@ onUnmounted(async () => {
 		<p class=" text-center">Chargement... ({{ socketStore.isConnected ? 'Connecté' : 'En attente de connexion' }})</p>
 	</div>
 
-	<div id="image-bg"></div>
-	<div id="clip-path"></div>
 
 </template>
 

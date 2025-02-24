@@ -46,17 +46,29 @@ const color = computed(() => {
 <template>
     <div
       ref="playerContainerRef"
-      class="d-flex h-100 w-100 "
+      class="d-flex h-100 w-100 position-relative"
       :class="[
           left ? '' : 'flex-row-reverse ',
           hovered && gameStore.holdenCard && 'hovered',
           !user.socket.connected && 'disconnected'
       ]"
     >
+	    <div
+		    class="player-info position-absolute z-1 mt-2"
+		    :class="[
+				left ? '' : 'text-end rtl',
+	        ]"
+		    :style="{
+				left: left && '15px',
+				right: !left && '15px'
+		    }"
+	    >
+		    <div>{{user.name}}</div>
+	    </div>
 
 	<!-- DECKS CARTES -->
       <div
-          class="col-10 d-flex flex-wrap m-2 p-2 rounded-2"
+          class="player-decks-container col-10 d-flex flex-wrap m-2 p-2 rounded-2"
           :class="[
               left ? 'justify-content-start' : 'justify-content-end',
           ]"
@@ -65,29 +77,17 @@ const color = computed(() => {
 		      <div
 			      v-if="family.id !== 'assassin'"
 			      class="family-deck-container m-1 rounded-1"
-            :style="{backgroundColor: family.color}"
+			      :style="{
+				  }"
 		      >
 		            <Deck
 		                v-if="user?.cards"
 		                :cards="user?.cards?.filter(card => card.family.id === family.id && card.power !== 'hidden') ?? {}"
 		                :show-back-face="false"
-                    :reversed="['grey', 'lightgreen', 'red'].includes(family.id)"
+                        :reversed="['grey', 'lightgreen', 'red'].includes(family.id)"
 		            />
 		      </div>
 	      </template>
-      </div>
-
-      <div class="col-2 info position-relative d-flex flex-column">
-        <div
-	        class="player-info position-absolute z-1"
-	        :class="[
-				left ? '' : 'text-end rtl',
-	        ]"
-        >
-          <p>{{user.name}}</p>
-          <p>{{user.socket.id}}</p>
-        </div>
-        <Deck :cards="user?.cards?.filter(card => card.power === 'hidden') ?? []" :show-back-face="true"/>
       </div>
 
     </div>
@@ -99,7 +99,10 @@ const color = computed(() => {
   height: 90%;
   background-color: rgba(0, 0, 0, 0.17);
 }
-
+.player-decks-container {
+	background-color: rgba(100, 100, 100, 0.5);
+	backdrop-filter: blur(10px);
+}
 .disconnected {
   opacity: .3;
 }
