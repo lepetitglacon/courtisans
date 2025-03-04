@@ -37,8 +37,13 @@ gameStore.registerActionDiv(
 		<!-- FAMILIES -->
 		<template v-for="family of Object.values(socketStore?.game?.infos?.FAMILIES ?? [])">
 			<div class="col d-flex flex-column" :style="{backgroundColor: family.color}">
-				<Deck v-if="family.id !== 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')" action="enlight"/>
-				<Deck v-if="family.id === 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.power === 'hidden')" action="enlight"/>
+				<template v-if="socketStore.game.state !== 'COUNTING'">
+					<Deck v-if="family.id !== 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')" action="enlight"/>
+					<Deck v-if="family.id === 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.power === 'hidden')" action="enlight"/>
+				</template>
+				<template v-else>
+					<Deck class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.family.id === family.id)" action="enlight"/>
+				</template>
 			</div>
 		</template>
 	</div>

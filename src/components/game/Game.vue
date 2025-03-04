@@ -69,7 +69,7 @@ onUnmounted(async () => {
 		</div>
 
 		<!-- Center Column -->
-    <Plateau/>
+        <Plateau/>
 
 		<!-- Right Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}" style="z-index: 1">

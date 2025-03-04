@@ -64,6 +64,11 @@ const color = computed(() => {
 		    }"
 	    >
 		    <div>{{user.name}}</div>
+		    <div v-if="socketStore?.game?.score?.users[user.socket.id]">
+			    {{ Object.values(socketStore?.game?.score?.users[user.socket.id]).reduce((acc, el) => {
+     				return acc += el
+			    }, 0) }}
+		    </div>
 	    </div>
 
 	<!-- DECKS CARTES -->
@@ -82,7 +87,13 @@ const color = computed(() => {
 		      >
 		            <Deck
 		                v-if="user?.cards"
-		                :cards="user?.cards?.filter(card => card.family.id === family.id && card.power !== 'hidden') ?? {}"
+		                :cards="user?.cards?.filter(card => {
+							if (socketStore.game?.state !== 'COUNTING') {
+								return card.family.id === family.id && card.power !== 'hidden'
+							} else {
+								return card.family.id === family.id
+							}
+						}) ?? {}"
 		                :show-back-face="false"
                         :reversed="['grey', 'lightgreen', 'red'].includes(family.id)"
 		            />

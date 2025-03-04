@@ -153,9 +153,6 @@ export default class Game {
                 await this.modelInstance.save()
             }
             console.log(`[${this.roomId}] saved`)
-            if (state === STATE.COUNTING) {
-                this.countCardForEndgame()
-            }
         })
     }
 
@@ -322,6 +319,17 @@ export default class Game {
 
     countCardForEndgame() {
         const families = {}
+
+        // remettre les cartes cachées dans les familles
+        for (const card of this.familyCards['assassin'].enlighten) {
+            this.familyCards[card.family.id].enlighten.push(card)
+        }
+        this.familyCards['assassin'].enlighten.length = 0
+        for (const card of this.familyCards['assassin'].shadowed) {
+            this.familyCards[card.family.id].shadowed.push(card)
+        }
+        this.familyCards['assassin'].shadowed.length = 0
+
         for (const family of Object.values(FAMILIES)) {
             const familiesEnlightenmentStatus = this.familyCards[family.id].enlighten.length - this.familyCards[family.id].shadowed.length
 
@@ -334,7 +342,6 @@ export default class Game {
             }
 
             for (const user of this.users) {
-
                 let score = 0
                 for (const card of user.cards.filter(c => c.family.id === family.id)) {
                     score += families[card.family.id] * (card.power === 'noble' ? 2 : 1)
@@ -343,6 +350,8 @@ export default class Game {
                     this.score.users[user.socket.id] = {}
                 }
                 this.score.users[user.socket.id][family.id] = score
+
+                // TODO faire les cartes missions
             }
         }
 
@@ -369,9 +378,10 @@ export default class Game {
     update() {
         this.io.to(this.roomId).emit('game:update', this.toJson())
 
-        if (this.getRemainingCardsToPlay() <= 0) {
+        if (this.getRemainingCardsToPlay() <= 0 && (this.state !== STATE.COUNTING)) {
             this.changeState(STATE.COUNTING)
-            this.io.emit('game:end:start', this.toJson())
+            this.countCardForEndgame()
+            this.update()
         }
     }
 

@@ -13,10 +13,6 @@ export default class fillCardsTest {
         if (this.game.state === STATE.PLAYING) {
             for (let i = 0; i < this.turns; i++) {
 
-                if (this.game.cards < 1) {
-                    break
-                }
-
                 for (const user of this.game.users) {
                     if (user.socket.id === this.game.userTurnId) {
 
@@ -42,12 +38,6 @@ export default class fillCardsTest {
                 }
             }
         }
-
-        // this.game.eventDispatcher.on('changeState', (state) => {
-        //     console.log(state)
-        //
-        //
-        // })
     }
 
 }

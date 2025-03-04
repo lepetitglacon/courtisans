@@ -21,6 +21,7 @@ function handleClick(e) {
     <button @click="handleClick" data-action="restart">Restart</button>
     <button @click="handleClick" data-action="test">Test</button>
 
+	<div>Cartes totales : {{ socketStore.game?.cards.length }}</div>
   </div>
 
 </template>

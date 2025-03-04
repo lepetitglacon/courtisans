@@ -2,8 +2,10 @@
 import {inject, onMounted, ref} from "vue";
 import Action from "@/components/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
+import {useSocketStore} from "@/stores/socket.ts";
 
 const gameStore = useGameStore()
+const socketStore = useSocketStore()
 
 const props = defineProps([
   'card',
@@ -40,14 +42,13 @@ gameStore.registerActionDiv(
 )
 
 function getImgSrc() {
-  if (props.showBackFace) {
+  if (
+	  socketStore.game?.state !== 'COUNTING'
+	  && (props.card.power === 'hidden' || props.showBackFace)
+  ) {
     return 'assassin'
   }
-  if (props.card.power !== 'hidden' || props.isPlayerDeck) {
-    return `${props.card.family.id}/${props.card.power}`
-  } else {
-    return 'assassin'
-  }
+  return `${props.card.family.id}/${props.card.power}`
 }
 
 function updateRotation() {
@@ -94,6 +95,7 @@ function onMouseLeave(e) {
     <img
         class="img"
         :src="`/cards/${getImgSrc()}.png`"
+
     >
   </div>
 </template>

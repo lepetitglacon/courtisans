@@ -15,13 +15,13 @@
 </script>
 
 <template>
-
+.5
   <div class="ownplayer d-flex justify-content-center position-absolute"
     ref="absoluteContainerRef"
   >
 
   <div
-	  v-if="socketStore?.isYourTurn"
+	  v-if="socketStore?.isYourTurn && socketStore.game?.state !== 'COUNTING'"
 	  class="position-absolute d-flex"
 	  style="top: -60px"
   >
