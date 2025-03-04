@@ -39,10 +39,37 @@ gameStore.registerActionDiv(
 			<div class="col d-flex flex-column" :style="{backgroundColor: family.color}">
 				<template v-if="socketStore.game.state !== 'COUNTING'">
 					<Deck v-if="family.id !== 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.family.id === family.id && card.power !== 'hidden')" action="enlight"/>
-					<Deck v-if="family.id === 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.power === 'hidden')" action="enlight"/>
+					<Deck v-else class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.power === 'hidden')" action="enlight"/>
 				</template>
 				<template v-else>
-					<Deck class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.family.id === family.id)" action="enlight"/>
+          <Deck v-if="family.id !== 'assassin'" class="h-100" :cards="socketStore.currentPlayer.cards.filter(card => card.family.id === family.id)"/>
+          <div v-else class="d-flex flex-column w-100 h-100 align-items-center">
+            <p>Résultat</p>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Famille</th>
+                  <th>Points</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="[familyId, points] of Object.entries(socketStore?.game?.score?.users[socketStore.currentPlayer.socket.id])">
+                  <th :style="{backgroundColor: Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId).color}">
+                    {{ Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId).title }}
+                  </th>
+                  <td :style="{backgroundColor: Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId).color}">{{ points }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Total</th>
+                  <td>{{ Object.values(socketStore?.game?.score?.users[socketStore.currentPlayer.socket.id]).reduce((acc, el) => {
+                    return acc += el
+                  }, 0) }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
 				</template>
 			</div>
 		</template>

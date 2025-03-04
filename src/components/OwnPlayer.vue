@@ -20,19 +20,21 @@
     ref="absoluteContainerRef"
   >
 
-  <div
-	  v-if="socketStore?.isYourTurn && socketStore.game?.state !== 'COUNTING'"
-	  class="position-absolute d-flex"
-	  style="top: -60px"
-  >
-	    <p>Your turn</p>
-	    <div
-		    v-for="action of socketStore?.game.userActionsToPlay"
-		    class="mx-2 px-2 bg-light text-dark rounded-2"
-	    >
-	        <p>{{ action }}</p>
-	    </div>
-  </div>
+    <template v-if="socketStore.game?.state !== 'COUNTING'">
+      <div
+        v-if="socketStore?.isYourTurn"
+        class="position-absolute d-flex"
+        style="top: -60px"
+      >
+          <p>Your turn</p>
+          <div
+            v-for="action of socketStore?.game.userActionsToPlay"
+            class="mx-2 px-2 bg-light text-dark rounded-2"
+          >
+              <p>{{ action }}</p>
+          </div>
+      </div>
+    </template>
 
     <div class="ownplayer-inner d-flex justify-content-center">
       <div
