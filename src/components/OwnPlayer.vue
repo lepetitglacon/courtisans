@@ -22,17 +22,19 @@
 
     <template v-if="socketStore.game?.state !== 'COUNTING'">
       <div
-        v-if="socketStore?.isYourTurn"
-        class="position-absolute d-flex"
-        style="top: -60px"
+        v-if="socketStore?.isYourTurn && socketStore.currentPlayer?.handCards?.length"
+        class="position-absolute d-flex flex-column"
+        style="top: -100px"
       >
-          <p>Your turn</p>
-          <div
-            v-for="action of socketStore?.game.userActionsToPlay"
-            class="mx-2 px-2 bg-light text-dark rounded-2"
-          >
-              <p>{{ action }}</p>
-          </div>
+          <p class="text-center">À votre tour !</p>
+	      <div class="d-flex ">
+	          <div
+	            v-for="action of socketStore?.game.userActionsToPlay"
+	            class="mx-2 px-2 bg-light text-dark rounded-2"
+	          >
+	              <p>{{ action === 'give' ? 'Donner' : action === 'place' ? 'Placer' : 'Garder' }}</p>
+	          </div>
+	      </div>
       </div>
     </template>
 

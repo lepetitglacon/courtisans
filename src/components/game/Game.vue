@@ -52,19 +52,19 @@ onUnmounted(async () => {
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}" style="z-index: 1">
 			<div class="h-100 d-flex justify-content-end" :style="{backgroundColor: useColor()}">
 			    <Player
-              v-if="socketStore?.otherPlayers[0]"
-              :user="socketStore.otherPlayers[0]"
-              :key="socketStore.otherPlayers[0].socket.id"
-              :left="true"
-          />
+	              v-if="socketStore?.otherPlayers[0]"
+	              :user="socketStore.otherPlayers[0]"
+	              :key="socketStore.otherPlayers[0].socket.id"
+	              :left="true"
+	            />
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-          <Player
-              v-if="socketStore?.otherPlayers[1]"
-              :user="socketStore.otherPlayers[1]"
-              :key="socketStore.otherPlayers[1].socket.id"
-              :left="true"
-          />
+	          <Player
+	              v-if="socketStore?.otherPlayers[1]"
+	              :user="socketStore.otherPlayers[1]"
+	              :key="socketStore.otherPlayers[1].socket.id"
+	              :left="true"
+	          />
 			</div>
 		</div>
 
@@ -74,20 +74,20 @@ onUnmounted(async () => {
 		<!-- Right Column (2 Rows) -->
 		<div class="d-flex flex-column col" :style="{backgroundColor: useColor()}" style="z-index: 1">
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player
-            v-if="socketStore?.otherPlayers[2]"
-            :user="socketStore.otherPlayers[2]"
-            :key="socketStore.otherPlayers[2].socket.id"
-            :left="false"
-        />
+		        <Player
+		            v-if="socketStore?.otherPlayers[2]"
+		            :user="socketStore.otherPlayers[2]"
+		            :key="socketStore.otherPlayers[2].socket.id"
+		            :left="false"
+		        />
 			</div>
 			<div class="h-100" :style="{backgroundColor: useColor()}">
-        <Player
-            v-if="socketStore?.otherPlayers[3]"
-            :user="socketStore.otherPlayers[3]"
-            :key="socketStore.otherPlayers[3].socket.id"
-            :left="false"
-        />
+		        <Player
+		            v-if="socketStore?.otherPlayers[3]"
+		            :user="socketStore.otherPlayers[3]"
+		            :key="socketStore.otherPlayers[3].socket.id"
+		            :left="false"
+		        />
 			</div>
 		</div>
 

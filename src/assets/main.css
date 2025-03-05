@@ -15,7 +15,6 @@
   background-color: #EFE9CC;
 
   font-family: medieval, "Roboto Mono", monospace;
-
 }
 html {
   overflow: hidden;
@@ -33,7 +32,7 @@ html {
   background-color: #2c3e50 !important;
   border: solid 2px !important;
 
-  color: #efe9cc;
+  color: #efe9cc !important;
   border-color: #A97A00 !important;
   font-weight: 900 !important;
 }
@@ -41,7 +40,7 @@ html {
   background-color: #efe9cc !important;
   border: solid 2px !important;
 
-  color: #2c3e50;
+  color: #2c3e50 !important;
   border-color: #A97A00 !important;
   font-weight: 900 !important;
 }

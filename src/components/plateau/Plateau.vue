@@ -32,14 +32,14 @@ onBeforeRouteLeave((to, from) => {
 <template>
   <div class="d-flex flex-column col-6 m-2 rounded-2">
 
-    <div class="d-flex h-100 rounded-2 pb-2" :style="{
+    <div class="d-flex h-100 rounded-2 mb-2 pb-2" :style="{
 		backdropFilter: 'blur(10px)',
-	  backgroundColor: 'rgba(100, 100, 100, 0.5)',
+	    backgroundColor: 'rgba(100, 100, 100, 0.5)',
     }">
       <div class="m-5 w-100 d-flex position-relative" :style="{backgroundColor: useColor()}">
 
         <!-- PANEL -->
-        <div class="d-flex justify-content-evenly w-100 h-50 py-2 px-5 position-absolute"
+        <div class="d-flex justify-content-evenly w-100 h-50 p-1 position-absolute"
              :style="{
                 zIndex: '1',
                 backgroundColor: BLUE,
@@ -48,15 +48,16 @@ onBeforeRouteLeave((to, from) => {
                 transform: 'translateY(50%) scaleX(1.1)'
               }"
         >
-            <div class="d-flex p-2">
+	        <div class="d-flex">
 	            <Chat/>
-            </div>
-          <div class="d-flex flex-column p-2" :style="{backgroundColor: LIGHT_BLUE, borderRadius: '5px'}">
-            <p>MENU</p>
-	          <RouterLink class="btn btn-game" to="/">Quitter</RouterLink>
-	          <button class="btn btn-game" @click="">Options</button>
+	        </div>
+          <div class="panel-item">
+	          <img
+		          class="img h-100"
+		          :src="`/cards/assassin.png`"
+	          >
           </div>
-          <div class="d-flex flex-column justify-content-center align-items-center p-2">
+          <div class="d-flex flex-column justify-content-center align-items-center panel-item">
 	          <p>MISSIONS</p>
             <div
 	            class="m-2 w-100 h-100 text-center rounded-2 d-flex align-items-center text-center"
@@ -70,11 +71,13 @@ onBeforeRouteLeave((to, from) => {
               {{ card.text }}
             </div>
           </div>
-          <div class="">
-	          <img
-		          class="img h-100"
-		          :src="`/cards/assassin.png`"
-	          >
+          <div class="d-flex flex-column align-items-center" :style="{
+			  backgroundColor: YELLOW, borderRadius: '5px',
+			  color: 'white'
+		  }">
+            <p>MENU</p>
+	          <RouterLink class="btn btn-game" to="/">Quitter</RouterLink>
+	          <button class="btn btn-game" @click="">Options</button>
           </div>
         </div>
 
@@ -90,7 +93,7 @@ onBeforeRouteLeave((to, from) => {
       </div>
     </div>
 
-	  <PlateauPlayer />
+    <PlateauPlayer />
 
   </div>
 </template>
@@ -98,6 +101,10 @@ onBeforeRouteLeave((to, from) => {
 <style scoped>
 .plateau {
 
+}
+.panel-item {
+	margin-right: 2px;
+	margin-left: 2px;
 }
 .side {
   width: 15%;
