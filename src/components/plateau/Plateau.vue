@@ -10,6 +10,7 @@ import PlateauDeck from "@/components/plateau/PlateauDeck.vue";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
 import PlateauPlayer from "@/components/plateau/PlateauPlayer.vue";
 import Chat from "@/components/Chat.vue";
+import AdminPanel from "@/components/UI/admin/AdminPanel.vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
@@ -78,6 +79,7 @@ onBeforeRouteLeave((to, from) => {
             <p>MENU</p>
 	          <RouterLink class="btn btn-game" to="/">Quitter</RouterLink>
 	          <button class="btn btn-game" @click="">Options</button>
+	          <AdminPanel v-if="socketStore?.currentPlayer?.admin"/>
           </div>
         </div>
 

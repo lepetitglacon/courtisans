@@ -77,10 +77,6 @@ export default class Game {
             await this.modelInstance.save()
             this.roomId = this.modelInstance.id
         }
-
-        this.initCards()
-        this.update()
-        console.log(`[${this.roomId}] init`)
     }
 
     initCards() {
@@ -116,8 +112,20 @@ export default class Game {
     }
 
     shuffleCards() {
-        shuffleArray(this.cards)
         shuffleArray(this.missionCards)
+        shuffleArray(this.cards)
+        // retirer les cartes en fonction du nombre de joueurs
+        let numberOfCardsToRemoveBasedOnPlayers
+        switch (this.users.length) {
+            case 2: numberOfCardsToRemoveBasedOnPlayers = 30; break;
+            case 3: numberOfCardsToRemoveBasedOnPlayers = 18; break;
+            case 4: numberOfCardsToRemoveBasedOnPlayers = 6; break;
+            default: numberOfCardsToRemoveBasedOnPlayers = 0; break;
+        }
+        for (let i = 0; i < numberOfCardsToRemoveBasedOnPlayers; i++) {
+            this.cards.pop()
+        }
+
     }
 
     async bind() {
@@ -235,6 +243,8 @@ export default class Game {
     }
 
     start() {
+        this.initCards()
+
         this.shuffleCards()
         this.distributeCardsToEveryPlayer()
 
@@ -378,7 +388,7 @@ export default class Game {
     update() {
         this.io.to(this.roomId).emit('game:update', this.toJson())
 
-        if (this.getRemainingCardsToPlay() <= 0 && (this.state !== STATE.COUNTING)) {
+        if (this.getRemainingCardsToPlay() <= 0 && (this.state === STATE.COUNTING)) {
             this.changeState(STATE.COUNTING)
             this.countCardForEndgame()
             this.update()

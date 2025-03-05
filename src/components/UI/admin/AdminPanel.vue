@@ -4,7 +4,7 @@ import {useSocketStore} from "@/stores/socket.ts";
 
 const socketStore = useSocketStore()
 
-const open = ref(true)
+const open = ref(false)
 
 function handleClick(e) {
   socketStore.emit(`client/admin/${e.target.dataset.action}`)
@@ -12,8 +12,7 @@ function handleClick(e) {
 </script>
 
 <template>
-
-  <button @click="open = !open">Admin</button>
+	<button class="btn btn-game" @click="open = !open">Admin</button>
 
   <div class="admin" v-if="open">
 

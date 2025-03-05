@@ -11,12 +11,7 @@ const socketStore = useSocketStore()
 <template>
 
   <div id="ui" class="position-absolute">
-    <AdminPanel/>
 
-    <div v-if="socketStore.game?.score?.users">
-      <h2>SCORE</h2>
-      <pre>{{ socketStore.game.score }}</pre>
-    </div>
   </div>
 
 </template>

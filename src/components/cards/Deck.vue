@@ -9,18 +9,29 @@ const props = defineProps<{
 }>()
 
 const offset = ref(props.reversed ? -30 : 30)
-
+const hovered = ref(false)
+function onMouseEnter() {
+	offset.value += props.reversed ? -20 : 20
+	hovered.value = true
+}
+function onMouseLeave() {
+	offset.value -= props.reversed ? -20 : 20
+	hovered.value = false
+}
 </script>
 
 <template>
 
-  <div class="deck-container position-relative d-flex flex-column "
+  <div class="deck-container position-relative d-flex flex-column"
        :class="[
            reversed && 'align-self-end'
        ]"
+       :style="{
+	    zIndex: hovered ? 10000000000 : 0,
+       }"
 
-    @mouseenter="offset += props.reversed ? -20 : 20"
-    @mouseleave="offset -= props.reversed ? -20 : 20"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
   >
     <DeckCard
         v-for="[i, card] of cards.entries()"
@@ -29,6 +40,9 @@ const offset = ref(props.reversed ? -30 : 30)
         :index="i"
         :showBackFace="showBackFace"
         :offset="offset"
+        :style="{
+		    zIndex: hovered ? 10000000000 : 0,
+	       }"
     />
   </div>
 
