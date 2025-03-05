@@ -3,6 +3,7 @@ import {computed, ref} from "vue";
 import {useChatStore} from "@/stores/chat.ts";
 import {Manager, Socket} from "socket.io-client";
 import {useGameStore} from "@/stores/game.ts";
+import {useSoundStore} from "@/stores/sound.ts";
 
 export const useSocketStore = defineStore("socket", () => {
     const chatStore = useChatStore()
@@ -56,8 +57,14 @@ export const useSocketStore = defineStore("socket", () => {
         });
 
         socket.value.on("game:update", (data) => {
+            const lastHand = currentPlayer?.value?.handCards?.length
+
             // game.value = {}
             game.value = data
+
+            if (currentPlayer.value?.handCards?.length === 3 && currentPlayer.value?.handCards?.length !== lastHand) {
+                useSoundStore().sounds.get('draw').play()
+            }
         });
     }
 

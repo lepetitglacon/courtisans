@@ -3,15 +3,19 @@
 
   import {useSocketStore} from "@/stores/socket.ts";
   import {useGameStore} from "@/stores/game.ts";
-  import {provide, ref} from "vue";
+  import {provide, ref, watch} from "vue";
+  import {useSoundStore} from "@/stores/sound.ts";
 
   const socketStore = useSocketStore()
   const gameStore = useGameStore()
+  const soundStore = useSoundStore()
 
   const absoluteContainerRef = ref()
 
   provide('killAction', 'kill_own')
   provide('absoluteContainerRef', absoluteContainerRef)
+
+
 </script>
 
 <template>

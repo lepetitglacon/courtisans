@@ -7,14 +7,18 @@ import {inject, onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
 import Action from "@/components/actions/Action.vue";
+import {useSoundStore} from "@/stores/sound.ts";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()
 const chatStore = useChatStore()
+const soundStore = useSoundStore()
 
 const sound1 = new Audio(sound_hover_1)
+sound1.volume = 0.2
 const sound2 = new Audio(sound_hover_2)
-const sounds = [sound1, sound2]
+sound2.volume = 0.2
+const sounds = [sound1]
 
 const props = defineProps([
     'card',
@@ -80,7 +84,9 @@ function onMouseDown(e) {
   dragging.value = true
 }
 function onValidationResult(e) {
-  if (!e.valid) {
+  if (e.valid) {
+    soundStore.sounds.get('play')?.play()
+  } else {
 
   }
   resetCard()
@@ -136,31 +142,6 @@ function snap(event) {
 	  cardContainerRef.value.style.opacity = 0.5
     gameStore.holdenCardAction = action
     closestSnap.value.hovered = true
-
-
-    // // ajouter les cartes aux fakeDeck
-    // if (closestSnap.value.data?.familyId) {
-    //   const type = closestSnap.value.action === 'shadow' ? 'shadowed' : 'enlighten'
-    //   const familyDeck = socketStore.game.familyCards[closestSnap.value.data.familyId][type]
-    //   if (!familyDeck.includes(props.card)) {
-    //     familyDeck.push(props.card)
-    //     fakeCardsInDeck.value.push(familyDeck)
-    //     hidden.value = true
-    //   }
-    // }
-    //
-    // if (closestSnap.value !== lastSnap.value) {
-    //   for (const fakeCardInDeck of fakeCardsInDeck.value) {
-    //     fakeCardInDeck.remove(props.card)
-    //   }
-    //   hidden.value = false
-    // }
-    //
-    // const snapRect = closestSnap.value.ref.getBoundingClientRect();
-    // cardContainerRef.value.style.left = `${(snapRect.left - snapRect.width/2) - (cardContainerRef.value.offsetParent.offsetLeft - snapRect.width/2)}px`;
-    // cardContainerRef.value.style.top = `${(snapRect.top - snapRect.height/2) - cardContainerRef.value.offsetParent.offsetTop}px`;
-
-
   } else {
 	  cardContainerRef.value.style.opacity = 1
     for (const fakeCardsInDeckElement of fakeCardsInDeck.value) {
@@ -238,8 +219,8 @@ function resetCard() {
 
 function onMouseEnter(e) {
   hovering.value = true
-  if (isMovable()) {
-    sounds[Math.floor(Math.random()*sounds.length)].play()
+  if (isMovable() && dragging.value === false) {
+    sounds[Math.floor(Math.random() * sounds.length)].play()
     clearTimeout(resetRotationTimeOut)
   }
 }
