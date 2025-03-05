@@ -388,7 +388,7 @@ export default class Game {
     update() {
         this.io.to(this.roomId).emit('game:update', this.toJson())
 
-        if (this.getRemainingCardsToPlay() <= 0 && (this.state === STATE.COUNTING)) {
+        if (this.state === STATE.PLAYING && this.getRemainingCardsToPlay() <= 0) {
             this.changeState(STATE.COUNTING)
             this.countCardForEndgame()
             this.update()
