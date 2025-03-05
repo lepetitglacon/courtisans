@@ -77,6 +77,8 @@ export default class Game {
             await this.modelInstance.save()
             this.roomId = this.modelInstance.id
         }
+
+        this.update()
     }
 
     initCards() {
@@ -360,9 +362,60 @@ export default class Game {
                     this.score.users[user.socket.id] = {}
                 }
                 this.score.users[user.socket.id][family.id] = score
-
-                // TODO faire les cartes missions
             }
+        }
+
+        for (const user of this.users) {
+            for (const missionCard of user.missionCards) {
+                let ok = false
+
+                const currentIndex = this.users.indexOf(user)
+                let newIndex = currentIndex + (missionCard.ordre ? 1 : -1)
+                if (newIndex > this.users.length - 1) {
+                    newIndex = 0
+                }
+                if (newIndex < 0) {
+                    newIndex = this.users.length - 1
+                }
+                const otherUser = this.users[newIndex]
+
+                switch (missionCard.type) {
+                    case 'MoreThan': {
+                        missionCard.otherUserId = otherUser.socket.id
+                        ok = user.cards.filter(card => card.family.id === missionCard.family.id).length
+                            > otherUser.cards.filter(card => card.family.id === missionCard.family.id).length;
+                        break;
+                    }
+                    case 'lessThan': {
+                        missionCard.otherUserId = otherUser.socket.id
+                        ok = user.cards.filter(card => card.family.id === missionCard.family.id).length
+                            < otherUser.cards.filter(card => card.family.id === missionCard.family.id).length;
+                        break;
+                    }
+                    case 'Enlighten': {
+                        ok = families[missionCard.family.id] === 1
+                        break;
+                    }
+                    case 'Shadowed': {
+                        ok = families[missionCard.family.id] === -1
+                        break;
+                    }
+                }
+                missionCard.isValid = ok
+                if (!this.score.users[user.socket.id]['missions']) {
+                    this.score.users[user.socket.id]['missions'] = 0
+                }
+                this.score.users[user.socket.id]['Missions'] += ok ? 3 : 0
+            }
+
+            const total = Object.values(this.score.users[user.socket.id]).reduce((acc, el) => {
+                return acc += el
+            }, 0)
+            this.score.users[user.socket.id]['Total'] = total
+            this.io.to(this.roomId).emit('message', {
+                user: `[ORDI] -> `,
+                message: `${user.name}: ${total}`
+            })
         }
 
         this.score.families = families

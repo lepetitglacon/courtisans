@@ -40,7 +40,7 @@ onBeforeRouteLeave((to, from) => {
       <div class="m-5 w-100 d-flex position-relative" :style="{backgroundColor: useColor()}">
 
         <!-- PANEL -->
-        <div class="d-flex justify-content-evenly w-100 h-50 p-1 position-absolute"
+        <div class="d-flex justify-content-around w-100 h-50 p-1 position-absolute"
              :style="{
                 zIndex: '1',
                 backgroundColor: BLUE,
@@ -61,15 +61,18 @@ onBeforeRouteLeave((to, from) => {
           <div class="d-flex flex-column justify-content-center align-items-center panel-item">
 	          <p>MISSIONS</p>
             <div
-	            class="m-2 w-100 h-100 text-center rounded-2 d-flex align-items-center text-center"
+	            class="m-2 w-100 h-100 rounded-2 d-flex justify-content-center align-items-center text-center"
 	            v-for="card of socketStore?.currentPlayer?.missionCards ?? []"
 	            :style="{
-					backgroundColor: BACKGROUND,
-					color: YELLOW,
-					border: `solid 3.5px ${YELLOW}`,
-				}"
+                backgroundColor: BACKGROUND,
+                fontWeight: '700',
+                color: BLUE,
+                border: `solid 3.5px ${YELLOW}`,
+              }"
             >
               {{ card.text }}
+              <span v-if="card.isValid" class="badge bg-danger text-bg-secondary mx-1">+3</span>
+              <span v-if="card.otherUserId" class="badge bg-danger text-bg-secondary mx-1">{{ card.otherUserId }}</span>
             </div>
           </div>
           <div class="d-flex flex-column align-items-center" :style="{

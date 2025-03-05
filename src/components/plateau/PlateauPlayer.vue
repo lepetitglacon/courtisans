@@ -31,7 +31,7 @@ gameStore.registerActionDiv(
 		class="h-100 w-100 d-flex flex-column mt-2 p-5 rounded-2"
 		style="backdrop-filter: blur(10px); background-color: rgba(100, 100, 100, 0.5);"
 	>
-		<div>{{socketStore.currentPlayer.name}} (Vous)</div>
+    <p class="text-center">{{socketStore.currentPlayer.name}} (Vous)</p>
 
 
 		<div
@@ -63,16 +63,10 @@ gameStore.registerActionDiv(
 								</thead>
 								<tbody>
 								<tr v-for="[familyId, points] of Object.entries(socketStore?.game?.score?.users[socketStore.currentPlayer.socket.id])">
-									<th :style="{backgroundColor: Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId).color}">
-										{{ Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId).title }}
+									<th :style="{backgroundColor: Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId)?.color ?? ''}">
+										{{ Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId)?.title ?? familyId }}
 									</th>
-									<td :style="{backgroundColor: Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId).color}">{{ points }}</td>
-								</tr>
-								<tr>
-									<th scope="row">Total</th>
-									<td>{{ Object.values(socketStore?.game?.score?.users[socketStore.currentPlayer.socket.id]).reduce((acc, el) => {
-										return acc += el
-									}, 0) }}</td>
+									<td :style="{backgroundColor: Object.values(socketStore?.game?.infos?.FAMILIES).find(el => el.id === familyId)?.color ?? ''}">{{ points }}</td>
 								</tr>
 								</tbody>
 							</table>

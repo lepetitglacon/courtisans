@@ -64,6 +64,7 @@ const color = computed(() => {
 		    }"
 	    >
 		    <div>{{user.name}}</div>
+		    <div>{{user.socket.id}}</div>
 		    <div v-if="socketStore?.game?.score?.users[user.socket.id]">
 			    {{ Object.values(socketStore?.game?.score?.users[user.socket.id]).reduce((acc, el) => {
      				return acc += el

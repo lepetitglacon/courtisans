@@ -11,7 +11,6 @@ export default class ActionValidator {
         this.lastKillCardId = null
 
         this.actionsToPlay = new Set(Object.values(this.HIGHER_ACTIONS))
-
     }
 
     initForCurrentUser() {
@@ -98,8 +97,6 @@ export default class ActionValidator {
                 }
             }
         }
-
-
 
         switch (data.action) {
             case 'enlight':
