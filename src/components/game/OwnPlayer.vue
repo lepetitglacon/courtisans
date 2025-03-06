@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import Card from "@/components/cards/Card.vue";
+  import Card from "@/components/game/cards/Card.vue";
 
   import {useSocketStore} from "@/stores/socket.ts";
   import {useGameStore} from "@/stores/game.ts";

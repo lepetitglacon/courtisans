@@ -1,5 +1,4 @@
 import Card from "./card.js";
-import {randomBytes} from "node:crypto";
 
 export default class MissionCard extends Card {
 

@@ -2,7 +2,7 @@
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
 import {inject, onMounted, ref, watch} from "vue";
-import Rule from "@/components/actions/rule.ts";
+import Rule from "@/components/game/actions/rule.ts";
 
 const props = defineProps<{
   action: string,

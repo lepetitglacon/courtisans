@@ -3,7 +3,7 @@ import {ref} from "vue";
 import useColor from "@/composables/useColor.ts";
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
-import Deck from "@/components/cards/Deck.vue";
+import Deck from "@/components/game/cards/Deck.vue";
 
 const socketStore = useSocketStore()
 const gameStore = useGameStore()

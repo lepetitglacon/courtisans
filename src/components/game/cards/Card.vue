@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import sound_hover_1 from '../../assets/sounds/cards_handle/hover_1.wav'
-import sound_hover_2 from '../../assets/sounds/cards_handle/hover_2.wav'
+import sound_hover_1 from '../../../assets/sounds/cards_handle/hover_1.wav'
+import sound_hover_2 from '../../../assets/sounds/cards_handle/hover_2.wav'
 
 import {useSocketStore} from "@/stores/socket.ts";
 import {inject, onMounted, ref} from "vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useChatStore} from "@/stores/chat.ts";
-import Action from "@/components/actions/Action.vue";
+import Action from "@/components/game/actions/Action.vue";
 import {useSoundStore} from "@/stores/sound.ts";
 
 const socketStore = useSocketStore()

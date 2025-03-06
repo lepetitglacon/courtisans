@@ -1,4 +1,4 @@
-import higherAction from '../../shared/higherActions.js'
+import higherAction from '../../../shared/higherActions.js'
 
 export default class Rule {
 

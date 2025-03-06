@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useSocketStore} from "@/stores/socket.ts";
-import Player from "@/components/players/Player.vue";
+import Player from "@/components/game/players/Player.vue";
 import {inject, provide} from "vue";
 
 const socketStore = useSocketStore()

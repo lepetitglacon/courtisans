@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "vue-router";
-import Players from "@/components/players/Players.vue";
+import Players from "@/components/game/players/Players.vue";
 import AppContainer from "@/components/AppContainer.vue";
-import OwnPlayer from "@/components/OwnPlayer.vue";
+import OwnPlayer from "@/components/game/OwnPlayer.vue";
 import UI from "@/components/UI/UI.vue";
-import Plateau from "@/components/plateau/Plateau.vue";
+import Plateau from "@/components/game/plateau/Plateau.vue";
 import {onMounted, onUnmounted, provide, ref} from "vue";
 import {io} from "socket.io-client";
 import {useSocketStore} from "@/stores/socket.ts";
 import useColor, {BLUE} from "@/composables/useColor.ts";
-import Player from "@/components/players/Player.vue";
+import Player from "@/components/game/players/Player.vue";
 import {useGameStore} from "../../stores/game.ts";
 const route = useRoute()
 const socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
@@ -24,19 +24,19 @@ socketStore.socket = socket
 socketStore.bindEvents()
 provide('socket', socket)
 
-socket.on("connect", (e) => {
-  console.log(`connected to`, e)
-});
-
-socket.on("disconnect", (reason, description) => {
+function connect() {
+  console.log(`connected`)
+}
+function disconnect(reason, description) {
   console.log(`[SOCKET] disconnected for "${reason}" because "${description}"`)
-});
-
+}
 onMounted(() => {
+  socket.on("connect", connect)
+  socket.on("disconnect", disconnect);
 })
-
 onUnmounted(async () => {
-  socket.disconnect()
+  socket.off("connect", connect)
+  socket.off("disconnect", disconnect);
 })
 </script>
 

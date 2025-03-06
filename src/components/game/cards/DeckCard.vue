@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {inject, onMounted, ref} from "vue";
-import Action from "@/components/actions/Action.vue";
+import Action from "@/components/game/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
 import {useSocketStore} from "@/stores/socket.ts";
 

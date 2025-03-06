@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DeckCard from "@/components/cards/DeckCard.vue";
+import DeckCard from "@/components/game/cards/DeckCard.vue";
 import {provide, ref} from "vue";
 
 const props = defineProps<{

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {useSocketStore} from "@/stores/socket.ts";
-import Action from "@/components/actions/Action.vue";
+import Action from "@/components/game/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
-import Card from "@/components/cards/Card.vue";
-import Deck from "@/components/cards/Deck.vue";
+import Card from "@/components/game/cards/Card.vue";
+import Deck from "@/components/game/cards/Deck.vue";
 import {provide, ref} from "vue";
 import useColor, {BLUE, YELLOW, BACKGROUND, LIGHT_BLUE} from "@/composables/useColor.ts";
-import PlateauDeck from "@/components/plateau/PlateauDeck.vue";
+import PlateauDeck from "@/components/game/plateau/PlateauDeck.vue";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
-import PlateauPlayer from "@/components/plateau/PlateauPlayer.vue";
-import Chat from "@/components/Chat.vue";
+import PlateauPlayer from "@/components/game/plateau/PlateauPlayer.vue";
+import Chat from "@/components/game/Chat.vue";
 import AdminPanel from "@/components/UI/admin/AdminPanel.vue";
 
 const socketStore = useSocketStore()

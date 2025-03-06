@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
-import Card from "@/components/cards/Card.vue";
-import Deck from "@/components/cards/Deck.vue";
+import Card from "@/components/game/cards/Card.vue";
+import Deck from "@/components/game/cards/Deck.vue";
 import {provide, ref} from "vue";
 import useColor, {BLUE, YELLOW, BACKGROUND, LIGHT_BLUE} from "@/composables/useColor.ts";
 

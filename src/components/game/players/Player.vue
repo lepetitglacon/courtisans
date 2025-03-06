@@ -2,8 +2,8 @@
 import {useSocketStore} from "@/stores/socket.ts";
 import {useGameStore} from "@/stores/game.ts";
 import {computed, inject, onMounted, provide, ref} from "vue";
-import Deck from "@/components/cards/Deck.vue";
-import Action from "@/components/actions/Action.vue";
+import Deck from "@/components/game/cards/Deck.vue";
+import Action from "@/components/game/actions/Action.vue";
 import useColor, {BLUE} from "@/composables/useColor.ts";
 
 const props = defineProps<{

@@ -8,31 +8,42 @@ const route = useRoute()
 
 <template>
 
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-
-
-
+  <nav class="navbar navbar-expand-md">
     <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <RouterLink to="/" class="nav-link">Home</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink to="/games" class="nav-link">Play</RouterLink>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Pricing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
+      <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
+
+        <div class="col">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <RouterLink to="/" class="nav-link">Accueil</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink to="/règles" class="nav-link">Les règles</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink to="/score" class="nav-link">Scores</RouterLink>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col d-flex justify-content-center">
+          <RouterLink class="btn btn-game play-button" to="/games">Jouer</RouterLink>
+        </div>
+
+        <div class="col d-flex justify-content-end">Z</div>
       </div>
     </div>
   </nav>
 </template>
 
 <style scoped>
-
+.nav-item {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.play-button {
+  font-size: 1.5em;
+  border-width: 3px !important;
+  border-radius: 5px;
+}
 </style>
