@@ -18,8 +18,8 @@ import Navbar from "@/components/Navbar.vue";
 
 <style scoped>
 #app-root {
-  width: 100vw;
-  height: 100vh;
+    width: 100vw;
+	height: 100vh;
 }
 .admin-panel {
  position: absolute;
