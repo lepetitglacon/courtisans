@@ -12,7 +12,7 @@ import useColor, {BLUE} from "@/composables/useColor.ts";
 import Player from "@/components/players/Player.vue";
 import {useGameStore} from "../../stores/game.ts";
 const route = useRoute()
-const socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
+const socket = io(`${import.meta.env.VITE_SERVER_URL}:${import.meta.env.VITE_SERVER_PORT}`, {
   autoConnect: false,
   query: {
     roomId: route.params.id
