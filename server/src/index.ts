@@ -9,11 +9,22 @@ import mongoose from "mongoose";
 import GameFactory from "./game/GameFactory";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+}));
 app.use(express.json());
 
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:5173',
+]
+
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: process.env.FRONTEND_URL,
+    }
+});
 
 getDB()
 deleteEndedGames()
@@ -23,6 +34,12 @@ gameFactory.initFromDB()
 
 server.listen(process.env.SERVER_PORT, () => {
     console.log(`server running at http://localhost:${process.env.SERVER_PORT}`);
+});
+app.all('*', function(req, res, next) {
+    const origin = allowedOrigins.includes(req.header('origin')?.toLowerCase() ?? '') ? req.headers.origin : allowedOrigins[0];
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 app.get('/games',  async (req: Request, res: Response): Promise<any> => {
     return res.json(await DBGame.find({}))
