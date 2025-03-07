@@ -4,7 +4,7 @@ import Action from "@/components/game/actions/Action.vue";
 import {useGameStore} from "@/stores/game.ts";
 import Card from "@/components/game/cards/Card.vue";
 import Deck from "@/components/game/cards/Deck.vue";
-import {provide, ref} from "vue";
+import {onMounted, provide, ref} from "vue";
 import useColor, {BLUE, YELLOW, BACKGROUND, LIGHT_BLUE} from "@/composables/useColor.ts";
 import PlateauDeck from "@/components/game/plateau/PlateauDeck.vue";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from "vue-router";
@@ -16,17 +16,6 @@ const socketStore = useSocketStore()
 const gameStore = useGameStore()
 
 provide('killAction', 'kill_crown')
-
-function warningBeforeLeavingRoom() {
-
-}
-onBeforeRouteLeave((to, from) => {
-	const answer = window.confirm(
-		'Do you really want to leave? you have unsaved changes!'
-	)
-	// cancel the navigation and stay on the same page
-	if (!answer) return false
-})
 
 </script>
 

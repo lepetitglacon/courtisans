@@ -14,6 +14,14 @@ const router = createRouter({
     routes,
 })
 
+router.beforeEach((to, from) => {
+    if (from.fullPath.startsWith('/games/')) {
+        return window.confirm(
+            'Êtes-vous sûr de vouloir quitter la partie ? Vous ne pourrez pas la rejoindre de nouveau.'
+        )
+    }
+})
+
 export {
     router,
     routes
