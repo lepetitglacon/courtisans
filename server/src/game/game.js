@@ -13,6 +13,7 @@ import EventDispatcher from "../EventDispatcher.js";
 
 import { fakerFR as faker } from '@faker-js/faker';
 import UserUtility from "../utility/UserUtility.js";
+import Bot from "../logic/bot";
 
 export default class Game {
 
@@ -50,6 +51,8 @@ export default class Game {
         this.tests = {}
         this.tests.fillCards = new fillCardsTest(this)
 
+        this.training = false
+        this.trainingBots = 0
     }
 
     async init() {
@@ -76,6 +79,13 @@ export default class Game {
             this.modelInstance.crdate = new Date()
             await this.modelInstance.save()
             this.roomId = this.modelInstance.id
+        }
+
+        if (this.training) {
+            console.log('adding bots', this.trainingBots)
+            for (let i = 0; i < this.trainingBots; i++) {
+                const bot = new Bot(this)
+            }
         }
 
         this.update()
@@ -183,7 +193,7 @@ export default class Game {
         })
         this.bindSocket(socket)
 
-        if (this.users.length === 0) {
+        if (this.users.length === 0 || this.training) {
             user.admin = true
         }
 
@@ -245,15 +255,15 @@ export default class Game {
     }
 
     start() {
-        this.initCards()
+        this.users = this.users.filter(user => user.socket.connected)
 
+        this.initCards()
         this.shuffleCards()
         this.distributeCardsToEveryPlayer()
 
         this.userTurnId = this.users[0].socket.id
         this.actionValidator.initForCurrentUser()
 
-        this.users = this.users.filter(user => user.socket.connected)
         this.started = true
         this.changeState(STATE.PLAYING)
         this.update()

@@ -50,13 +50,13 @@ const color = computed(() => {
       :class="[
           left ? '' : 'flex-row-reverse ',
           hovered && gameStore.holdenCard && 'hovered',
-          !user.socket.connected && 'disconnected'
+          !user.socket.connected && 'disconnected',
       ]"
     >
 	    <div
 		    class="player-info position-absolute z-1 mt-2"
 		    :class="[
-				left ? '' : 'text-end rtl',
+				    left ? '' : 'text-end rtl',
 	        ]"
 		    :style="{
 				left: left && '15px',
@@ -77,6 +77,8 @@ const color = computed(() => {
           class="player-decks-container col-10 d-flex flex-wrap m-2 p-2 rounded-2"
           :class="[
               left ? 'justify-content-start' : 'justify-content-end',
+          user.socket.id === socketStore.game?.userTurnId && 'playing',
+
           ]"
       >
 	      <template v-for="family of socketStore?.game?.infos?.FAMILIES ?? []" >
@@ -125,5 +127,8 @@ const color = computed(() => {
 	color: floralwhite;
 	font-size: 1.5em;
 	font-weight: bold;
+}
+.playing {
+  box-shadow: inset 0 0 50px #f6db51;
 }
 </style>

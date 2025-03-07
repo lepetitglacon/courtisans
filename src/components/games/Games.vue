@@ -7,6 +7,7 @@ const router = useRouter();
 
 const games = ref([])
 const isTraining = ref(false)
+const trainingBots = ref(1)
 
 onMounted(async () => {
   const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/games`)
@@ -74,12 +75,12 @@ async function createGame(e) {
 			  </div>
         <div class="mb-3 ">
           <div class="form-check form-switch form-check">
-            <input v-model="isTraining"  class="form-check-input" type="checkbox" name="training" id="training">
+            <input v-model.number="isTraining" class="form-check-input" type="checkbox" name="training" id="training">
             <label class="form-check-label" for="training">Mode entrainement</label>
           </div>
           <div class="mb-3">
-            <label class="form-check-label" for="training-bots">Nombre de bots</label>
-            <input type="number" min="1" max="5" class="form-control" id="training-bots" name="training-bots" :disabled="!isTraining">
+            <label class="form-check-label" for="trainingBots">Nombre de bots</label>
+            <input v-model.number="trainingBots" type="number" min="1" max="5" class="form-control" id="trainingBots" name="trainingBots" :disabled="!isTraining">
           </div>
         </div>
 			  <button type="submit" class="btn btn-success">Jouer !</button>

@@ -46,15 +46,16 @@ app.get('/games',  async (req: Request, res: Response): Promise<any> => {
 })
 app.post('/create',  async (req: Request, res: Response): Promise<any> => {
     try {
+        console.log(req.body)
         const game = await gameFactory.create({
-            title: req.body.title
+            ...req.body
         })
 
         return res.json({
             roomId: game.roomId
         })
     } catch (e) {
-
+        console.error(e)
     }
 })
 
@@ -66,7 +67,7 @@ async function getDB() {
 }
 
 function deleteEndedGames() {
-    console.log('[DB] deleteEndedGames')
+    // console.log('[DB] deleteEndedGames')
     // setInterval(async () => {
     //     const games = await DBGame.find({})
     //     for (const game of games) {

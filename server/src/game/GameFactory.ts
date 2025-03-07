@@ -14,6 +14,9 @@ export default class GameFactory {
     async create(options: any) {
         const game = new Game(this.io)
         game.title = options?.title ?? 'No title'
+        game.training = options?.training === 'on'
+        game.trainingBots = parseInt(options?.trainingBots) ?? 0
+
         game.roomId = options?.roomId ?? null
         await game.bind()
         await game.init()
