@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {useRoute, useRouter} from "vue-router";
-import Players from "@/components/game/players/Players.vue";
-import AppContainer from "@/components/AppContainer.vue";
+import {useRoute} from "vue-router";
 import OwnPlayer from "@/components/game/OwnPlayer.vue";
 import UI from "@/components/UI/UI.vue";
 import Plateau from "@/components/game/plateau/Plateau.vue";
@@ -10,7 +8,7 @@ import {io} from "socket.io-client";
 import {useSocketStore} from "@/stores/socket.ts";
 import useColor, {BLUE} from "@/composables/useColor.ts";
 import Player from "@/components/game/players/Player.vue";
-import {useGameStore} from "../../stores/game.ts";
+
 const route = useRoute()
 const socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
   autoConnect: false,

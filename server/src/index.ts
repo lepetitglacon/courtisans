@@ -16,7 +16,7 @@ app.use(express.json());
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,
-    'http://localhost:5173',
+    'localhost:5173',
 ]
 
 const server = createServer(app);
@@ -57,6 +57,10 @@ app.post('/create',  async (req: Request, res: Response): Promise<any> => {
     } catch (e) {
         console.error(e)
     }
+})
+app.get('/',  async (req: Request, res: Response): Promise<any> => {
+    res.set('Content-Type', 'text/html');
+    return res.send(`<a href="${process.env.FRONTEND_URL}">Aller sur le site</a>`)
 })
 
 async function getDB() {
