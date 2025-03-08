@@ -71,14 +71,16 @@ async function getDB() {
 }
 
 function deleteEndedGames() {
-    // console.log('[DB] deleteEndedGames')
-    // setInterval(async () => {
-    //     const games = await DBGame.find({})
-    //     for (const game of games) {
-    //         if (!game.crdate || game.crdate.getDate() + 50000 < Date.now()) {
-    //             await DBGame.deleteOne({_id: game.id})
-    //             console.log(`[DB] ${game.id} deleted by time`)
-    //         }
-    //     }
-    // }, 50000)
+    const timeToDeleteInMinute = 10
+    const timeToDeleteInMs = timeToDeleteInMinute * 60 * 1000
+    console.log('[DB] deleteEndedGames')
+    setInterval(async () => {
+        const games = await DBGame.find({})
+        for (const game of games) {
+            if (game.crdate.getTime() + timeToDeleteInMs < Date.now()) {
+                await DBGame.deleteOne({_id: game.id})
+                console.log(`[DB] ${game.id} deleted by time`)
+            }
+        }
+    }, 500)
 }

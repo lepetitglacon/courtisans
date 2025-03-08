@@ -377,6 +377,11 @@ export default class Game {
 
     countCardForEndgame() {
         const families = {}
+        const winner = {
+            id: '',
+            name: '',
+            total: 0
+        }
 
         // remettre les cartes cachées dans les familles
         for (const card of this.familyCards['assassin'].enlighten) {
@@ -458,9 +463,35 @@ export default class Game {
                 return acc += el
             }, 0)
             this.score.users[user.socket.id]['Total'] = total
+
+            if (total > winner.total) {
+                winner.id = user.socket.id
+                winner.name = user.name
+                winner.total = total
+            }
+        }
+
+        this.io.to(this.roomId).emit('message', {
+            user: `[ORDI] -> `,
+            message: `-- Résultats -- `
+        })
+
+        this.io.to(this.roomId).emit('message', {
+            user: `[ORDI] -> `,
+            message: `Gagnant du banquet : ${winner.name}: <br> avec ${winner.total} points !`
+        })
+        this.io.to(this.roomId).emit('message', {
+            user: `[ORDI] -> `,
+            message: ``
+        })
+
+        for (const user of this.users) {
+            if (user.socket.id === winner.id) {
+                continue
+            }
             this.io.to(this.roomId).emit('message', {
                 user: `[ORDI] -> `,
-                message: `${user.name}: ${total}`
+                message: `${user.name}: ${this.score.users[user.socket.id].Total}`
             })
         }
 

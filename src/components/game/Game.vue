@@ -37,6 +37,7 @@ onUnmounted(async () => {
   socket.off("disconnect", disconnect);
 
   socketStore.cleanEvents()
+  socketStore.game = null
 })
 </script>
 

@@ -77,8 +77,7 @@ const color = computed(() => {
           class="player-decks-container col-10 d-flex flex-wrap m-2 p-2 rounded-2"
           :class="[
               left ? 'justify-content-start' : 'justify-content-end',
-          user.socket.id === socketStore.game?.userTurnId && 'playing',
-
+              user.socket.id === socketStore.game?.userTurnId && socketStore.game?.state !== 'COUNTING' && 'playing',
           ]"
       >
 	      <template v-for="family of socketStore?.game?.infos?.FAMILIES ?? []" >
