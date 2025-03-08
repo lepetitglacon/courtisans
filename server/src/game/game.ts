@@ -135,10 +135,12 @@ export default class Game {
                     family: family,
                     power: POWERS.NORMAL
                 })
-                if (i > 3) { card.power = POWERS.SHIELD }
-                if (i > 6) { card.power = POWERS.NOBLE }
-                if (i > 9) { card.power = POWERS.ROGUE }
-                if (i > 12) { card.power = POWERS.HIDDEN }
+                switch (true) {
+                    case i <= 3: { card.power = POWERS.SHIELD } break;
+                    case i <= 7: { card.power = POWERS.NOBLE } break;
+                    case i <= 9: { card.power = POWERS.ROGUE } break;
+                    case i <= 11: { card.power = POWERS.HIDDEN } break;
+                }
                 card.id = cardId++
                 this.cards.push(card)
                 this.initialDeck.push(card)
