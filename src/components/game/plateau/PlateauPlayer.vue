@@ -23,6 +23,10 @@ gameStore.registerActionDiv(
 	hovered,
 	active
 )
+
+function handleMenuClick(e) {
+  socketStore.emit(`client/admin/${e.target.dataset.action}`)
+}
 </script>
 
 <template>
@@ -31,8 +35,15 @@ gameStore.registerActionDiv(
 		class="h-100 w-100 d-flex flex-column mt-2 p-5 rounded-2"
 		style="backdrop-filter: blur(10px); background-color: rgba(100, 100, 100, 0.5);"
 	>
-    <p class="text-center">{{socketStore.currentPlayer.name}} (Vous)</p>
 
+    <div
+        class="d-flex flex-column"
+    >
+      <button class="btn btn-game" @click="handleMenuClick" data-action="start" v-if="socketStore?.game?.state === 'WAITING_FOR_START'">Commencer !</button>
+      <button class="btn btn-game" @click="handleMenuClick" data-action="restart" v-if="socketStore?.game?.state === 'COUNTING'">Rejouer !</button>
+    </div>
+
+    <p class="text-center">{{socketStore.currentPlayer.name}} (Vous)</p>
 
 		<div
 			ref="actionRef"

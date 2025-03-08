@@ -17,6 +17,7 @@ const gameStore = useGameStore()
 
 provide('killAction', 'kill_crown')
 
+
 </script>
 
 <template>

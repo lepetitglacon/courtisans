@@ -15,7 +15,6 @@
   provide('killAction', 'kill_own')
   provide('absoluteContainerRef', absoluteContainerRef)
 
-
 </script>
 
 <template>

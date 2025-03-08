@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import {useRouter} from "vue-router";
-import {onMounted, ref} from "vue";
-
-const games = ref()
-
-onMounted(async () => {
-})
 
 </script>
 
 <template>
-  <h2>Courtisans</h2>
-	{{  }}
+  <div class="container-fluid">
+    <div class="container">
+      <div class="row">
+
+        <div class="col">
+          <h2>Courtisans</h2>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>

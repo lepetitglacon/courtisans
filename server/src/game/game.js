@@ -412,8 +412,8 @@ export default class Game {
                     }
                 }
                 missionCard.isValid = ok
-                if (!this.score.users[user.socket.id]['missions']) {
-                    this.score.users[user.socket.id]['missions'] = 0
+                if (!this.score.users[user.socket.id]['Missions']) {
+                    this.score.users[user.socket.id]['Missions'] = 0
                 }
                 this.score.users[user.socket.id]['Missions'] += ok ? 3 : 0
             }

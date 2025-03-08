@@ -12,15 +12,18 @@ function handleClick(e) {
 </script>
 
 <template>
-	<button class="btn btn-game" @click="open = !open">Admin</button>
+	<button
+      class="btn btn-game"
+      @click="open = !open"
+      :class="[
+          open && 'active'
+      ]"
+  >
+    Admin
+  </button>
 
   <div class="admin" v-if="open">
-
-    <button @click="handleClick" data-action="start">Start</button>
-    <button @click="handleClick" data-action="restart">Restart</button>
     <button @click="handleClick" data-action="test">Test</button>
-
-	<div>Cartes totales : {{ socketStore.game?.cards.length }}</div>
   </div>
 
 </template>
