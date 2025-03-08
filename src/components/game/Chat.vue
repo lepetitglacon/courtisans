@@ -11,10 +11,10 @@ const messagesDivRef = ref<HTMLDivElement>()
 function sendMessage() {
   const message = textareaValue.value
   socketStore.emit('client/message', {
-    user: socketStore?.socket?.id,
+    user: socketStore?.currentPlayer?.name ?? socketStore?.socket?.id,
     message: message
   })
-  chatStore.postMessage(message)
+  // chatStore.postMessage(message)
   textareaValue.value = null
 }
 
@@ -28,13 +28,16 @@ watch(() => socketStore.game?.state, (newValue) => {
   chatStore.postMessage(`[ORDI] -> ${newValue}`)
 })
 
+const onMessage = (e) => {
+  chatStore.postMessage(`${e.user}: ${e.message}`)
+}
+
 onMounted(() => {
-  socketStore.on('message', (e) => {
-    chatStore.postMessage(`${e.user}: ${e.message}`)
-  })
+  socketStore.on('message', onMessage)
 })
 onUnmounted(() => {
   chatStore.messages.length = 0
+  socketStore.off('message', onMessage)
 })
 
 function onKeyDown(e: KeyboardEvent) {
