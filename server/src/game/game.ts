@@ -15,6 +15,7 @@ import {shuffleArray} from "../utils.js";
 import { fakerFR as faker } from '@faker-js/faker';
 import * as Mongoose from "mongoose";
 import {Server} from "socket.io";
+import {randomInt} from "../utility/random";
 
 export default class Game {
     title: string;
@@ -85,7 +86,6 @@ export default class Game {
         this.started = false
         this.changeState(this.users.length ? STATE.WAITING_FOR_START : STATE.WAITING_FOR_PLAYERS)
 
-
         this.score = {
             users: {},
             families: {}
@@ -109,6 +109,10 @@ export default class Game {
         }
 
         if (this.training) {
+            if (this.trainingBots <= 0 || this.trainingBots > 4) {
+                throw new Error("Training bots needs to be between 1 and 4")
+            }
+
             if (this.bots.length) {
                 this.bots.forEach(bot => bot.socket.connect())
             } else {
@@ -293,7 +297,7 @@ export default class Game {
         this.shuffleCards()
         this.distributeCardsToEveryPlayer()
 
-        this.userTurnId = this.users[0].socket.id
+        this.userTurnId = this.users[randomInt(0, this.users.length - 1)].socket.id
         this.actionValidator.initForCurrentUser()
 
         this.started = true

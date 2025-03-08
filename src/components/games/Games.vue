@@ -80,7 +80,7 @@ async function createGame(e) {
           </div>
           <div class="mb-3">
             <label class="form-check-label" for="trainingBots">Nombre de bots</label>
-            <input v-model.number="trainingBots" type="number" min="1" max="5" class="form-control" id="trainingBots" name="trainingBots" :disabled="!isTraining">
+            <input v-model.number="trainingBots" type="number" min="1" max="4" class="form-control" id="trainingBots" name="trainingBots" :disabled="!isTraining">
           </div>
         </div>
 			  <button type="submit" class="btn btn-success">Jouer !</button>
