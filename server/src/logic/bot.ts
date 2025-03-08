@@ -3,7 +3,7 @@ import type Game from "../game/game";
 
 export default class Bot {
     private game: Game;
-    private socket: Socket;
+    socket: Socket;
 
     constructor(game: Game) {
         this.game = game

@@ -1,23 +1,48 @@
-import User from "../user.js";
-import Card from "../cards/card.js";
-import { Game as DBGame } from "../db/schema/game";
 import POWERS from "../data/powers.js";
 import FAMILIES from "../data/families.js";
 import MISSIONS from "../data/missions.js";
 import STATE from "../shared/gameState.js";
-import {shuffleArray} from "../utils.js";
 import ActionValidator from "../logic/actionValidator.js";
 import MissionCard from "../cards/missionCard.js";
 import fillCardsTest from "../tests/fillCardsTest.js";
 import EventDispatcher from "../EventDispatcher.js";
-
-import { fakerFR as faker } from '@faker-js/faker';
+import User from "../user.js";
+import Card from "../cards/card.js";
 import UserUtility from "../utility/UserUtility.js";
 import Bot from "../logic/bot";
+import { Game as DBGame } from "../db/schema/game";
+import {shuffleArray} from "../utils.js";
+import { fakerFR as faker } from '@faker-js/faker';
+import * as Mongoose from "mongoose";
+import {Server} from "socket.io";
 
 export default class Game {
+    title: string;
+    private NUMBER_OF_CARDS_PER_FAMILY: number;
+    private HAND_SIZE: number;
+    private MISSION_HAND_SIZE: number;
+    private model: Mongoose.Model<any>;
+    private io: Server;
+    private roomId: string;
+    private eventDispatcher: EventDispatcher;
+    private actionValidator: ActionValidator;
+    private userUtility: UserUtility;
+    private score: { families: {}; users: {} };
+    private state: string;
+    private started: boolean;
+    private userTurnId: number;
+    private users: User[];
+    private initialDeck: Card[];
+    private cards: Card[];
+    private missionCards: MissionCard[];
+    private familyCards: {};
+    private tests: {};
+    private bots: Bot[];
+    private training: boolean;
+    private trainingBots: number;
+    private modelInstance: any;
 
-    constructor(io) {
+    constructor(io: Server) {
         this.NUMBER_OF_CARDS_PER_FAMILY = 15
         this.HAND_SIZE = 3
         this.MISSION_HAND_SIZE = 2
@@ -25,7 +50,7 @@ export default class Game {
         this.model = DBGame
 
         this.io = io;
-        this.roomId = null
+        this.roomId = ''
         this.title = ''
 
         this.eventDispatcher = new EventDispatcher()
@@ -40,7 +65,7 @@ export default class Game {
 
         this.state = STATE.WAITING_FOR_PLAYERS
         this.started = false
-        this.userTurnId = null
+        this.userTurnId = 0
 
         this.users = []
         this.initialDeck = []
@@ -51,13 +76,15 @@ export default class Game {
         this.tests = {}
         this.tests.fillCards = new fillCardsTest(this)
 
+        this.bots = []
         this.training = false
         this.trainingBots = 0
     }
 
     async init() {
         this.started = false
-        this.changeState(STATE.WAITING_FOR_PLAYERS)
+        this.changeState(this.users.length ? STATE.WAITING_FOR_START : STATE.WAITING_FOR_PLAYERS)
+
 
         this.score = {
             users: {},
@@ -82,9 +109,14 @@ export default class Game {
         }
 
         if (this.training) {
-            console.log('adding bots', this.trainingBots)
-            for (let i = 0; i < this.trainingBots; i++) {
-                const bot = new Bot(this)
+            if (this.bots.length) {
+                this.bots.forEach(bot => bot.socket.connect())
+            } else {
+                console.log('adding bots', this.trainingBots)
+                for (let i = 0; i < this.trainingBots; i++) {
+                    const bot = new Bot(this)
+                    this.bots.push(bot)
+                }
             }
         }
 

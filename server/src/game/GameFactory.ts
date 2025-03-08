@@ -1,4 +1,4 @@
-import Game from "./game";
+import Game from "../game/game";
 import {Game as DBGame} from "../db/schema/game";
 import {Server} from "socket.io";
 
