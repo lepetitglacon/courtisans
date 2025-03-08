@@ -48,24 +48,24 @@ export const useSocketStore = defineStore("socket", () => {
     }
 
     function bindEvents() {
-        socket.value.on("connect", () => {
-            isConnected.value = true;
-
-        });
-        socket.value.on("disconnect", () => {
-            isConnected.value = false;
-        });
-
-        socket.value.on("game:update", (data) => {
-            const lastHand = currentPlayer?.value?.handCards?.length
-
-            // game.value = {}
-            game.value = data
-
-            if (currentPlayer.value?.handCards?.length === 3 && currentPlayer.value?.handCards?.length !== lastHand) {
-                useSoundStore().sounds.get('draw').play()
-            }
-        });
+        socket.value.on("connect", onConnect);
+        socket.value.on("disconnect", onDisconnect);
+        socket.value.on("game:update", onGameUpdate);
+    }
+    const onConnect = () => { isConnected.value = true }
+    const onDisconnect = () => { isConnected.value = false }
+    const onGameUpdate = (data: any) => {
+        const lastHand = currentPlayer?.value?.handCards?.length
+        // game.value = {}
+        game.value = data
+        if (currentPlayer.value?.handCards?.length === 3 && currentPlayer.value?.handCards?.length !== lastHand) {
+            useSoundStore()?.sounds?.get('draw')?.play()
+        }
+    }
+    function cleanEvents() {
+        socket.value.on("connect", onConnect);
+        socket.value.on("disconnect", onDisconnect);
+        socket.value.on("game:update", onGameUpdate);
     }
 
     function emit(type: string, data: any = null) {
@@ -109,6 +109,7 @@ export const useSocketStore = defineStore("socket", () => {
         bindEvents,
         on,
         off,
-        connect
+        connect,
+        cleanEvents
     }
 });

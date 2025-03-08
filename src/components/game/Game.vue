@@ -35,6 +35,8 @@ onMounted(() => {
 onUnmounted(async () => {
   socket.off("connect", connect)
   socket.off("disconnect", disconnect);
+
+  socketStore.cleanEvents()
 })
 </script>
 
