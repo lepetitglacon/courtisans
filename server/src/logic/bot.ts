@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client'
+import { randomInt } from '../utility/random'
 import type Game from "../game/game";
 
 export default class Bot {
@@ -47,7 +48,7 @@ export default class Bot {
                             break;
                         }
                     }
-                }, Math.random() * 2000)
+                }, randomInt(1000, 5000))
 
             }
         });

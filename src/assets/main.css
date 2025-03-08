@@ -5,19 +5,20 @@
   src: url('./fonts/MedievalSharp-Book.ttf');
 }
 
+body {
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 #app {
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
 
-  color: white;
   background-color: #EFE9CC;
 
   font-family: medieval, "Roboto Mono", monospace;
-}
-html {
-  overflow: hidden;
 }
 
 .hovered {
@@ -53,3 +54,5 @@ html {
   border-color: #A97A00 !important;
   font-weight: 900 !important;
 }
+
+

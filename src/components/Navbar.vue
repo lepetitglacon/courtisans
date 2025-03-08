@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import logo from '@/assets/img/logo.svg?url'
 
 import {RouterLink, useRoute, useRouter} from "vue-router";
 
@@ -12,16 +13,27 @@ const route = useRoute()
     <div class="container-fluid">
       <div class="container collapse navbar-collapse d-flex justify-content-between" id="navbarNav">
 
+        <img style="margin-right: 1vw" :src="logo" alt="Courtisans logo" width="128" height="64">
+
         <div class="col">
+
           <ul class="navbar-nav">
             <li class="nav-item">
               <RouterLink to="/" class="btn nav-link">Accueil</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink to="/règles" class="btn nav-link">Les règles</RouterLink>
+              <RouterLink to="/règles" class="btn nav-link">Règles</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink to="/scores" class="btn nav-link">Scores</RouterLink>
+            </li>
+            <li class="nav-item">
+              <a href="https://www.philibertnet.com/fr/catch-up-games/134055-courtisans-3760273010423.html"
+                 class="btn nav-link"
+                 target="_blank"
+              >
+                Acheter
+              </a>
             </li>
           </ul>
         </div>
@@ -33,8 +45,9 @@ const route = useRoute()
         <div class="col d-flex justify-content-end">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <RouterLink to="/login" class="btn nav-link">Se connecter</RouterLink>
+              <RouterLink to="/login" class="btn nav-link" disabled="disabled">Se connecter</RouterLink>
             </li>
+            <li><p>v1.0.0</p></li>
           </ul>
         </div>
       </div>

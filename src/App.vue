@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import './assets/main.css'
+import '@/assets/main.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 import {router} from './router.ts'
@@ -24,18 +24,8 @@ const fullPath = computed(() => {
 </template>
 
 <style scoped>
+
 #app-root {
-    width: 100vw;
-	height: 100vh;
-}
-.admin-panel {
- position: absolute;
-  bottom: 0;
-}
-.tier {
-  height: 25vh;
-}
-.quart {
-  height: 50vh;
+  width: 100vw;
 }
 </style>

@@ -3,7 +3,13 @@
 </script>
 
 <template>
-<h2>Score</h2>
+
+  <div class="container-fluid">
+    <div class="container">
+      <h2>Scores</h2>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>

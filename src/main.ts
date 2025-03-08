@@ -1,4 +1,3 @@
-import './assets/main.css'
 import './utils/Array.ts'
 
 import { createApp } from 'vue'

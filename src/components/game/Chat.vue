@@ -68,7 +68,7 @@ function onKeyDown(e: KeyboardEvent) {
 .messages {
   overflow-y: scroll;
   height: 100%;
-
+  color: white;
 	font-size: .8em;
 }
 
