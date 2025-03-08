@@ -47,7 +47,7 @@ export default class Bot {
                             break;
                         }
                     }
-                }, Math.random() * 1000)
+                }, Math.random() * 2000)
 
             }
         });
